@@ -1,0 +1,50 @@
+#locations{
+  width: 50%;
+  margin: 20px 25% 0 25%;
+}
+
+#locations td {
+  vertical-align: middle;
+}
+
+#input_path input[type='text']{
+ 	width: 460px;
+} 
+
+#input_path form{
+ 	margin-bottom: 0px;
+} 
+
+
+#locations_sync {
+  width: 75%;
+  margin: 20px auto;	
+}
+
+#locations_sync .missing-True
+{
+	color: #b00;
+}
+
+#locations_sync td {
+  vertical-align: top;
+}
+
+#locations_sync .path{
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
+}
+
+#locations_sync_dialog .path {
+	font-family: "Courier New", Courier, monospace;
+	font-weight: bold;
+}
+
+#locations_sync_dialog .ajaxerror{
+	background: #c00;
+	color: yellow;
+	text-align: center;
+	width: 100%;
+	padding: 6px 0;
+}
+

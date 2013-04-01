@@ -1,0 +1,55 @@
+{% extends "generic.html" %}
+{% block body %}
+	
+	<div id='locations_sync_dialog' class="modal hide fade" tabindex='-1'>
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		</div>
+		<div class="modal-body">
+			<form action='{%url "#locations_add_path_mediainfo" %}' method='POST'>{% csrf_token %}
+				<input type='hidden' name='location.id' value='{{location.id}}'>
+				<input type='hidden' name='location.path' value='{{path}}'>
+				<input type='hidden' name='file.path'>
+				<ol>
+					<li>Getting info on <span class='path'>file</span></li>
+					<div class='step2'>
+					</div>
+				</ol>
+			</form>
+			<div class="progress progress-striped active">
+				<div class="bar" style="width: 100%;"></div>
+			</div>
+		</div>
+	</div>
+
+	<table id='locations_sync' class='table no_table-bordered no_table-hover'>
+		<caption>Movies for {{location}} under {{path}}</caption>
+		<thead>
+			<tr><th>Add</th><th>Path &amp; Title</th><th>Remove</th></tr>
+		</thead>
+		<tbody>
+		    {% for path, title, missing in movies %}
+		    <tr>
+		    	<td>
+				  	{% if not missing %}
+					    <a class="btn btn-mini search_path" href="#">
+					    <i class="icon-search icon-white"></i></a>
+				    {% endif %}
+			    </td>
+		    	<td>
+		    		<div class='path'>{{path}}</div>
+		    		<div class='title missing-{{missing}}'>{{title}}</div>
+		    	</td>
+		    	<td>
+				  	{% if missing %}
+					    <a class="btn btn-mini remove_path disabled" href="#">
+					    <i class="icon-trash icon-white"></i></a>
+				    {% endif %}
+			    </td>
+		    </tr>
+		    {% endfor %}
+		</tbody>
+	</table>
+
+{% endblock %}
+

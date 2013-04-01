@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Movies control{% endblock %}</title>
+    <!--
+      black: cyborg, slate, superhero, 
+      white: spruce, cerulean, journal, simplex, united, cosmo, readable, spacelab
+       cosmo: nice, waiting bar not ok
+       spruce: very okay
+    -->
+    <link href="/static/bootstrap/css/spruce.bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/movies.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    {% for message in messages %}
+      <div class='alert {{ message.tags }}'>
+        <a class="close" data-dismiss="alert" href="#">&times;</a> 
+        {{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/locations.js"></script>
+    <script src="/static/locations_sync.js"></script>
+    <script src="/static/global.js"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+$bg_color_inverse:#111;
+$fg_color_inverse:#fff; 
+
+body{
+    padding: 0px;
+    margin: 0px;
+}
+
+body.inverse-body{
+    background: $bg_color_inverse;
+    color: $fg_color_inverse;
+}
+
+caption{
+	font-size: 24px;
+	margin: 12px;	
+}
+
+@import "menu";
+@import "movies";
+@import "locations";
+

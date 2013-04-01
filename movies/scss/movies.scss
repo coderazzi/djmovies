@@ -1,0 +1,85 @@
+$bg_color_inverse_a : desaturate(lighten($bg_color_inverse, 7%), 7%);
+$bg_color_inverse_b : desaturate(lighten($bg_color_inverse, 14%), 14%);
+$bg_color_inverse_c : desaturate(lighten($bg_color_inverse, 21%), 21%);
+
+$fg_color_inverse_a : saturate(darken($fg_color_inverse, 7%), 2%);
+$fg_color_inverse_b : saturate(darken($fg_color_inverse, 14%), 4%);
+$fg_color_inverse_d : saturate(darken($fg_color_inverse, 28%), 6%);
+
+
+#div_movies{
+}
+
+
+.div_movie{
+    float: left;
+}
+
+.movie_section{
+    float: left;
+    border: 1px solid $bg_color_inverse_b;
+    margin: 8px;
+    background: $bg_color_inverse_a;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0px 0px 2px 2px $bg_color_inverse_b;
+}
+
+.movie_image {
+    float: left;
+    width: 214px;
+    height: 317px;
+    overflow: hidden;
+}
+
+.movie_info {
+    float: left;
+    width: 400px;
+    color: $fg_color_inverse_a;
+    margin: 8px;
+    font-family:"Arial";
+    font-size: 12px;
+}
+
+.movie_title {
+    font-size: 16px;
+    font-weight: 400;
+    width: 100%;
+    border-bottom: 1px solid $bg_color_inverse_c;
+}
+
+.movie_info_item {
+    float: left;
+    position: relative;
+    clear: both;
+    width: 100%;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.movie_info_item_key {
+    padding-left: 6px;
+    width: 70px;
+    color: $fg_color_inverse_d;
+}
+
+.movie_info_item_value {
+    position: absolute;
+    left: 70px;
+    top: 0px;
+    color: $fg_color_inverse_b;
+    overflow: hidden;
+}
+
+.movie_info_item_value_text{
+    font: 80%;
+    color: $fg_color_inverse_d;
+}
+
+.movie_info_item a,
+.movie_info_item a:visited,
+.movie_info_item a:active,
+.movie_info_item a:hover,
+.movie_info_item a:link {
+    color: $fg_color_inverse;
+}

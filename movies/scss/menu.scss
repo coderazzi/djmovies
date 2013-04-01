@@ -1,0 +1,39 @@
+$bg_menu_color:black;//lighten($bg_color, 10%);
+$bg_menu_color_alpha:rgba($bg_menu_color, .5);
+
+$border_color: #334;
+$border_color_active: #669;
+
+#menu{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+#menu-main{
+	float: left;
+	width: 100%;
+	padding: 10px 20px; 
+    background: $bg_menu_color;
+    background: $bg_menu_color_alpha;
+    border-bottom: 1px solid $border_color;
+	box-shadow: 0 0px 2px 2px $border_color_active;
+}
+
+.menu-item{
+	display: inline-block;
+	margin: 10px;
+	padding: 10px;
+	background: black;
+    border-radius: 6px;
+    color: $border_color;
+	box-shadow: 0 0px 2px 2px $border_color;
+	//box-shadow: 0 0px 2px 2px white;
+}
+
+.menu-item-enabled{
+    color: $border_color_active;
+	box-shadow: 0 0px 2px 2px $border_color_active;
+	cursor: pointer;
+}

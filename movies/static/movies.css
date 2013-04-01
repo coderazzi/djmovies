@@ -1,0 +1,141 @@
+body {
+  padding: 0px;
+  margin: 0px; }
+
+body.inverse-body {
+  background: #111111;
+  color: white; }
+
+caption {
+  font-size: 24px;
+  margin: 12px; }
+
+#menu {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%; }
+
+#menu-main {
+  float: left;
+  width: 100%;
+  padding: 10px 20px;
+  background: black;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid #333344;
+  box-shadow: 0 0px 2px 2px #666699; }
+
+.menu-item {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px;
+  background: black;
+  border-radius: 6px;
+  color: #333344;
+  box-shadow: 0 0px 2px 2px #333344; }
+
+.menu-item-enabled {
+  color: #666699;
+  box-shadow: 0 0px 2px 2px #666699;
+  cursor: pointer; }
+
+.div_movie {
+  float: left; }
+
+.movie_section {
+  float: left;
+  border: 1px solid #353535;
+  margin: 8px;
+  background: #232323;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow: 0px 0px 2px 2px #353535; }
+
+.movie_image {
+  float: left;
+  width: 214px;
+  height: 317px;
+  overflow: hidden; }
+
+.movie_info {
+  float: left;
+  width: 400px;
+  color: #eeeded;
+  margin: 8px;
+  font-family: "Arial";
+  font-size: 12px; }
+
+.movie_title {
+  font-size: 16px;
+  font-weight: 400;
+  width: 100%;
+  border-bottom: 1px solid #474747; }
+
+.movie_info_item {
+  float: left;
+  position: relative;
+  clear: both;
+  width: 100%;
+  margin-top: 20px;
+  overflow: hidden; }
+
+.movie_info_item_key {
+  padding-left: 6px;
+  width: 70px;
+  color: #bcb3b3; }
+
+.movie_info_item_value {
+  position: absolute;
+  left: 70px;
+  top: 0px;
+  color: #dddada;
+  overflow: hidden; }
+
+.movie_info_item_value_text {
+  font: 80%;
+  color: #bcb3b3; }
+
+.movie_info_item a,
+.movie_info_item a:visited,
+.movie_info_item a:active,
+.movie_info_item a:hover,
+.movie_info_item a:link {
+  color: white; }
+
+#locations {
+  width: 50%;
+  margin: 20px 25% 0 25%; }
+
+#locations td {
+  vertical-align: middle; }
+
+#input_path input[type='text'] {
+  width: 460px; }
+
+#input_path form {
+  margin-bottom: 0px; }
+
+#locations_sync {
+  width: 75%;
+  margin: 20px auto; }
+
+#locations_sync .missing-True {
+  color: #b00; }
+
+#locations_sync td {
+  vertical-align: top; }
+
+#locations_sync .path {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px; }
+
+#locations_sync_dialog .path {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold; }
+
+#locations_sync_dialog .ajaxerror {
+  background: #c00;
+  color: yellow;
+  text-align: center;
+  width: 100%;
+  padding: 6px 0; }

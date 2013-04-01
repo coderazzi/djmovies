@@ -1,0 +1,49 @@
+{% extends "generic.html" %}
+{% block body %}
+	{% if locations %}
+	
+	<div id='input_path' class="modal hide fade" tabindex='-1'>
+		<form action='{%url "#locations_add_path" %}' method='POST'>{% csrf_token %}
+			<input id='input_path_id' type='hidden' name='location.id'>
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h5>Synchronize location</h5>
+			</div>
+			<div class="modal-body">
+				<input name='location.path' type='text' placeholder='full path to location'>
+			</div>
+			<div class="modal-footer">
+				<button type='submit' id='location-search-button' class="btn btn-primary">Process path</button>
+			</div>			
+		</form>
+	</div>
+
+	<table id='locations' class='table no_table-bordered no_table-hover'>
+		<caption>Locations</caption>
+		<thead>
+			<tr><th>Name</th><th>Description</th><th>Operations</th></tr>
+		</thead>
+		<tbody>
+		    {% for location in locations %}
+		    <tr>
+		    	<td>{{location.name}}</td>
+		    	<td>{{location.description}}</td>
+		    	<td>
+		    		<div class="btn-toolbar">
+					  <div class="btn-group">
+					    <a class="btn btn-mini add_path" href="#" data-location="{{location.id}}">
+					    <i class="icon-hdd icon-white"></i></a>
+					  </div>
+					</div>
+			    </td>
+		    </tr>
+		    {% endfor %}
+		</tbody>
+	</table>
+
+
+	{% else %}
+	    <p>No Locations are available.</p>
+	{% endif %}
+{% endblock %}
+
