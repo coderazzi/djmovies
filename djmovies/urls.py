@@ -21,4 +21,8 @@ urlpatterns = patterns('',
     	name='#locations_add_path'),
     url(r'^locations_add_path_mediainfo$', 'movies.views.locations_add_path_mediainfo', 
     	name='#locations_add_path_mediainfo'),
+    url(r'^locations_add_path_imdbinfo_try$', 'movies.views.locations_add_path_imdbinfo_try', 
+        name='#locations_add_path_imdbinfo_try'),
+    url(r'^locations_add_path_imdbinfo_exact$', 'movies.views.locations_add_path_imdbinfo_exact', 
+        name='#locations_add_path_imdbinfo_exact'),
 )

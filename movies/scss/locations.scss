@@ -35,12 +35,26 @@
 	font-size: 12px;
 }
 
+#locations_sync_dialog .modal-body {
+	max-height: 1000px;
+}
+
+// #locations_sync_dialog {
+// 	width: 800px;
+// }
+
+// #locations_sync_dialog .modal-body{
+// 	width: 700px;
+// }
+
 #locations_sync_dialog .path {
 	font-family: "Courier New", Courier, monospace;
+	font-size: 11px;
 	font-weight: bold;
 }
 
-#locations_sync_dialog .ajaxerror{
+#locations_sync_dialog .error{
+	display: none;
 	background: #c00;
 	color: yellow;
 	text-align: center;
@@ -48,3 +62,22 @@
 	padding: 6px 0;
 }
 
+#locations_sync_dialog .row {
+	padding-bottom: 12px;
+}
+
+#locations_sync_dialog a.btn{
+	width: 120px;
+	float: right;
+} 
+
+#locations_sync_dialog .step6 img{
+	float: left;
+	width: 60px; 
+}
+
+#locations_sync_dialog div.imdb_info{
+ 	float: right;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 11px;
+}
