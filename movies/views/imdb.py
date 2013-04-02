@@ -14,69 +14,11 @@ from local.imdb import getImdbInfo, getBasicImdbInfo, searchImdb
 
 
 
-def index(request):
-    movies=Movie.objects.order_by('title')[:9]
-    images={}
-    for each in movies:
-        images=each.image_set.filter(size='B')[:1]
-        if images:
-            each.image=images[0].path
-        
-    context = Context({
-        'movies': movies,
-    })
-    return render_to_response('movies.html', context)
-
-
-def locations(request):        
-    return render_to_response('locations.html', 
-        {'locations':  Location.objects.order_by('name')},
-        RequestContext(request))
-
-
-def locations_add_path(request):    
-    # if request.method == 'GET': return redirect('#locations')
-    # locationId, locationPath = request.POST['location.id'], request.POST['location.path']
-    if request.method == 'GET': 
-        locationId, locationPath = 1, u'/Volumes/TTC7/_movies'
-    else:
-        locationId, locationPath = request.POST['location.id'], request.POST['location.path']
-
-
-    movies= {}
-    location = Location.objects.get(id=locationId)
-    for each in MovieLocation.objects.filter(location=location):
-        movies[each.path]=[each.movie.title, True]
-
-    for path, ok in LocationHandler(locationPath).iterateAllFilesInPath():
-        if ok:
-            info = movies.get(path)
-            if info:
-                info[1]=False
-            else:
-                movies[path]=['', False]
-        else:
-            messages.warning(request, 'Cannot access path: '+path)
-    
-    info=[]
-    for key in sorted(movies.keys(), key=unicode.lower):
-        movie=movies[key]
-        info.append((key, movie[0], movie[1]))
-
-    return render_to_response('locations_add_path.html', 
-        {      
-            'location' : location,
-            'path'     : locationPath,
-            'movies'   : info,
-        },
-        RequestContext(request))
-
-
 SIMULATE=True
 SIMULATE_TRY={'first_movie_info': {'bigImageLink': u'http://ia.media-imdb.com/images/M/MV5BMTYxOTAyNjEzNV5BMl5BanBnXkFtZTcwMTAxMDAwMQ@@._V1._SX320_SY475_.jpg', 'genres': u'Comedy/Drama', 'title': u'About Schmidt', 'url': u'http://www.imdb.com/title/tt0257360/?ref_=fn_al_tt_1', 'imageLink': u'http://ia.media-imdb.com/images/M/MV5BMTYxOTAyNjEzNV5BMl5BanBnXkFtZTcwMTAxMDAwMQ@@._V1_SX214_.jpg', 'actors': u'Jack Nicholson/Hope Davis/Dermot Mulroney', 'year': u'2002', 'duration': u'125', 'trailer': u'/video/screenplay/vi3820224793/?ref_=tt_ov_vi'}, 'links': [(u'http://www.imdb.com/title/tt0257360/?ref_=fn_al_tt_1', u'About Schmidt', u'(2002)'), (u'http://www.imdb.com/title/tt1418906/?ref_=fn_al_tt_2', u'Mortimer Hayden Smyth Talks About Gay Marriage', u'(2009) (Short)')]}
 SIMULATE_INFO = {'movie_info': {'bigImageLink': None, 'genres': u'Short/Comedy', 'title': u'Mortimer Hayden Smyth Talks About Gay Marriage', 'url': u'http://www.imdb.com/title/tt1418906/?ref_=fn_al_tt_2', 'imageLink': None, 'actors': u'Connor Ratliff', 'year': u'2009', 'duration': u'7', 'trailer': None}}
 
-def locations_add_path_mediainfo(request):
+def get_mediainfo(request):
     try:
         result = {'mediainfo' : mediainfo(request.POST['file.path'], request.POST['location.path']).__dict__}
     except Exception, ex:
@@ -84,7 +26,7 @@ def locations_add_path_mediainfo(request):
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 
-def locations_add_path_imdbinfo_try(request):
+def search_title(request):
     #return list of refernces as [(url, title, info)], plus the basic information on the first title
     try:
         if SIMULATE:
@@ -100,7 +42,8 @@ def locations_add_path_imdbinfo_try(request):
         result = {'error': ex.message}
     return HttpResponse(json.dumps(result), content_type="application/json")
 
-def locations_add_path_imdbinfo_exact(request):
+
+def access_url(request):
     try:
         if SIMULATE:
             import time

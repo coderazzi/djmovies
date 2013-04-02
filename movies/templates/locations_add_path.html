@@ -6,23 +6,23 @@
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		</div>
 		<div class="modal-body">
-			<form action='{%url "#locations_add_path_mediainfo" %}' method='POST' class='form-horizontal'>{% csrf_token %}
+			<form action='{%url "#imdb_get_mediainfo" %}' method='POST' class='form-horizontal'>{% csrf_token %}
 				<input type='hidden' name='location.id' value='{{location.id}}'>
 				<input type='hidden' name='location.path' value='{{path}}'>
 				<input type='hidden' name='file.path'>
 				<div class='path'>file</div>
 				<div class='step2 row'>
 					<input name='movie.title' type='text' class='span5'>
-					<a href='{%url "#locations_add_path_imdbinfo_try" %}' 
+					<a href='{%url "#imdb_search_title" %}' 
 						id='location-sync-accept-title' 
 						class="btn">Search</a>
 				</div>
 
 				<div class='step4 row'>
 					<select name='movie.imdb' class='span5'
-					        data-href='{%url "#locations_add_path_imdbinfo_exact" %}'>
+					        data-href='{%url "#imdb_access_url" %}'>
 					</select>
-					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
+					<a href='{%url "#imdb_access_url" %}' 
 						id='location-sync-check-title' 
 						class="btn">Accept</a>
 				</div>

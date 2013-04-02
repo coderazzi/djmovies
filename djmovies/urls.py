@@ -5,7 +5,7 @@ from django.conf.urls import patterns, include, url
 #admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'movies.views.index', name='#index'),
+    url(r'^$', 'movies.common_views.index', name='#index'),
     # url(r'^djmovies/', include('djmovies.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -15,14 +15,11 @@ urlpatterns = patterns('',
     #url(r'^admin/', include(admin.site.urls)),
 
 
-    url(r'^locations$', 'movies.views.locations', 
-    	name='#locations'),
-    url(r'^locations_add_path$', 'movies.views.locations_add_path', 
-    	name='#locations_add_path'),
-    url(r'^locations_add_path_mediainfo$', 'movies.views.locations_add_path_mediainfo', 
-    	name='#locations_add_path_mediainfo'),
-    url(r'^locations_add_path_imdbinfo_try$', 'movies.views.locations_add_path_imdbinfo_try', 
-        name='#locations_add_path_imdbinfo_try'),
-    url(r'^locations_add_path_imdbinfo_exact$', 'movies.views.locations_add_path_imdbinfo_exact', 
-        name='#locations_add_path_imdbinfo_exact'),
+    url(r'^locations$', 'movies.common_views.locations', name='#locations'),
+    url(r'^locations_add_path$', 'movies.common_views.locations_add_path', 
+        name='#locations_add_path'),
+
+    url(r'^imdb_get_mediainfo$', 'movies.views.imdb.get_mediainfo', name='#imdb_get_mediainfo'),
+    url(r'^imdb_search_title$', 'movies.views.imdb.search_title', name='#imdb_search_title'),
+    url(r'^imdb_access_url$', 'movies.views.imdb.access_url', name='#imdb_access_url'),
 )
