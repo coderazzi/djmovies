@@ -12,28 +12,24 @@
 				<input type='hidden' name='file.path'>
 				<div class='path'>file</div>
 				<div class='step2 row'>
-					<input name='movie.title' type='text' class='span4'>
+					<input name='movie.title' type='text' class='span5'>
 					<a href='{%url "#locations_add_path_imdbinfo_try" %}' 
 						id='location-sync-accept-title' 
-						class="btn">Search title</a>
+						class="btn">Search</a>
 				</div>
 
-				<label class='step4'>Movie matches</label>
 				<div class='step4 row'>
-					<select name='movie.imdb' class='span4'></select>
+					<select name='movie.imdb' class='span5'
+					        data-href='{%url "#locations_add_path_imdbinfo_exact" %}'>
+					</select>
 					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
 						id='location-sync-check-title' 
-						class="btn">Get info</a>
+						class="btn">Accept</a>
 				</div>
 
 				<a href='#' target='_blank'><img alt='movie poster' class='step6'></a>
-				<div class='step6 imdb_area'>
-					<div class='imdb_info'>
-					</div>
- 					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
-						id='location-sync-check-title' 
-						class="btn">Accept movie</a>
-					</div>
+				<div class='step6 imdb_area'><div class='imdb_info'></div></div>
+
 			</form>
 			<div class='error'></div>
 			<div class="progress progress-striped active">

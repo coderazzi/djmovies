@@ -45,7 +45,7 @@ def getBrowser():
     return br
 
 
-def getImdbReferences(movieTitle):
+def searchImdb(movieTitle):
     ret=[]
     url='http://www.imdb.com/find?'+urllib.urlencode({'q': movieTitle, 's':'all'})
     browser=getBrowser()
@@ -63,9 +63,9 @@ def getImdbReferences(movieTitle):
                         title = unescape(ref.text)
                         if title:
                             ret.append(('http://www.imdb.com'+href,title, unescape(ref.nextSibling)))
+        return (ret, ret and _getFullImdbInfo(browser, ret[0][0]))
     finally:
         browser.close()
-    return ret
 
 
 def getBasicImdbInfo(link):
@@ -74,6 +74,7 @@ def getBasicImdbInfo(link):
         return _getFullImdbInfo(browser, link)
     finally:
         browser.close()
+
 
 def getImdbInfo(link):
     browser=getBrowser()

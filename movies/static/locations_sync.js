@@ -1,6 +1,7 @@
 function setupLocationsSync(){
-	var $dialog=null, $dialogBody, $wait, $path, $hiddenPath, $form, $error, imdbUrl, imdbFullUrl;
-	var mediainfo;
+	var $dialog=null, $dialogBody, $wait, $path, $hiddenPath, $form, $error, $select, imdbUrl;
+	var imdbFullUrl;
+	var mediainfo, imdbCache={};
 
 	function showStep(step){
 		$error.hide();
@@ -31,19 +32,34 @@ function setupLocationsSync(){
 	function invalidResponse(){handleError('Server error: invalid response');}
 
 	function handleFileStep5_LoadImdbInfo(){
-		showStep(5);
-		innerPost(imdbFullUrl, $form.serializeArray(), handleError, function(response){
-			var info = response.info;
-			if (!info){
-				invalidResponse();
-			} else {
-				var src=info.imageLink || '/static/noposter.jpg';
-				$('img.step6', $dialogBody).attr('src', src).parent().attr('href',info.url);
-				var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
-				$('.imdb_info', $dialogBody).html(html);
-				showStep(6);
-			}
-		});
+		if (!showUrlMovieInfo($(this).val())){
+			showStep(5);
+			innerPost(imdbFullUrl, $form.serializeArray(), handleError, function(response){
+				updateMovieInfo(response.movie_info);
+			});
+		}
+		return false;
+	}
+
+	function updateMovieInfo(info){
+		if (info){
+			imdbCache[info.url]=info;
+			showUrlMovieInfo(info.url);
+		} else {
+			invalidResponse();
+		}		
+	}
+
+	function showUrlMovieInfo(url){
+		var info = imdbCache[url];
+		if (info){
+			var src=info.imageLink || '/static/noposter.jpg';
+			$('img.step6', $dialogBody).attr('src', src).parent().attr('href',info.url);
+			var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
+			$('.imdb_info', $dialogBody).html(html);
+			showStep(6);
+			return true;
+		}
 		return false;
 	}
 
@@ -64,8 +80,9 @@ function setupLocationsSync(){
 					if (reference[2]) html+=' '+reference[2];
 					html+='</a></option>';
 				}
-				$('select[name="movie.imdb"]', $dialogBody).html(html);
+				$select.html(html);
 				showStep(4);
+				updateMovieInfo(response.first_movie_info);
 			}
 		});
 		return false;
@@ -92,8 +109,9 @@ function setupLocationsSync(){
 			$path=$('.path', $dialogBody);
 			$error=$('.error', $dialogBody);
 			$hiddenPath=$('input[name="file.path"]', $dialogBody);
+			$select = $('select[name="movie.imdb"]').change(handleFileStep5_LoadImdbInfo);
 			imdbUrl=$('a#location-sync-accept-title', $dialogBody).click(handleFileStep3_LoadImdbInfo)[0].href;
-			imdbFullUrl=$('a#location-sync-check-title', $dialogBody).click(handleFileStep5_LoadImdbInfo)[0].href;
+			imdbFullUrl=$select.attr('data-href');
 		}
 		showStep(1);
 		$path.text(path);

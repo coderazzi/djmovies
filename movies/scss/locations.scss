@@ -35,9 +35,9 @@
 	font-size: 12px;
 }
 
-#locations_sync_dialog .modal-body {
-	max-height: 1000px;
-}
+// #locations_sync_dialog .modal-body {
+// 	max-height: 1000px;
+// }
 
 #locations_sync_dialog .path {
 	font-family: "Courier New", Courier, monospace;
@@ -60,13 +60,14 @@
 }
 
 #locations_sync_dialog a.btn{
-	width: 120px;
+	width: 80px;
 	float: right;
 } 
 
 #locations_sync_dialog img.step6{
 	float: left;
-	width: 110px; 
+	width: 107px; 
+	max-height: 158px;
 }
 
 

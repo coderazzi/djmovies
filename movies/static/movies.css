@@ -129,9 +129,6 @@ caption {
   font-family: "Courier New", Courier, monospace;
   font-size: 12px; }
 
-#locations_sync_dialog .modal-body {
-  max-height: 1000px; }
-
 #locations_sync_dialog .path {
   font-family: "Courier New", Courier, monospace;
   font-size: 11px;
@@ -150,12 +147,13 @@ caption {
   padding-left: 20px; }
 
 #locations_sync_dialog a.btn {
-  width: 120px;
+  width: 80px;
   float: right; }
 
 #locations_sync_dialog img.step6 {
   float: left;
-  width: 110px; }
+  width: 107px;
+  max-height: 158px; }
 
 #locations_sync_dialog .imdb_info {
   padding: 12px 0px 12px 150px;
