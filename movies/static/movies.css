@@ -146,7 +146,8 @@ caption {
   padding: 6px 0; }
 
 #locations_sync_dialog .row {
-  padding-bottom: 12px; }
+  padding-bottom: 24px;
+  padding-left: 20px; }
 
 #locations_sync_dialog a.btn {
   width: 120px;

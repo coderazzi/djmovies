@@ -10,34 +10,30 @@
 				<input type='hidden' name='location.id' value='{{location.id}}'>
 				<input type='hidden' name='location.path' value='{{path}}'>
 				<input type='hidden' name='file.path'>
-				<ol>
-					<li>Getting media info on <div class='path'>file</div></li>
-					<div class='step2 row'>
-						<input name='movie.title' type='text' class='span4'>
-						<a href='{%url "#locations_add_path_imdbinfo_try" %}' 
-							id='location-sync-accept-title' 
-							class="btn">Search title</a>
+				<div class='path'>file</div>
+				<div class='step2 row'>
+					<input name='movie.title' type='text' class='span4'>
+					<a href='{%url "#locations_add_path_imdbinfo_try" %}' 
+						id='location-sync-accept-title' 
+						class="btn">Search title</a>
+				</div>
+
+				<label class='step4'>Movie matches</label>
+				<div class='step4 row'>
+					<select name='movie.imdb' class='span4'></select>
+					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
+						id='location-sync-check-title' 
+						class="btn">Get info</a>
+				</div>
+
+				<a href='#' target='_blank'><img alt='movie poster' class='step6'></a>
+				<div class='step6 imdb_area'>
+					<div class='imdb_info'>
 					</div>
-
-					<li class='step3'>Accessing IMDB to get movie info</li>
-
-					<div class='step4 row'>
-						<select name='movie.imdb' class='span4'></select>
-						<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
-							id='location-sync-check-title' 
-							class="btn">Get info</a>
+ 					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
+						id='location-sync-check-title' 
+						class="btn">Accept movie</a>
 					</div>
-
-					<li class='step5'>Retrieving full IMDB info</li>
-
-					<a href='#' target='_blank'><img alt='movie poster' class='step6'></a>
-					<div class='step6 imdb_area'>
-						<div class='imdb_info'>
-						</div>
-	 					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
-							id='location-sync-check-title' 
-							class="btn">Accept movie</a>
-				</ol>
 			</form>
 			<div class='error'></div>
 			<div class="progress progress-striped active">

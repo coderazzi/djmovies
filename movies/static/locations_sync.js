@@ -1,26 +1,3 @@
-function innerPost(where, what, failFunction, getFunction) {
-    $.post(where, what, function (response, status, xhr) {
-        if (status === "error") {
-            failFunction();
-        } else {
-        	var error = response.error;
-        	if (error){
-            	failFunction(error);
-        	} else {
-	            getFunction(response);
-	        }
-        } 
-    }).error(function (xhr, status, error) { failFunction();});
-};
-
-function postForm(form, failFunction, getFunction, where) {
-    innerPost(where || form.attr('action'), form.serializeArray(), failFunction, getFunction);
-};
-
-
-
-
-
 function setupLocationsSync(){
 	var $dialog=null, $dialogBody, $wait, $path, $hiddenPath, $form, $error, imdbUrl, imdbFullUrl;
 	var mediainfo;
@@ -55,16 +32,13 @@ function setupLocationsSync(){
 
 	function handleFileStep5_LoadImdbInfo(){
 		showStep(5);
-
-		// var info = $form.serializeArray();
-		// info.push({name: 'mediainfo', value: mediainfo}); //see: http://api.jquery.com/serializeArray/		
-
 		innerPost(imdbFullUrl, $form.serializeArray(), handleError, function(response){
 			var info = response.info;
 			if (!info){
 				invalidResponse();
 			} else {
-				$('img.step6', $dialogBody).attr('src', info.imageLink).parent().attr('href',info.url);
+				var src=info.imageLink || '/static/noposter.jpg';
+				$('img.step6', $dialogBody).attr('src', src).parent().attr('href',info.url);
 				var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
 				$('.imdb_info', $dialogBody).html(html);
 				showStep(6);

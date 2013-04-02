@@ -18,7 +18,7 @@ try:
 except ImportError:
     import json
 
-__version__ = '1.3.2'
+# __version__ = '1.3.2'
 
 ENV_DICT = {
     "PATH": "/usr/local/bin/:/usr/bin/",
@@ -223,55 +223,57 @@ def mediainfo(path, folder):
         return Struct(name=name, size=size, duration=duration, width=width, height=height, 
             audios='/'.join(audios), texts='/'.join(texts))
 
-
-    if folder:
-        path=os.path.join(folder, path)
-    if os.path.isdir(path):
-        dirs, files = get_subs(path)
-        if 'VIDEO_TS' in dirs:
-            mi = invoke_mi([path])
-            mi.format='DVD'
-            size=0
-            for each in files:
-                size+=os.path.getsize(each)
-            mi.size=retSize(size)
+    def process(path, folder):
+        if folder:
+            path=os.path.join(folder, path)
+        if os.path.isdir(path):
+            dirs, files = get_subs(path)
+            if 'VIDEO_TS' in dirs:
+                mi = invoke_mi([path])
+                mi.format='DVD'
+                size=0
+                for each in files:
+                    size+=os.path.getsize(each)
+                mi.size=retSize(size)
+                return mi
+            if not 'BDMV' in dirs:
+                raise Exception, "Invalid path:"+path
+            files=[f for f in files if f.lower().endswith('.m2ts')]
+            if not files:
+                raise Exception, "Invalid [empty?] path:"+path
+            mi = invoke_mi(files)
+            mi.format='BlueRay'
             return mi
-        if not 'BDMV' in dirs:
-            raise Exception, "Invalid path:"+path
-        files=[f for f in files if f.lower().endswith('.m2ts')]
-        if not files:
-            raise Exception, "Invalid [empty?] path:"+path
-        mi = invoke_mi(files)
-        mi.format='BlueRay'
-        return mi
-    else:
-        extension=os.path.splitext(path)[-1].lower()
-        if extension:
-            extension=extension[1:].title()
-        if extension in ['Iso', 'Img']:
-            mpath=mount(path)
-            if not mpath:
-                raise Exception, "Could not mount:"+path
-            try:
-                ret = mediainfo(mpath)                
-                if ret.format=='BlueRay':
-                    extension+='x'
-                ret.format = extension
-                return ret
-            finally:
-                umount(mpath)
-        elif extension in ['Jpg', 'Png', 'Gif', 'Srt', 'Sub', 'Idx', 'Txt']:
-            return None
-        elif extension in ['Avi', 'Mkv', 'Mp4', 'Divx', 'Vob', 'M2Ts']:
-            ret= invoke_mi([path])
-            if not ret.name:
-                ret.name = getTitleFromFilename(path)
-            ret.format=extension
-            return ret
         else:
-            raise Exception, "'"+extension+"' is not a valid extension"
+            extension=os.path.splitext(path)[-1].lower()
+            if extension:
+                extension=extension[1:].title()
+            if extension in ['Iso', 'Img']:
+                mpath=mount(path)
+                if not mpath:
+                    raise Exception, "Could not mount:"+path
+                try:
+                    ret = mediainfo(mpath)                
+                    if ret.format=='BlueRay':
+                        extension+='x'
+                    ret.format = extension
+                    return ret
+                finally:
+                    umount(mpath)
+            elif extension in ['Jpg', 'Png', 'Gif', 'Srt', 'Sub', 'Idx', 'Txt']:
+                return None
+            elif extension in ['Avi', 'Mkv', 'Mp4', 'Divx', 'Vob', 'M2Ts']:
+                ret= invoke_mi([path])
+                ret.format=extension
+                return ret
+            else:
+                raise Exception, "'"+extension+"' is not a valid extension"
 
 
+    ret=process(path, folder)
+    if ret and not ret.name:
+        ret.name = getTitleFromFilename(path)
+    return ret
 
 
 
