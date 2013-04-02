@@ -94,6 +94,7 @@ def locations_add_path_imdbinfo_try(request):
 def locations_add_path_imdbinfo_exact(request):
     try:
         info = {'bigImageLink': u'http://ia.media-imdb.com/images/M/MV5BMTI4MzU5OTc2MF5BMl5BanBnXkFtZTYwNzQxMjc5._V1._SX334_SY475_.jpg', 'genres': u'Comedy/Drama/Romance', 'title': u'10 Things I Hate About You', 'imageLink': u'http://ia.media-imdb.com/images/M/MV5BMTI4MzU5OTc2MF5BMl5BanBnXkFtZTYwNzQxMjc5._V1_SY317_CR4,0,214,317_.jpg', 'actors': u'Heath Ledger/Julia Stiles/Joseph Gordon-Levitt', 'year': u'1999', 'duration': u'97', 'trailer': u'/video/screenplay/vi32480537/?ref_=tt_ov_vi'}
+        info['url']=request.POST['movie.imdb']
         result = {'info' : info}
         # info = getBasicImdbInfo(request.POST['movie.imdb'])
         # result = {'info' : info and info.__dict__}

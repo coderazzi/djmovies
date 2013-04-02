@@ -64,17 +64,10 @@ function setupLocationsSync(){
 			if (!info){
 				invalidResponse();
 			} else {
-				$('.step6 img', $dialogBody).attr('src', info.imageLink);
+				$('img.step6', $dialogBody).attr('src', info.imageLink).parent().attr('href',info.url);
+				var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
+				$('.imdb_info', $dialogBody).html(html);
 				showStep(6);
-				// var html='';
-				// for (var each in references){
-				// 	var reference=references[each];
-				// 	html+='<option value="'+reference[0]+'">'+reference[1];
-				// 	if (reference[2]) html+=' '+reference[2];
-				// 	html+='</a></option>';
-				// }
-				// $('select[name="movie.imdb"]', $dialogBody).html(html);
-				// showStep(4);
 			}
 		});
 		return false;

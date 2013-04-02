@@ -16,7 +16,7 @@
 						<input name='movie.title' type='text' class='span4'>
 						<a href='{%url "#locations_add_path_imdbinfo_try" %}' 
 							id='location-sync-accept-title' 
-							class="btn">Accept title</a>
+							class="btn">Search title</a>
 					</div>
 
 					<li class='step3'>Accessing IMDB to get movie info</li>
@@ -25,20 +25,18 @@
 						<select name='movie.imdb' class='span4'></select>
 						<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
 							id='location-sync-check-title' 
-							class="btn">Check title</a>
+							class="btn">Get info</a>
 					</div>
 
 					<li class='step5'>Retrieving full IMDB info</li>
 
-					<div class='step6 row'>
-						<div class='span4'>
-							<img alt='movie poster'>
-							<div class='imdb_info span3'>hola, mi amor, yo soy tu lobo, y quiero</div>
-	 					</div>
+					<a href='#' target='_blank'><img alt='movie poster' class='step6'></a>
+					<div class='step6 imdb_area'>
+						<div class='imdb_info'>
+						</div>
 	 					<a href='{%url "#locations_add_path_imdbinfo_exact" %}' 
 							id='location-sync-check-title' 
-							class="btn">Check title</a>
-					</div>
+							class="btn">Accept movie</a>
 				</ol>
 			</form>
 			<div class='error'></div>

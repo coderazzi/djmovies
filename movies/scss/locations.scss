@@ -39,14 +39,6 @@
 	max-height: 1000px;
 }
 
-// #locations_sync_dialog {
-// 	width: 800px;
-// }
-
-// #locations_sync_dialog .modal-body{
-// 	width: 700px;
-// }
-
 #locations_sync_dialog .path {
 	font-family: "Courier New", Courier, monospace;
 	font-size: 11px;
@@ -71,13 +63,15 @@
 	float: right;
 } 
 
-#locations_sync_dialog .step6 img{
+#locations_sync_dialog img.step6{
 	float: left;
-	width: 60px; 
+	width: 110px; 
 }
 
-#locations_sync_dialog div.imdb_info{
- 	float: right;
+
+#locations_sync_dialog .imdb_info{
+	padding: 12px 0px 12px 150px;
 	font-family: "Courier New", Courier, monospace;
-	font-size: 11px;
+	font-size: 12px;
+	font-weight: bold;
 }

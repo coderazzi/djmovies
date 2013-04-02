@@ -129,7 +129,7 @@ def _getFullImdbInfo(browser, link):
                 if bigImgSrc:
                     imgTag = BeautifulSoup(browser.open(bigImgSrc).read()).find('img', attrs={'id' : 'primary-img'})
                     bigImgSrc = imgTag and imgTag.get('src')
-        return Struct(title=title, year=year, duration=duration, 
+        return Struct(url=link, title=title, year=year, duration=duration, 
             genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
 
 
