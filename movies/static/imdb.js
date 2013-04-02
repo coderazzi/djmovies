@@ -1,4 +1,4 @@
-function setupLocationsSync(){
+function setupImdb(){
 	var $dialog=null, $dialogBody, $wait, $path, $hiddenPath, $form, $error, $select, imdbUrl;
 	var imdbFullUrl;
 	var mediainfo, imdbCache={};
@@ -102,7 +102,7 @@ function setupLocationsSync(){
 
 	function handleFile(path){
 		if (!$dialog) {
-			$dialog=$('#locations_sync_dialog').on('shown', handleFileStep1_LoadMediaInfo);
+			$dialog=$('#imdb_dialog').on('shown', handleFileStep1_LoadMediaInfo);
 			$dialogBody=$('.modal-body', $dialog);
 			$form=$('form', $dialogBody);
 			$wait=$('.progress', $dialogBody);

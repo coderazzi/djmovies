@@ -67,6 +67,6 @@ function iconWhiteCheck(){
 
 $(function() {
 	if ($('#locations').length) setupLocations();
-	if ($('#locations_sync').length) setupLocationsSync();
+	if ($('#imdb_dialog').length) setupImdb();
 	iconWhiteCheck();
 })
