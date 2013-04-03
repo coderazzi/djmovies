@@ -1,4 +1,4 @@
-function innerPost(where, what, failFunction, getFunction) {
+function serverPost(where, what, failFunction, getFunction) {
     $.post(where, what, function (response, status, xhr) {
         if (status === "error") {
             failFunction();
@@ -14,7 +14,7 @@ function innerPost(where, what, failFunction, getFunction) {
 }
 
 function postForm(form, failFunction, getFunction, where) {
-    innerPost(where || form.attr('action'), form.serializeArray(), failFunction, getFunction);
+    serverPost(where || form.attr('action'), form.serializeArray(), failFunction, getFunction);
 }
 
 

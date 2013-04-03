@@ -1,7 +1,15 @@
 function setupImdb(){
-	var $dialog, $dialogBody, $wait, $path, $hiddenPath, $form, $error, $select, $title, $img, $movieInfo;
-	var imdbUrl, imdbFullUrl;
+	var $dialog, $dialogBody, $form, $wait, $path, $hiddenPath, $error;
+	var $select, $title, $img, $movieInfo;
+	var urlSearchTitle, urlGetImdb;
 	var mediainfo, imdbCache={};
+
+	var STEP_1_SERVER_MEDIAINFO=1;
+	var STEP_2_EXPECT_TITLE=2;
+	var STEP_3_SERVER_TITLE_INFO=3;
+	var STEP_4_EXPECT_SELECTION=4;
+	var STEP_5_SERVER_MOVIE_INFO=5;
+	var STEP_6_EXPECT_CONFIRMATION=6;
 
 	function invalidResponse(){handleError('Server error: invalid response');}
 
@@ -23,11 +31,17 @@ function setupImdb(){
 			$wait.show();
 		} else {
 			$wait.hide();
-			if (step==2){
-				$('a.step2', $dialog).focus();
-			} else if (step==4){
-				$('select.step4', $dialog).focus();
+			if (step==STEP_2_EXPECT_TITLE){
+				$title.focus();
+			} else if (step==STEP_4_EXPECT_SELECTION){
+				$select.focus();
 			}
+		}
+	}
+
+	function enterPressedCallback(){
+		if ($title.is(":focus")){
+			searchTitleCallback();
 		}
 	}
 
@@ -47,7 +61,7 @@ function setupImdb(){
 			var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
 			$img.attr('src', src).parent().attr('href',info.url);
 			$movieInfo.html(html);
-			showStep(6);
+			showStep(STEP_6_EXPECT_CONFIRMATION);
 			return true;
 		}
 		return false;
@@ -55,8 +69,8 @@ function setupImdb(){
 
 	function loadImdbInfoCallback(){
 		if (!showUrlMovieInfo($(this).val())){
-			showStep(5);
-			innerPost(imdbFullUrl, $form.serializeArray(), handleError, function(response){
+			showStep(STEP_5_SERVER_MOVIE_INFO);
+			serverPost(urlGetImdb, $form.serializeArray(), handleError, function(response){
 				updateMovieInfo(response.movie_info);
 			});
 		}
@@ -64,9 +78,9 @@ function setupImdb(){
 	}
 
 	function searchTitleCallback(){
-		showStep(3);
+		showStep(STEP_3_SERVER_TITLE_INFO);
 
-		innerPost(imdbUrl, $form.serializeArray(), handleError, function(response){
+		serverPost(urlSearchTitle, $form.serializeArray(), handleError, function(response){
 			var references = response.links;
 			if (!references){
 				invalidResponse();
@@ -81,27 +95,27 @@ function setupImdb(){
 					html+='</a></option>';
 				}
 				$select.html(html);
-				showStep(4);
+				showStep(STEP_4_EXPECT_SELECTION);
 				updateMovieInfo(response.first_movie_info);
 			}
 		});
 		return false;
 	}
 
-	function dialogShownCallback(){
+	function dialogShownCallback(){		
 		postForm($form, handleError, function(response){
 			mediainfo = response.mediainfo;
 			if (!mediainfo){
 				invalidResponse();
 			} else {
 				$title.val(mediainfo.name);
-				showStep(2);
+				showStep(STEP_2_EXPECT_TITLE);
 			}
 		});
 	}
 
 	function handleFile(path){
-		showStep(1);
+		showStep(STEP_1_SERVER_MEDIAINFO);
 		$path.text(path);
 		$hiddenPath.val(path);
 		$dialog.modal();
@@ -120,8 +134,15 @@ function setupImdb(){
 	$img=$('img.step6', $dialogBody);
 	$movieInfo=$('.imdb_info', $dialogBody);
 
-	imdbUrl=$('a#imdb_search_title', $dialogBody).click(searchTitleCallback)[0].href;
-	imdbFullUrl=$select.attr('data-href');
+	urlSearchTitle=$('a#imdb_search_title', $dialogBody).click(searchTitleCallback)[0].href;
+	urlGetImdb=$select.attr('data-href');
+
+	$form.keypress(function(e) {
+    	if(e.which == 13) { // Checks for the enter key
+        	e.preventDefault(); // Stops IE from triggering the button to be clicked
+        	enterPressedCallback(); // Stops IE from triggering the button to be clicked
+    	}
+	});
 
 	$('.search_path').click(function(){
 		var path = $('.path', $(this).parent().parent());
