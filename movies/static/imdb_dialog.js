@@ -1,7 +1,14 @@
 function setupImdb(){
-	var $dialog=null, $dialogBody, $wait, $path, $hiddenPath, $form, $error, $select, imdbUrl;
-	var imdbFullUrl;
+	var $dialog, $dialogBody, $wait, $path, $hiddenPath, $form, $error, $select, $title, $img, $movieInfo;
+	var imdbUrl, imdbFullUrl;
 	var mediainfo, imdbCache={};
+
+	function invalidResponse(){handleError('Server error: invalid response');}
+
+	function handleError(error){
+		$wait.hide();
+		$error.text(error || 'Error accessing server').show();
+	}
 
 	function showStep(step){
 		$error.hide();
@@ -24,23 +31,6 @@ function setupImdb(){
 		}
 	}
 
-	function handleError(error){
-		$wait.hide();
-		$error.text(error || 'Error accessing server').show();
-	}
-
-	function invalidResponse(){handleError('Server error: invalid response');}
-
-	function handleFileStep5_LoadImdbInfo(){
-		if (!showUrlMovieInfo($(this).val())){
-			showStep(5);
-			innerPost(imdbFullUrl, $form.serializeArray(), handleError, function(response){
-				updateMovieInfo(response.movie_info);
-			});
-		}
-		return false;
-	}
-
 	function updateMovieInfo(info){
 		if (info){
 			imdbCache[info.url]=info;
@@ -54,16 +44,26 @@ function setupImdb(){
 		var info = imdbCache[url];
 		if (info){
 			var src=info.imageLink || '/static/noposter.jpg';
-			$('img.step6', $dialogBody).attr('src', src).parent().attr('href',info.url);
 			var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
-			$('.imdb_info', $dialogBody).html(html);
+			$img.attr('src', src).parent().attr('href',info.url);
+			$movieInfo.html(html);
 			showStep(6);
 			return true;
 		}
 		return false;
 	}
 
-	function handleFileStep3_LoadImdbInfo(){
+	function loadImdbInfoCallback(){
+		if (!showUrlMovieInfo($(this).val())){
+			showStep(5);
+			innerPost(imdbFullUrl, $form.serializeArray(), handleError, function(response){
+				updateMovieInfo(response.movie_info);
+			});
+		}
+		return false;
+	}
+
+	function searchTitleCallback(){
 		showStep(3);
 
 		innerPost(imdbUrl, $form.serializeArray(), handleError, function(response){
@@ -88,36 +88,40 @@ function setupImdb(){
 		return false;
 	}
 
-	function handleFileStep1_LoadMediaInfo(){
+	function dialogShownCallback(){
 		postForm($form, handleError, function(response){
 			mediainfo = response.mediainfo;
 			if (!mediainfo){
 				invalidResponse();
 			} else {
-				$('input[name="movie.title"]', $dialogBody).val(mediainfo.name);
+				$title.val(mediainfo.name);
 				showStep(2);
 			}
 		});
 	}
 
 	function handleFile(path){
-		if (!$dialog) {
-			$dialog=$('#imdb_dialog').on('shown', handleFileStep1_LoadMediaInfo);
-			$dialogBody=$('.modal-body', $dialog);
-			$form=$('form', $dialogBody);
-			$wait=$('.progress', $dialogBody);
-			$path=$('.path', $dialogBody);
-			$error=$('.error', $dialogBody);
-			$hiddenPath=$('input[name="file.path"]', $dialogBody);
-			$select = $('select[name="movie.imdb"]').change(handleFileStep5_LoadImdbInfo);
-			imdbUrl=$('a#location-sync-accept-title', $dialogBody).click(handleFileStep3_LoadImdbInfo)[0].href;
-			imdbFullUrl=$select.attr('data-href');
-		}
 		showStep(1);
 		$path.text(path);
 		$hiddenPath.val(path);
 		$dialog.modal();
 	}
+
+	$dialog=$('#imdb_dialog').on('shown', dialogShownCallback);
+	$dialogBody=$('.modal-body', $dialog);
+	$form=$('form', $dialogBody);
+	$wait=$('.progress', $dialogBody);
+	$path=$('.path', $dialogBody);
+	$error=$('.error', $dialogBody);
+	$hiddenPath=$('input[name="file.path"]', $dialogBody);
+	$title=$('input[name="movie.title"]', $dialogBody);	
+	$select = $('select[name="movie.imdb"]').change(loadImdbInfoCallback);
+
+	$img=$('img.step6', $dialogBody);
+	$movieInfo=$('.imdb_info', $dialogBody);
+
+	imdbUrl=$('a#imdb_search_title', $dialogBody).click(searchTitleCallback)[0].href;
+	imdbFullUrl=$select.attr('data-href');
 
 	$('.search_path').click(function(){
 		var path = $('.path', $(this).parent().parent());
