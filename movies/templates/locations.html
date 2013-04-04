@@ -3,7 +3,7 @@
 	{% if locations %}
 	
 	<div id='input_path' class="modal hide fade" tabindex='-1'>
-		<form action='{%url "#locations_add_path" %}' method='POST'>{% csrf_token %}
+		<form action='{%url "#locations_sync" %}' method='POST'>{% csrf_token %}
 			<input id='input_path_id' type='hidden' name='location.id'>
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

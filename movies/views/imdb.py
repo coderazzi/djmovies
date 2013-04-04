@@ -1,14 +1,7 @@
 import json
 
-from django.core.context_processors import csrf
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib import messages
-from django.template import Context, RequestContext, loader
-from django.shortcuts import render_to_response, redirect
+from django.http import HttpResponse
 
-from movies.models import *
-
-from local.locations import LocationHandler
 from local.media import mediainfo
 from local.imdb import getImdbInfo, getBasicImdbInfo, searchImdb
 
