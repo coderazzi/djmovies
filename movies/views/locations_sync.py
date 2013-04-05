@@ -1,3 +1,4 @@
+import json
 from django.contrib import messages
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
@@ -50,6 +51,11 @@ def index(request):
 
 
 def update(request):
+    print request.raw_post_data
     if request.method == 'GET': return redirect('#locations')
-    filepath, mediainfo, imdbinfo = request.POST['location.id'], request.POST['location.path']
+    data = json.loads(request.body)
+    print 'filepath:', data['filepath']
+    print 'mediainfo:', data['mediainfo']
+    print 'imdbinfo:', data['imdbinfo']
+    #filepath, mediainfo, imdbinfo = request.POST['location.id'], request.POST['location.path']
 

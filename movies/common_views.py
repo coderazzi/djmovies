@@ -8,10 +8,6 @@ from django.shortcuts import render_to_response, redirect
 
 from movies.models import *
 
-from local.locations import LocationHandler
-from local.media import mediainfo
-from local.imdb import getImdbInfo, getBasicImdbInfo, searchImdb
-
 
 
 def index(request):

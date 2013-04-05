@@ -1,0 +1,37 @@
+#imdb_dialog .path {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+#imdb_dialog .error{
+	display: none;
+	background: #c00;
+	color: yellow;
+	text-align: center;
+	width: 100%;
+	padding: 6px 0;
+}
+
+#imdb_dialog .row {
+	padding-bottom: 12px;
+	padding-left: 20px;
+}
+
+#imdb_dialog a.btn{
+	width: 80px;
+	float: right;
+} 
+
+#imdb_dialog img.step6{
+	float: left;
+	width: 107px; 
+	max-height: 158px;
+}
+
+#imdb_dialog .imdb_info{
+	padding: 12px 0px 12px 150px;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 12px;
+	font-weight: bold;
+}
