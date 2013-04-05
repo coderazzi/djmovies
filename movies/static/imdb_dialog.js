@@ -83,9 +83,11 @@ function showImdbDialog(filepath, dialogCallback){
 	function loadImdbInfoCallback(){
 		if (!showUrlMovieInfo($(this).val())){
 			showStep(STEP_5_SERVER_MOVIE_INFO);
-			ajaxPostForm($form, handleError, function(response){
-				updateMovieInfo(response.movie_info);
-			}, urlGetImdb);
+			ajaxPostForm($form, {
+				url: urlGetImdb,
+				error: handleError,
+				success: function(response){updateMovieInfo(response.movie_info);}
+			});
 		}
 		return false;
 	}
@@ -93,36 +95,43 @@ function showImdbDialog(filepath, dialogCallback){
 	function searchTitleCallback(){
 		showStep(STEP_3_SERVER_TITLE_INFO);
 
-		ajaxPostForm($form, handleError, function(response){
-			var references = response.links;
-			if (!references){
-				invalidResponse();
-			} else if (!references.length){
-				handleError('No IMDB info for such title. Try changing it');
-			} else {
-				var html='';
-				for (var each in references){
-					var reference=references[each];
-					html+='<option value="'+reference[0]+'">'+reference[1];
-					if (reference[2]) html+=' '+reference[2];
-					html+='</a></option>';
+		ajaxPostForm($form, {
+			url: urlSearchTitle,
+			error: handleError, 
+			success: function(response){
+				var references = response.links;
+				if (!references){
+					invalidResponse();
+				} else if (!references.length){
+					handleError('No IMDB info for such title. Try changing it');
+				} else {
+					var html='';
+					for (var each in references){
+						var reference=references[each];
+						html+='<option value="'+reference[0]+'">'+reference[1];
+						if (reference[2]) html+=' '+reference[2];
+						html+='</a></option>';
+					}
+					$select.html(html);
+					showStep(STEP_4_EXPECT_SELECTION);
+					updateMovieInfo(response.first_movie_info);
 				}
-				$select.html(html);
-				showStep(STEP_4_EXPECT_SELECTION);
-				updateMovieInfo(response.first_movie_info);
 			}
-		}, urlSearchTitle);
+		});
 		return false;
 	}
 
 	function dialogShownCallback(){		
-		ajaxPostForm($form, handleError, function(response){
-			mediainfo = response.mediainfo;
-			if (!mediainfo){
-				invalidResponse();
-			} else {
-				$title.val(mediainfo.name);
-				showStep(STEP_2_EXPECT_TITLE);
+		ajaxPostForm($form, {
+			error: handleError,
+			success: function(response){
+				mediainfo = response.mediainfo;
+				if (!mediainfo){
+					invalidResponse();
+				} else {
+					$title.val(mediainfo.name);
+					showStep(STEP_2_EXPECT_TITLE);
+				}
 			}
 		});
 	}

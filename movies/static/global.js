@@ -1,7 +1,8 @@
-function luajax(settings, messengerMsg){
+function luajax(settings){
+	//success, error, url, data, msg, type
 	var msg = null, serror=settings.error, sok=settings.success;
 	settings.error = function(){
-		if (msg) msg.update({type: 'error', message: messengerMsg+" failed"});
+		if (msg) msg.update({type: 'error', message: settings.msg+" failed"});
 		if (arguments.length==1) serror(response.error, msg); 
 		else serror(null, msg); 			
 	}
@@ -9,7 +10,7 @@ function luajax(settings, messengerMsg){
     	if (response && response.error) {
     		settings.error(response.error);
     	} else {
-    		if (msg) msg.update({type: 'success', message: messengerMsg + " done"});
+    		if (msg) msg.update({type: 'success', message: settings.msg + " done"});
     		sok(response, msg);
     	}
 	};
@@ -19,16 +20,16 @@ function luajax(settings, messengerMsg){
 			settings.contentType='application/json';
 		}
 	}
-	if (messengerMsg){
+	if (settings.msg){
 		msg = Messenger().post({
-			message: messengerMsg,
+			message:settings.msg,
 			type: 'info'
 		});
 	}
 	$.ajax(settings);
 }
 
-function ajaxPost(where, what, failFunction, successFunction, messengerMsg) {
+function ajaxPost(settings) {
     // $.post(where, what, function (response, status, xhr) {
     //     if (status === "error") {
     //         failFunction();
@@ -41,18 +42,22 @@ function ajaxPost(where, what, failFunction, successFunction, messengerMsg) {
 	   //      }
     //     } 
     // }).error(function (xhr, status, error) { failFunction();});
-
-	luajax({
-		url: where,
-		type: 'POST',
-		data: what,
-		error: failFunction,
-		success: successFunction
-	}, messengerMsg);
+	luajax($.extend({type: 'POST'}, settings));
+	// luajax({
+	// 	url: settings.url,
+	// 	type: 'POST',
+	// 	data: settings.data,
+	// 	error: settings.error,
+	// 	success: settings.success
+	// }, messengerMsg);
 }
 
-function ajaxPostForm(form, failFunction, getFunction, where) {
-    ajaxPost(where || form.attr('action'), form.serializeArray(), failFunction, getFunction);
+//function ajaxPostForm(form, failFunction, getFunction, where) {
+function ajaxPostForm(form, settings) {
+	var data = $.extend({url: form.attr('action')}, settings);
+	//var info = data.data;
+	data.data = form.serializeArray();
+    ajaxPost(data);
 }
 
 
