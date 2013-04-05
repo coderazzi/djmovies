@@ -16,8 +16,8 @@ urlpatterns = patterns('',
 
 
     url(r'^locations$', 'movies.common_views.locations', name='#locations'),
-    url(r'^locations_sync$', 'movies.views.locations_sync.index', 
-        name='#locations_sync'),
+    url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
+    url(r'^locations_sync_update$', 'movies.views.locations_sync.update', name='#locations_sync_update'),
 
     url(r'^imdb_get_mediainfo$', 'movies.views.imdb.get_mediainfo', name='#imdb_get_mediainfo'),
     url(r'^imdb_search_title$', 'movies.views.imdb.search_title', name='#imdb_search_title'),

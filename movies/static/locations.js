@@ -3,7 +3,7 @@ function setupLocations(){
 	var $dialog = $('#input_path').on('shown', function(){
 		$("input", $dialog).focus(); //just focus the input component		
 	}).on('show', function(){
-		prepareWaitOnPostForm($dialog);
+		prepareWaitOnajaxPostForm($dialog);
 	}).on('hidden', function(){
 		//just in case a submit is going on
 		window.stop(); //ie seems to require window.document.execCommand('Stop');

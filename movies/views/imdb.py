@@ -13,6 +13,8 @@ SIMULATE_INFO = {'movie_info': {'bigImageLink': None, 'genres': u'Short/Comedy',
 
 def get_mediainfo(request):
     try:
+        import time
+        time.sleep(2)
         result = {'mediainfo' : mediainfo(request.POST['file.path'], request.POST['location.path']).__dict__}
     except Exception, ex:
         result = {'error': ex.message}
@@ -33,6 +35,7 @@ def search_title(request):
             print result
     except Exception, ex:
         result = {'error': ex.message}
+    #raise Exception, 'oood'
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 

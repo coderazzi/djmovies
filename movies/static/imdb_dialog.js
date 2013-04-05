@@ -37,7 +37,7 @@ function showImdbDialog(filepath, dialogCallback){
 
 		$('#location-sync-check-title', $dialogBody).click(function(){
 			$dialog.modal('hide');
-			dialogCallback(filepath, mediainfo, $select.val());
+			dialogCallback(filepath, mediainfo, imdbCache[$select.val()]);
 		});
 	}
 
@@ -83,9 +83,9 @@ function showImdbDialog(filepath, dialogCallback){
 	function loadImdbInfoCallback(){
 		if (!showUrlMovieInfo($(this).val())){
 			showStep(STEP_5_SERVER_MOVIE_INFO);
-			serverPost(urlGetImdb, $form.serializeArray(), handleError, function(response){
+			ajaxPostForm($form, handleError, function(response){
 				updateMovieInfo(response.movie_info);
-			});
+			}, urlGetImdb);
 		}
 		return false;
 	}
@@ -93,7 +93,7 @@ function showImdbDialog(filepath, dialogCallback){
 	function searchTitleCallback(){
 		showStep(STEP_3_SERVER_TITLE_INFO);
 
-		serverPost(urlSearchTitle, $form.serializeArray(), handleError, function(response){
+		ajaxPostForm($form, handleError, function(response){
 			var references = response.links;
 			if (!references){
 				invalidResponse();
@@ -111,12 +111,12 @@ function showImdbDialog(filepath, dialogCallback){
 				showStep(STEP_4_EXPECT_SELECTION);
 				updateMovieInfo(response.first_movie_info);
 			}
-		});
+		}, urlSearchTitle);
 		return false;
 	}
 
 	function dialogShownCallback(){		
-		postForm($form, handleError, function(response){
+		ajaxPostForm($form, handleError, function(response){
 			mediainfo = response.mediainfo;
 			if (!mediainfo){
 				invalidResponse();

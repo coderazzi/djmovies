@@ -7,14 +7,17 @@ from movies.models import Location, MovieLocation
 from local.locations import LocationHandler
 
 
+SUPPORT_GET_FOR_TESTING=True
 
 def index(request):    
-    # if request.method == 'GET': return redirect('#locations')
-    # locationId, locationPath = request.POST['location.id'], request.POST['location.path']
-    if request.method == 'GET': 
-        locationId, locationPath = 1, u'/Volumes/TTC7/_movies'
-    else:
+    if not SUPPORT_GET_FOR_TESTING:
+        if request.method == 'GET': return redirect('#locations')
         locationId, locationPath = request.POST['location.id'], request.POST['location.path']
+    else:
+        if request.method == 'GET': 
+            locationId, locationPath = 1, u'/Volumes/TTC7/_movies'
+        else:
+            locationId, locationPath = request.POST['location.id'], request.POST['location.path']
 
 
     movies= {}
@@ -44,3 +47,9 @@ def index(request):
             'movies'   : info,
         },
         RequestContext(request))
+
+
+def update(request):
+    if request.method == 'GET': return redirect('#locations')
+    filepath, mediainfo, imdbinfo = request.POST['location.id'], request.POST['location.path']
+
