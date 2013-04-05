@@ -1,4 +1,4 @@
-function showImdbDialog(filepath, dialogCallback){
+var ImdbDialog = new function(){
 	var $dialog=null, $dialogBody, $form, $wait, $path, $hiddenPath, $error;
 	var $select, $title, $img, $movieInfo;
 	var urlSearchTitle, urlGetImdb;
@@ -11,34 +11,44 @@ function showImdbDialog(filepath, dialogCallback){
 	var STEP_5_SERVER_MOVIE_INFO=5;
 	var STEP_6_EXPECT_CONFIRMATION=6;
 
-	function setup(){
-		$dialog=$('#imdb_dialog').on('shown', dialogShownCallback);
-		$dialogBody=$('.modal-body', $dialog);
-		$form=$('form', $dialogBody);
-		$wait=$('.progress', $dialogBody);
-		$path=$('.path', $dialogBody);
-		$error=$('.error', $dialogBody);
-		$hiddenPath=$('input[name="file.path"]', $dialogBody);
-		$title=$('input[name="movie.title"]', $dialogBody);	
-		$select = $('select[name="movie.imdb"]').change(loadImdbInfoCallback);
+	var shownDialogCallback, shownFilepath;
 
-		$img=$('img.step6', $dialogBody);
-		$movieInfo=$('.imdb_info', $dialogBody);
+	this.show=function(filepath, dialogCallback){
+		shownDialogCallback = dialogCallback;
+		shownFilepath = shownFilepath;
+		if (! $dialog) {
+			$dialog=$('#imdb_dialog').on('shown', dialogShownCallback);
+			$dialogBody=$('.modal-body', $dialog);
+			$form=$('form', $dialogBody);
+			$wait=$('.progress', $dialogBody);
+			$path=$('.path', $dialogBody);
+			$error=$('.error', $dialogBody);
+			$hiddenPath=$('input[name="file.path"]', $dialogBody);
+			$title=$('input[name="movie.title"]', $dialogBody);	
+			$select = $('select[name="movie.imdb"]').change(loadImdbInfoCallback);
 
-		urlSearchTitle=$('a#imdb_search_title', $dialogBody).click(searchTitleCallback)[0].href;
-		urlGetImdb=$select.attr('data-href');
+			$img=$('img.step6', $dialogBody);
+			$movieInfo=$('.imdb_info', $dialogBody);
 
-		$form.keypress(function(e) {
-	    	if(e.which == 13) { 
-	        	e.preventDefault();
-				if ($title.is(":focus")) searchTitleCallback();
-	    	}
-		});
+			urlSearchTitle=$('a#imdb_search_title', $dialogBody).click(searchTitleCallback)[0].href;
+			urlGetImdb=$select.attr('data-href');
 
-		$('#location-sync-check-title', $dialogBody).click(function(){
-			$dialog.modal('hide');
-			dialogCallback(filepath, mediainfo, imdbCache[$select.val()]);
-		});
+			$form.keypress(function(e) {
+		    	if(e.which == 13) { 
+		        	e.preventDefault();
+					if ($title.is(":focus")) searchTitleCallback();
+		    	}
+			});
+
+			$('#location-sync-check-title', $dialogBody).click(function(){
+				$dialog.modal('hide');
+				shownDialogCallback(shownFilepath, mediainfo, imdbCache[$select.val()]);
+			});
+		}
+		$path.text(filepath);
+		$hiddenPath.val(filepath);
+		showStep(STEP_1_SERVER_MEDIAINFO);
+		$dialog.modal('show');
 	}
 
 	function invalidResponse(){handleError('Server error: invalid response');}
@@ -135,10 +145,4 @@ function showImdbDialog(filepath, dialogCallback){
 			}
 		});
 	}
-
-	if (! $dialog) setup();
-	showStep(STEP_1_SERVER_MEDIAINFO);
-	$path.text(filepath);
-	$hiddenPath.val(filepath);
-	$dialog.modal('show');
 }
