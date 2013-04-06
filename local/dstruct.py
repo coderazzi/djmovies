@@ -1,3 +1,4 @@
 class Struct:
     def __init__(self, **entries): 
-        self.__dict__.update(entries)
+    	for k, v in entries.items():
+        	self.__dict__[k]=v or ''

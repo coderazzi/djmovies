@@ -4,7 +4,7 @@ function luajax(settings){
 	settings.error = function ERROR(){
 		if (msg) msg.update({type: 'error', message: settings.message+" failed"});
 		if (serror){
-			if (arguments.length==1) serror(response.error, msg); 
+			if (arguments.length==1) serror(arguments[0], msg); 
 			else serror(null, msg);
 		}
 	}

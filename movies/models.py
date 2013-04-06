@@ -8,7 +8,10 @@
 # into your database.
 from __future__ import unicode_literals
 
-from django.db import models
+from django.db import models, IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
+
+from movies.image_manager import ImageManager
 
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -45,18 +48,16 @@ class Location(models.Model):
         return "%s [%d]" % (self.name, self.id)
 
 
-class Configuration(models.Model):
-    id = models.IntegerField(primary_key=True)
-    key = models.TextField(unique=True)
-    value = models.TextField(blank=True)
+class MovieLocation(models.Model):
+    movie = models.ForeignKey(Movie)
+    location = models.ForeignKey(Location)
+    path = models.TextField()
     class Meta:
-        db_table = 'configuration'
-
-    def __unicode__(self):
-        return self.key
+        db_table = 'mmap'
 
 
 class Image(models.Model):
+    objects=ImageManager()
     id = models.IntegerField(primary_key=True)
     movie = models.ForeignKey(Movie)
     url = models.TextField(blank=True)
@@ -71,10 +72,48 @@ class Image(models.Model):
         return "%s [%dx%d]" % (self.movie, self.width, self.height)
 
 
-class MovieLocation(models.Model):
-    movie = models.ForeignKey(Movie)
-    location = models.ForeignKey(Location)
-    path = models.TextField()
+class Lock(models.Model):
+    name = models.TextField(primary_key=True)
     class Meta:
-        db_table = 'mmap'
+        db_table = 'locks'
 
+    def __unicode__(self):
+        return self.name
+
+    @staticmethod
+    def createLock(name):
+        try:
+            Lock.objects.create(name=name)
+            return True
+        except IntegrityError:
+            return False
+
+    @staticmethod
+    def removeLock(name):
+        Lock.objects.filter(name=name).delete()
+
+
+class Configuration(models.Model):
+    id = models.IntegerField(primary_key=True)
+    key = models.TextField(unique=True)
+    value = models.TextField(blank=True)
+    class Meta:
+        db_table = 'configuration'
+
+    def __unicode__(self):
+        return self.key
+
+    @staticmethod
+    def getValue(key):
+        try:
+            return Configuration.objects.get(key=key).value
+        except ObjectDoesNotExist:
+            return None
+
+    @staticmethod
+    def setValue(key, value):
+        query = Configuration.objects.filter(key=key)
+        if query:
+            query.update(value=value)
+        else:
+            Configuration.objects.create(key=key, value=value)

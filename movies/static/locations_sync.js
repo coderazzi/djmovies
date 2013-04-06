@@ -1,6 +1,6 @@
 function setupLocationsSync(){
 
-	function imdbDialogCallback(filepath, mediainfo, imdbinfo){
+	function imdbDialogCallback(info){
 		// console.log('filepath:'+filepath);
 		// console.log('mediainfo:'+mediaInfo);
 		// console.log('imdbInfo:'+imdbInfo);
@@ -8,11 +8,7 @@ function setupLocationsSync(){
 		ajaxPost({
 			url: '/locations_sync_update',
 			message: 'Adding movie information',
-			data:{
-				filepath: filepath,
-				mediainfo: mediainfo,
-				imdbinfo: imdbinfo,
-			}
+			data: info
 		});
 	}
 

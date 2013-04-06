@@ -15,7 +15,7 @@ var ImdbDialog = new function(){
 
 	this.show=function(filepath, dialogCallback){
 		shownDialogCallback = dialogCallback;
-		shownFilepath = shownFilepath;
+		shownFilepath = filepath;
 		if (! $dialog) {
 			$dialog=$('#imdb_dialog').on('shown', dialogShownCallback);
 			$dialogBody=$('.modal-body', $dialog);
@@ -40,9 +40,17 @@ var ImdbDialog = new function(){
 		    	}
 			});
 
+			var callbackData = {
+				location: $('input[name="location.id"]', $dialogBody).val(),
+				dirpath: $('input[name="location.path"]', $dialogBody).val()
+			};
+
 			$('#location-sync-check-title', $dialogBody).click(function(){
 				$dialog.modal('hide');
-				shownDialogCallback(shownFilepath, mediainfo, imdbCache[$select.val()]);
+				callbackData.filepath=shownFilepath;
+				callbackData.mediainfo=mediainfo;
+				callbackData.imdbinfo=imdbCache[$select.val()];
+				shownDialogCallback(callbackData);
 			});
 		}
 		$path.text(filepath);
