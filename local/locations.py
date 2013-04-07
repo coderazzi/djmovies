@@ -39,7 +39,8 @@ class LocationHandler:
     def reverseNormalization(self, path, normalizedName):
         fullpath = os.path.join(self.folderBase, path)
         fullNormalizedPath = os.path.join(self.folderBase, normalizedName)
-        os.rename(fullNormalizedPath, fullpath)
+        if fullNormalizedPath!=fullPath:
+            os.rename(fullNormalizedPath, fullpath)
 
     def _getRelativeName(self, path):
         ret = path[len(self.folderBase):]

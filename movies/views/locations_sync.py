@@ -29,6 +29,7 @@ def index(request):
             else:
                 movies[path]=['', True, False] #in fs, not in db
         else:
+            print 'Cannot access path: '+path #to user, use MESSENGER!
             messages.warning(request, 'Cannot access path: '+path) #to user, use MESSENGER!
     
     info=[]
@@ -82,7 +83,6 @@ def update(request):
             raise
     except Exception as ex:
         locationHandler.reverseNormalization(filepath, path)
-        raise
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
                             content_type="application/json")
 

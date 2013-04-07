@@ -10,7 +10,7 @@ function setupLocationsSync(){
 					message: 'Adding movie information',
 					data: info,
 					success: function(response){
-						$tr.html(response);
+						$tr.addClass('location_updated').html(response);
 						$('.add_path', $tr).click(addPathCallback);
 					}
 				});

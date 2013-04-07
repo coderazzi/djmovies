@@ -122,6 +122,9 @@ caption {
 #locations_sync .ok-False {
   color: #b00; }
 
+#locations_sync tr.location_updated {
+  color: blue; }
+
 #locations_sync td {
   vertical-align: top; }
 
