@@ -29,7 +29,7 @@ function luajax(settings){
 		msg = Messenger().post({
 			message:settings.message,
 			type: 'info',
-			showCloseButton: false
+			showCloseButton: true
 		});
 	}
 	$.ajax(settings);

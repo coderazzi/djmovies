@@ -14,11 +14,6 @@
     <link href="/static/movies.css" rel="stylesheet" media="screen">
   </head>
   <body>
-    {% for message in messages %}
-      <div class='alert {{ message.tags }}'>
-        <a class="close" data-dismiss="alert" href="#">&times;</a> 
-        {{ message }}</div>
-    {% endfor %}
     {% block body %}{% endblock %}
     <script src="/static/vendor/jquery-1.9.1.min.js"></script>
     <script src="/static/vendor/jquery.cookie.js"></script>
@@ -31,5 +26,15 @@
     <script src="/static/imdb_dialog.js"></script>
     <script src="/static/ajax.js"></script>
     <script src="/static/global.js"></script>
+    {% if messages %}
+    <script>
+    {% for message in messages %}
+        Messenger().post({
+          message:'{{message}}',
+          type: {%if message.tags == "info" %} 'info' {% else %} 'error' {% endif %},
+          showCloseButton: true});
+    {% endfor %}
+    </script>
+    {% endif %}
   </body>
 </html>
