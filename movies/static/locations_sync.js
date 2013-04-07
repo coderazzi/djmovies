@@ -1,6 +1,6 @@
 function setupLocationsSync(){
 
-	function searchPathCallback(){
+	function addPathCallback(){
 		var $tr=$(this).parent().parent();
 		var path = $('.path', $tr);
 		if (path.length){
@@ -11,7 +11,7 @@ function setupLocationsSync(){
 					data: info,
 					success: function(response){
 						$tr.html(response);
-						$('.search_path', $tr).click(searchPathCallback);
+						$('.add_path', $tr).click(addPathCallback);
 					}
 				});
 			});
@@ -19,5 +19,5 @@ function setupLocationsSync(){
 		return false;
 	}
 
-	$('.search_path').click(searchPathCallback);
+	$('.add_path').click(addPathCallback);
 }

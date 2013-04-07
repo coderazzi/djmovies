@@ -49,7 +49,7 @@ def update(request):
     if not request.is_ajax(): return redirect('#locations')
 
     data = json.loads(request.body)
-    mediainfo, imdbinfo = Struct(**data['mediainfo']), Struct(**data['imdbinfo'])
+    mediainfo, imdbinfo = Struct.fromjs(**data['mediainfo']), Struct.fromjs(**data['imdbinfo'])
     filepath, locationId = data['filepath'], data['location']
     locationHandler = LocationHandler(data['dirpath'])
     path = locationHandler.normalizeFilename(filepath, imdbinfo)
@@ -82,6 +82,7 @@ def update(request):
             raise
     except Exception as ex:
         locationHandler.reverseNormalization(filepath, path)
+        raise
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
                             content_type="application/json")
 

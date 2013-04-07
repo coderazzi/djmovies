@@ -47,7 +47,7 @@ def _getImdbInfo(link, browser):
                 year = _unescape(yearRef.text)
             else:
                 yearRef = titleTag.find('span', attrs={'class':'nobr'})
-                match = re.search('(\d\d\d\d)', _unescape(yearRef.text))
+                match = yearRef and re.search('(\d\d\d\d)', _unescape(yearRef.text))
                 year = match and match.group(1)
             titleTag = titleTag.find('span', attrs={'itemprop':'name'})
             if titleTag:
@@ -72,9 +72,12 @@ def _getImdbInfo(link, browser):
             if imgSrc:
                 bigImgSrc = imgTag.parent.get('href')
                 if bigImgSrc:
-                    imgTag = BeautifulSoup(browser.open(bigImgSrc).read()).find('img', attrs={'id' : 'primary-img'})
-                    bigImgSrc = imgTag and imgTag.get('src')
-        return Struct(url=link, title=title, year=year, duration=duration, 
+                    try:
+                        imgTag = BeautifulSoup(browser.open(bigImgSrc).read()).find('img', attrs={'id' : 'primary-img'})
+                        bigImgSrc = imgTag and imgTag.get('src')
+                    except:
+                        bigImgSrc=None
+        return Struct.nonulls(url=link, title=title, year=year, duration=duration, 
             genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
 
 

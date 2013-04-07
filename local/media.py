@@ -220,7 +220,7 @@ def mediainfo(path, folder):
 
         duration = int(round(duration/60000)) if duration else None
         size = retSize(size)
-        return Struct(name=name, size=size, duration=duration, width=width, height=height, 
+        return Struct.nonulls(name=name, size=size, duration=duration, width=width, height=height, 
             audios='/'.join(audios), texts='/'.join(texts))
 
     def process(path, folder):
