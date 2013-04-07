@@ -1,7 +1,10 @@
 import json
+
+from django.db import IntegrityError
 from django.contrib import messages
-from django.template import RequestContext
+from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
+from django.template import RequestContext
 
 from movies.models import Location, MovieLocation, Movie, Image
 
@@ -16,28 +19,28 @@ def index(request):
     movies= {}
     location = Location.objects.get(id=locationId)
     for each in MovieLocation.objects.filter(location=location):
-        movies[each.path]=[each.movie.title, True]
+        movies[each.path]=[each.movie.title, False, True] #title, in fs, in db
 
     for path, ok in LocationHandler(locationPath).iterateAllFilesInPath():
         if ok:
             info = movies.get(path)
             if info:
-                info[1]=False
+                info[1]=True #in fs, okay
             else:
-                movies[path]=['', False]
+                movies[path]=['', True, False] #in fs, not in db
         else:
-            messages.warning(request, 'Cannot access path: '+path)
+            messages.warning(request, 'Cannot access path: '+path) #to user, use MESSENGER!
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
         movie=movies[key]
-        info.append((key, movie[0], movie[1]))
+        info.append((key, movie[0], movie[1], movie[2]))
 
     return render_to_response('locations_sync.html', 
         {      
             'location' : location,
             'path'     : locationPath,
-            'movies'   : info,
+            'movies'   : info, #path, title, infs, indb
         },
         RequestContext(request))
 
@@ -70,7 +73,10 @@ def update(request):
                 movie.image_set.create(url=imdbinfo.imageLink, size=Image.SIZE_BASIC)
             if imdbinfo.bigImageLink:
                 movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
-            MovieLocation.objects.create(movie=movie, location_id=locationId, path=path)
+            try:
+                MovieLocation.objects.create(movie=movie, location_id=locationId, path=path)
+            except IntegrityError:
+                raise Exception('Movie (path) already exists on this location: repeated?')
         except:
             movie.delete()
             raise
@@ -81,7 +87,8 @@ def update(request):
 
     return render_to_response('locations_sync_item.html', 
         {      
-            'missing'  : False,
+            'in_fs'    : True,
+            'in_db'    : True,
             'path'     : path,
             'title'    : imdbinfo.title,
         },

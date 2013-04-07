@@ -39,8 +39,6 @@ class LocationHandler:
     def reverseNormalization(self, path, normalizedName):
         fullpath = os.path.join(self.folderBase, path)
         fullNormalizedPath = os.path.join(self.folderBase, normalizedName)
-        print 'Requested',path,'----',normalizedName
-        print 'Ro rename',fullNormalizedPath,'    as   ',fullpath
         os.rename(fullNormalizedPath, fullpath)
 
     def _getRelativeName(self, path):

@@ -119,7 +119,7 @@ caption {
   width: 75%;
   margin: 20px auto; }
 
-#locations_sync .missing-True {
+#locations_sync .ok-False {
   color: #b00; }
 
 #locations_sync td {

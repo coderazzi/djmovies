@@ -2,11 +2,13 @@ function luajax(settings){
 	//success, error, url, data, msg, type
 	var msg = null, serror=settings.error, sok=settings.success;
 	settings.error = function(){
-		if (msg) msg.update({type: 'error', message: settings.message+" failed"});
-		if (serror){
-			if (arguments.length==1) serror(arguments[0], msg); 
-			else serror(null, msg);
+		var problem = (arguments.length==1) && arguments[0]; 
+		if (msg) {
+			var reason = settings.message+" failed";
+			if (problem) reason+=': '+problem;
+			msg.update({type: 'error', message: reason});
 		}
+		if (serror) serror(problem, msg);
 	}
 	settings.success=function(response){
     	if (response && response.error) {
@@ -27,6 +29,7 @@ function luajax(settings){
 		msg = Messenger().post({
 			message:settings.message,
 			type: 'info',
+			showCloseButton: false
 		});
 	}
 	$.ajax(settings);

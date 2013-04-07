@@ -82,7 +82,6 @@ class Image(models.Model):
     @staticmethod
     def delete_callback(**kwargs):
         try:
-            print 'Removing', kwargs['instance'].abspath()
             os.remove(kwargs['instance'].abspath())
         except:
             pass

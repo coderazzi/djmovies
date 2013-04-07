@@ -1,16 +1,16 @@
 <td>
-  	{% if not missing %}
-	    <a class="btn btn-mini search_path" href="#">
+  	{% if not in_db %}
+	    <a class="btn btn-mini btn-warning search_path" href="#">
 	    <i class="icon-search icon-white"></i></a>
     {% endif %}
 </td>
 <td>
-	<div class='path'>{{path}}</div>
-	<div class='title missing-{{missing}}'>{{title}}</div>
+	<div class='path ok-{{in_db}}'>{{path}}</div>
+	<div class='title ok-{{in_fs}}'>{{title}}</div>
 </td>
 <td>
-  	{% if missing %}
-	    <a class="btn btn-mini remove_path disabled" href="#">
+  	{% if in_db and not in_fs %}
+	    <a class="btn btn-mini btn-danger remove_path disabled" href="#">
 	    <i class="icon-trash icon-white"></i></a>
     {% endif %}
 </td>

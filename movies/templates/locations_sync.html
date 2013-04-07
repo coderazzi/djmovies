@@ -9,7 +9,7 @@
 			<tr><th>Add</th><th>Path &amp; Title</th><th>Remove</th></tr>
 		</thead>
 		<tbody>
-		    {% for path, title, missing in movies %}
+		    {% for path, title, in_fs, in_db in movies %}
 		    <tr>
 				{%include "locations_sync_item.html"%}
 			</tr>
