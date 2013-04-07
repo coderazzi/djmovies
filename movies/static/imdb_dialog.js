@@ -51,6 +51,7 @@ var ImdbDialog = new function(){
 				callbackData.mediainfo=mediainfo;
 				callbackData.imdbinfo=imdbCache[$select.val()];
 				shownDialogCallback(callbackData);
+				return false;
 			});
 		}
 		$path.text(filepath);

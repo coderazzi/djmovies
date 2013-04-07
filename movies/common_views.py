@@ -16,7 +16,7 @@ def index(request):
     for each in movies:
         images=each.image_set.filter(size='B')[:1]
         if images:
-            each.image=images[0].path
+            each.image=images[0].servepath()
         
     context = Context({
         'movies': movies,

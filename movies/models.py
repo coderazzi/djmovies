@@ -1,4 +1,3 @@
-# This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #     * Rearrange models' order
 #     * Make sure each model has one field with primary_key=True
@@ -8,13 +7,15 @@
 # into your database.
 from __future__ import unicode_literals
 
+import os
+
 from django.db import models, IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
-from movies.image_manager import ImageManager
+from movies.images_manager import ImagesManager
 
 class Movie(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     title = models.TextField(max_length=64)
     format = models.TextField(blank=True)
     year = models.IntegerField(null=True, blank=True)
@@ -37,7 +38,7 @@ class Movie(models.Model):
 
 
 class Location(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.TextField(blank=True)
     description = models.TextField(blank=True)
     movies = models.ManyToManyField(Movie, through='MovieLocation')
@@ -57,8 +58,8 @@ class MovieLocation(models.Model):
 
 
 class Image(models.Model):
-    objects=ImageManager()
-    id = models.IntegerField(primary_key=True)
+    objects = ImagesManager()
+    id = models.AutoField(primary_key=True)
     movie = models.ForeignKey(Movie)
     url = models.TextField(blank=True)
     path = models.TextField(blank=True)
@@ -69,7 +70,27 @@ class Image(models.Model):
         db_table = 'images'
 
     def __unicode__(self):
-        return "%s [%dx%d]" % (self.movie, self.width, self.height)
+        movie = self.movie or '-no movie associated?-'
+        return "%s [%dx%d]" % (movie, self.width, self.height)
+
+    def abspath(self):
+        return self.path and os.path.join(Image.ABS_DIRECTORY_BASE, self.path)
+
+    def servepath(self):
+        return self.path and os.path.join(Image.DIRECTORY_BASE, self.path)
+
+    @staticmethod
+    def delete_callback(**kwargs):
+        try:
+            print 'Removing', kwargs['instance'].abspath()
+            os.remove(kwargs['instance'].abspath())
+        except:
+            pass
+
+    SIZE_BASIC='B'
+    SIZE_LARGE='L'
+    DIRECTORY_BASE='static/mov_imgs'
+    ABS_DIRECTORY_BASE=os.path.join('movies', DIRECTORY_BASE)
 
 
 class Lock(models.Model):
@@ -94,7 +115,7 @@ class Lock(models.Model):
 
 
 class Configuration(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     key = models.TextField(unique=True)
     value = models.TextField(blank=True)
     class Meta:
@@ -117,3 +138,8 @@ class Configuration(models.Model):
             query.update(value=value)
         else:
             Configuration.objects.create(key=key, value=value)
+
+
+#ensure now that images are properly deleted
+models.signals.pre_delete.connect(Image.delete_callback, sender=Image, dispatch_uid="image.delete_callback")
+

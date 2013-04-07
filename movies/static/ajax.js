@@ -1,7 +1,7 @@
 function luajax(settings){
 	//success, error, url, data, msg, type
 	var msg = null, serror=settings.error, sok=settings.success;
-	settings.error = function ERROR(){
+	settings.error = function(){
 		if (msg) msg.update({type: 'error', message: settings.message+" failed"});
 		if (serror){
 			if (arguments.length==1) serror(arguments[0], msg); 
@@ -28,7 +28,6 @@ function luajax(settings){
 		msg = Messenger().post({
 			message:settings.message,
 			type: 'info',
-			singleton: true
 		});
 	}
 	$.ajax(settings);
@@ -39,8 +38,7 @@ function ajaxPost(settings) {
 }
 
 function ajaxPostForm(form, settings) {
-	var data = $.extend({}, {url: form.attr('action'), type: 'POST'}, settings);
-	//var data = $.extend({url: form.attr('action'), type: 'POST'}, settings);
+	var data = $.extend({url: form.attr('action'), type: 'POST'}, settings);
 	data.data = form.serializeArray();
     luajax(data);
 }

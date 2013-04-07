@@ -3,24 +3,15 @@ from django.contrib import messages
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 
-from movies.models import Location, MovieLocation
+from movies.models import Location, MovieLocation, Movie, Image
 
 from local.locations import LocationHandler
-from local.imdb import getImdbImages
+from local.dstruct import Struct
 
-
-SUPPORT_GET_FOR_TESTING=True
 
 def index(request):    
-    if not SUPPORT_GET_FOR_TESTING:
-        if request.method == 'GET': return redirect('#locations')
-        locationId, locationPath = request.POST['location.id'], request.POST['location.path']
-    else:
-        if request.method == 'GET': 
-            locationId, locationPath = 1, u'/Volumes/TTC7/_movies/test'
-        else:
-            locationId, locationPath = request.POST['location.id'], request.POST['location.path']
-
+    if request.method == 'GET': return redirect('#locations')
+    locationId, locationPath = request.POST['location.id'], request.POST['location.path']
 
     movies= {}
     location = Location.objects.get(id=locationId)
@@ -54,40 +45,42 @@ def index(request):
 def update(request):
     if request.method == 'GET': return redirect('#locations')
     data = json.loads(request.body)
-    filepath, mediainfo, imdbinfo = data['filepath'], data['mediainfo'], data['imdbinfo']
-    location, dirpath = data['location'], data['dirpath']
+    mediainfo, imdbinfo = Struct(**data['mediainfo']), Struct(**data['imdbinfo'])
+    filepath, location= data['filepath'], data['location'], 
 
-    images = getImdbImages(imdbinfo.imageLink, imdbinfo.bigImageLink)
+    locationHandler = LocationHandler(data['dirpath'])
+    path = locationHandler.normalizeFilename(filepath, imdbinfo)
+    try:
+        movie = Movie.objects.create(title = imdbinfo.title,
+                                    format=mediainfo.format, 
+                                    year=imdbinfo.year,
+                                    duration=mediainfo.duration,
+                                    imdb_duration=imdbinfo.duration,
+                                    width=mediainfo.width,
+                                    height=mediainfo.height,
+                                    size=mediainfo.size,
+                                    imdb_link=imdbinfo.url,
+                                    trailer_link=imdbinfo.trailer,
+                                    genres=imdbinfo.genres,
+                                    actors=imdbinfo.actors,
+                                    audios=mediainfo.audios,
+                                    subs=mediainfo.texts)
+        try:
+            if imdbinfo.imageLink:
+                movie.image_set.create(url=imdbinfo.imageLink, size=Image.SIZE_BASIC)
+            if imdbinfo.bigImageLink:
+                movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
+        except:
+            movie.delete()
+            raise
+    except:
+        locationHandler.reverseNormalization(filepath, path)
+        raise
 
-    path = locationHandler = LocationHandler(dirpath).renameFile(filepath)
-
-    print filepath
-    print mediainfo
-    print imdbinfo
-    print location
-    print dirpath
-
-
-            # imdbInfo= getImdbInfo(self.browser, references[index-1][0])
-            # if not imdbInfo.year:
-            #     imdbInfo.year = raw_input("Year not returned by IMDB, please enter it: ").strip()
-            # newName = self.normalizeFilename(imdbInfo.title, path, imdbInfo.year)           
-            # if newName != path:
-            #     print '***I***', 'renaming', path,'as', newName
-            #     os.rename(path, newName)
-            # locationName = self._getRelativeName(folder, newName)
-            # self.db.storeMovie(mInfo, imdbInfo, self.location, locationName)
-            # self.db.commit()
-
-
-    # def normalizeFilename(self, title, basePath, year):
-    #     year = (year and ('__'+year)) or ''
-    #     basename=re.sub('[^a-z0-9]+', '_', title.lower()).title()
-    #     return os.path.join(os.path.dirname(basePath), basename+year+os.path.splitext(basePath)[-1].lower())
-
-    # def _getRelativeName(self, basepath, path):
-    #     ret = path[len(basepath):]
-    #     if ret[0]=='/':
-    #         ret=ret[1:]
-    #     return ret
-
+    # return render_to_response('locations_sync.html', 
+    #     {      
+    #         'location' : location,
+    #         'path'     : dirpath,
+    #         'movies'   : [],
+    #     },
+    #     RequestContext(request))

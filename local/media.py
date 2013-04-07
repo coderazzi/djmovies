@@ -237,10 +237,10 @@ def mediainfo(path, folder):
                 mi.size=retSize(size)
                 return mi
             if not 'BDMV' in dirs:
-                raise Exception, "Invalid path:"+path
+                raise Exception("Invalid path:"+path)
             files=[f for f in files if f.lower().endswith('.m2ts')]
             if not files:
-                raise Exception, "Invalid [empty?] path:"+path
+                raise Exception("Invalid [empty?] path:"+path)
             mi = invoke_mi(files)
             mi.format='BlueRay'
             return mi
@@ -251,7 +251,7 @@ def mediainfo(path, folder):
             if extension in ['Iso', 'Img']:
                 mpath=mount(path)
                 if not mpath:
-                    raise Exception, "Could not mount:"+path
+                    raise Exception("Could not mount:"+path)
                 try:
                     ret = mediainfo(mpath)                
                     if ret.format=='BlueRay':
@@ -267,7 +267,7 @@ def mediainfo(path, folder):
                 ret.format=extension
                 return ret
             else:
-                raise Exception, "'"+extension+"' is not a valid extension"
+                raise Exception("'"+extension+"' is not a valid extension")
 
 
     ret=process(path, folder)
@@ -282,7 +282,8 @@ def mediainfo(path, folder):
     
 if __name__ == '__main__':
     # movie='/Volumes/Movies_III/How_The_West_Was_Won__1962.iso'
-    movie='/Volumes/TTC7/The Wackness.mkv'
-    info= mediainfo(movie)
+    folder='/Volumes/TTC7/'
+    movie='The Wackness.mkv'
+    info= mediainfo(movie, folder)
     for i in dir(info):
         print i, getattr(info, i)

@@ -24,12 +24,24 @@ class LocationHandler:
                     continue
             yield self._getRelativeName(current), True
 
-    def renameFile(self, path, imdbInfo):
+    def normalizeFilename(self, path, imdbInfo):
+        def _normalizeFilename(filename, title, year):
+            if not title: return filename
+            year = (year and ('__'+year)) or ''
+            basename=re.sub('[^a-z0-9]+', '_', title.lower()).title()
+            return os.path.join(os.path.dirname(filename), basename+year+os.path.splitext(filename)[-1].lower())
         fullpath = os.path.join(self.folderBase, path)
-        newName = self.normalizeFilename(fullpath, imdbInfo.title, imdbInfo.year)
+        newName = _normalizeFilename(fullpath, imdbInfo.title, imdbInfo.year)
         if newName != fullpath:
             os.rename(fullpath, newName)
-        return self._getRelativeName(fullpath)
+        return self._getRelativeName(newName)
+
+    def reverseNormalization(self, path, normalizedName):
+        fullpath = os.path.join(self.folderBase, path)
+        fullNormalizedPath = os.path.join(self.folderBase, normalizedName)
+        print 'Requested',path,'----',normalizedName
+        print 'Ro rename',fullNormalizedPath,'    as   ',fullpath
+        os.rename(fullNormalizedPath, fullpath)
 
     def _getRelativeName(self, path):
         ret = path[len(self.folderBase):]
@@ -37,11 +49,6 @@ class LocationHandler:
             ret=ret[1:]
         return ret
 
-    def _normalizeFilename(self, filename, title, year):
-        if not title: return filename
-        year = (year and ('__'+year)) or ''
-        basename=re.sub('[^a-z0-9]+', '_', title.lower()).title()
-        return os.path.join(os.path.dirname(filename), basename+year+os.path.splitext(filename)[-1].lower())
 
 
 

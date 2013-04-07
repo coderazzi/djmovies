@@ -1,0 +1,18 @@
+<tr>
+	<td>
+	  	{% if not missing %}
+		    <a class="btn btn-mini search_path" href="#">
+		    <i class="icon-search icon-white"></i></a>
+	    {% endif %}
+    </td>
+	<td>
+		<div class='path'>{{path}}</div>
+		<div class='title missing-{{missing}}'>{{title}}</div>
+	</td>
+	<td>
+	  	{% if missing %}
+		    <a class="btn btn-mini remove_path disabled" href="#">
+		    <i class="icon-trash icon-white"></i></a>
+	    {% endif %}
+    </td>
+</tr>

@@ -29,6 +29,11 @@ $.ajaxSetup({
     }
 });
 
+Messenger.options = {
+	extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+	theme: 'future'
+}
+
 $(function() {
 	if ($('#locations').length) setupLocations();
 	if ($('#locations_sync').length) setupLocationsSync();

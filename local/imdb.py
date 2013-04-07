@@ -1,12 +1,10 @@
-import htmlentitydefs
-import os
-import re
-import urllib
-import urllib2
+import htmlentitydefs, os, re, urllib, urllib2
 
 from BeautifulSoup import BeautifulSoup
-from mechanize import Browser
+
+from browser import Browser
 from dstruct import Struct
+
 
 title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
@@ -14,8 +12,7 @@ duration_search = re.compile('[^\\d]*(\\d+) min.*')
 def searchImdb(movieTitle):
     ret=[]
     url='http://www.imdb.com/find?'+urllib.urlencode({'q': movieTitle, 's':'all'})
-    browser=_getBrowser()
-    try:
+    with Browser() as browser:
         page = browser.open(url)
         soup = BeautifulSoup(page.read())
         divMain = soup.find('div', attrs={'id':'main'})
@@ -30,35 +27,11 @@ def searchImdb(movieTitle):
                         if title:
                             ret.append(('http://www.imdb.com'+href,title, _unescape(ref.nextSibling)))
         return (ret, ret and _getImdbInfo(ret[0][0], browser))
-    finally:
-        browser.close()
 
 
 def getImdbInfo(link):
-    browser=_getBrowser()
-    try:
+    with Browser() as browser:
         return _getImdbInfo(link, browser)
-    finally:
-        browser.close()
-
-
-def getImdbImages(*links):
-    ret=[]
-    if links:
-        browser=_getBrowser()
-        try:
-            for link in links:
-                image = None
-                if link:
-                    try:
-                        image = browser.open_novisit(imdbInfo.imageLink).read()
-                    except urllib2.HTTPError:
-                        pass
-                ret.append(image)
-        finally:
-            browser.close()
-    return ret
-
 
 def _getImdbInfo(link, browser):
     title, year, duration, genres, actors, trailer, imgSrc, bigImgSrc = [None]*8
@@ -127,15 +100,4 @@ def _unescape(text):
         return text.strip() # leave as is
     if not text: return ''
     return re.sub("&#?\w+;", fixup, text).strip()
-
-
-def _getBrowser():
-    br = Browser()
-    br.addheaders = [
-        ('User-agent', 
-            'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1'),
-        ('Accept-Language',
-            'en-US,en;q=0.8')]
-    return br
-
 
