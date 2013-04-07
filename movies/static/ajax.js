@@ -24,7 +24,6 @@ function luajax(settings){
 		}
 	}
 	if (settings.message){
-		settings.message =  new Date().toLocaleTimeString() + ' : '+settings.message;
 		msg = Messenger().post({
 			message:settings.message,
 			type: 'info',

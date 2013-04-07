@@ -10,7 +10,9 @@
 		</thead>
 		<tbody>
 		    {% for path, title, missing in movies %}
+		    <tr>
 				{%include "locations_sync_item.html"%}
+			</tr>
 		    {% endfor %}
 		</tbody>
 	</table>

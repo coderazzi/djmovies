@@ -43,11 +43,11 @@ def index(request):
 
 
 def update(request):
-    if request.method == 'GET': return redirect('#locations')
+    if not request.is_ajax(): return redirect('#locations')
+
     data = json.loads(request.body)
     mediainfo, imdbinfo = Struct(**data['mediainfo']), Struct(**data['imdbinfo'])
-    filepath, location= data['filepath'], data['location'], 
-
+    filepath, locationId = data['filepath'], data['location']
     locationHandler = LocationHandler(data['dirpath'])
     path = locationHandler.normalizeFilename(filepath, imdbinfo)
     try:
@@ -65,22 +65,24 @@ def update(request):
                                     actors=imdbinfo.actors,
                                     audios=mediainfo.audios,
                                     subs=mediainfo.texts)
-        try:
+        try:            
             if imdbinfo.imageLink:
                 movie.image_set.create(url=imdbinfo.imageLink, size=Image.SIZE_BASIC)
             if imdbinfo.bigImageLink:
                 movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
+            MovieLocation.objects.create(movie=movie, location_id=locationId, path=path)
         except:
             movie.delete()
             raise
-    except:
+    except Exception as ex:
         locationHandler.reverseNormalization(filepath, path)
-        raise
+        return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
+                            content_type="application/json")
 
-    # return render_to_response('locations_sync.html', 
-    #     {      
-    #         'location' : location,
-    #         'path'     : dirpath,
-    #         'movies'   : [],
-    #     },
-    #     RequestContext(request))
+    return render_to_response('locations_sync_item.html', 
+        {      
+            'missing'  : False,
+            'path'     : path,
+            'title'    : imdbinfo.title,
+        },
+        RequestContext(request))

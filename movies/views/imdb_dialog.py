@@ -17,7 +17,6 @@ def _json_response(f):
         result = f()
     except Exception as ex:
         result = {'error': 'Server error: '+str(ex)}
-    print result
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 
