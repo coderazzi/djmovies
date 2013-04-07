@@ -91,7 +91,7 @@ var ImdbDialog = new function(){
 		if (info){
 			var src=info.imageLink || '/static/noposter.jpg';
 			var html=info.actors+'<br>'+info.genres+'<br>'+info.year;
-			$img.attr('src', src).parent().attr('href',info.url);
+			$img.attr('src', src).parent().attr('href','http://www.imdb.com'+info.url);
 			$movieInfo.html(html);
 			showStep(STEP_6_EXPECT_CONFIRMATION);
 			return true;
