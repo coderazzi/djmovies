@@ -54,6 +54,8 @@ def update(request):
     filepath, locationId = data['filepath'], data['location']
     locationHandler = LocationHandler(data['dirpath'])
     path = locationHandler.normalizeFilename(filepath, imdbinfo)
+    # for k, v in imdbinfo.__dict__.items():
+    #     print k, v
     try:
         movie = Movie.objects.create(title = imdbinfo.title,
                                     format=mediainfo.format, 

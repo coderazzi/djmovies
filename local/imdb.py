@@ -8,10 +8,11 @@ from dstruct import Struct
 
 title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
+IMDB_COM='http://www.imdb.com'
 
 def searchImdb(movieTitle):
     ret=[]
-    url='http://www.imdb.com/find?'+urllib.urlencode({'q': movieTitle, 's':'all'})
+    url=IMDB_COM+'/find?'+urllib.urlencode({'q': movieTitle, 's':'all'})
     with Browser() as browser:
         page = browser.open(url)
         soup = BeautifulSoup(page.read())
@@ -25,7 +26,7 @@ def searchImdb(movieTitle):
                     if href and title_search.match(href):
                         title = _unescape(ref.text)
                         if title:
-                            ret.append(('http://www.imdb.com'+href,title, _unescape(ref.nextSibling)))
+                            ret.append((href,title, _unescape(ref.nextSibling)))
         return (ret, ret and _getImdbInfo(ret[0][0], browser))
 
 
@@ -35,7 +36,7 @@ def getImdbInfo(link):
 
 def _getImdbInfo(link, browser):
     title, year, duration, genres, actors, trailer, imgSrc, bigImgSrc = [None]*8
-    page = browser.open(link)
+    page = browser.open(IMDB_COM+link)
     soup = BeautifulSoup(page.read())
     divMain = soup.find('div', attrs={'id':'pagecontent'})
     if divMain:

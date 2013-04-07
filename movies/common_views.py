@@ -11,7 +11,7 @@ from movies.models import *
 
 
 def index(request):
-    movies=Movie.objects.order_by('title')[:9]
+    movies=Movie.objects.order_by('title')#[:9]
     images={}
     for each in movies:
         images=each.image_set.filter(size='B')[:1]
