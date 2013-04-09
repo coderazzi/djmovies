@@ -52,6 +52,6 @@ class LocationHandler:
 
 
 if __name__ == '__main__':
-    for each in Location('/tmp').iterateAllFilesInPath():
+    for each in LocationHandler('/tmp').iterateAllFilesInPath():
         print each
 

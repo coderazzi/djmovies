@@ -150,7 +150,7 @@ def runProcess(exe):
       if(retcode is not None):
         break
 
-def mediainfo(path, folder):
+def mediainfo(path, folder=''):
     def mount(isoFile):   
         disk, path, first=None, None, True
         for line in runProcess(['hdiutil', 'mount', isoFile]):
@@ -262,7 +262,7 @@ def mediainfo(path, folder):
                     umount(mpath)
             elif extension in ['Jpg', 'Png', 'Gif', 'Srt', 'Sub', 'Idx', 'Txt']:
                 return None
-            elif extension in ['Avi', 'Mkv', 'Mp4', 'Divx', 'Vob', 'M2Ts']:
+            elif extension in ['Avi', 'Mkv', 'Mp4', 'Divx', 'Vob', 'M2Ts', 'Wmv', 'Ts']:
                 ret= invoke_mi([path])
                 ret.format=extension
                 return ret
