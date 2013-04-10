@@ -19,5 +19,10 @@ function setupLocationsSync(){
 		return false;
 	}
 
+	var $problemDialog = $('#locations_sync_problems_dialog');
+	if ($('td', $problemDialog).length){
+		$problemDialog.modal('show');
+	}
 	$('.add_path').click(addPathCallback);
+
 }

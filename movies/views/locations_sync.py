@@ -21,27 +21,37 @@ def index(request):
     for each in MovieLocation.objects.filter(location=location):
         movies[each.path]=[each.movie.title, False, True] #title, in fs, in db
 
-    for path, ok in LocationHandler(locationPath).iterateAllFilesInPath():
-        if ok:
-            info = movies.get(path)
-            if info:
-                info[1]=True #in fs, okay
-            else:
-                movies[path]=['', True, False] #in fs, not in db
+    problems=[]
+    for path, error, type in LocationHandler(locationPath).iterateAllFilesInPath():
+        if error:
+            problems.append((0, path))
         else:
-            print 'Cannot access path: '+path #to user, use MESSENGER!
-            messages.warning(request, 'Cannot access path: '+path) #to user, use MESSENGER!
+            if type==LocationHandler.ADDITIONAL_FILE_IN_DIR:
+                problems.append((2, path))
+            elif type in [LocationHandler.UNVISITED_FOLDER, LocationHandler.UNHANDLED_FILE]:
+                problems.append((1, path))
+            else:
+                info = movies.get(path)
+                if info:
+                    info[1]=True #in fs, okay
+                else:
+                    movies[path]=['', True, False] #in fs, not in db
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
         movie=movies[key]
         info.append((key, movie[0], movie[1], movie[2]))
 
+    problems.sort() 
+    if problems and problems[0][0]==2:
+        problems=[] #do not show at first info messages
+
     return render_to_response('locations_sync.html', 
         {      
             'location' : location,
             'path'     : locationPath,
-            'movies'   : info, #path, title, infs, indb
+            'movies'   : info, 
+            'problems' : problems,
         },
         RequestContext(request))
 

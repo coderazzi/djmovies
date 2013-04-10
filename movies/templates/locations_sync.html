@@ -2,6 +2,21 @@
 {% block body %}
 
 	{%include "imdb_dialog.html"%}
+
+	<div id='locations_sync_problems_dialog' class="modal hide fade container" tabindex='-1'>
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h5>Unhandled files in location</h5>
+		</div>
+		<div class="modal-body">
+			<table class='table no_table-bordered no_table-hover'>
+				<tbody>
+					{%include "locations_sync_problems.html"%}
+				</tbody>
+			</table>		
+		</div>
+	</div>
+
 	
 	<table id='locations_sync' class='table no_table-bordered no_table-hover'>
 		<caption>Movies for {{location}} under {{path}}</caption>
