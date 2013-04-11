@@ -5,21 +5,27 @@ from movies.models import *
 
 def index(request):    
     table, images = {}, {}
+
     for image in Image.objects.filter(size=Image.SIZE_BASIC):
         images[image.movie_id]=image.servepath()
 
     for movie in Movie.objects.order_by('title'):
-        movie.image = images.get(movie.id)
         imdb_link=movie.imdb_link
         key = (movie.title, movie.year, imdb_link)
         locations=[(each.location, each.path) for each in movie.movielocation_set.all()]
         table.setdefault(key, []).append((movie, locations))
 
-    keys = table.keys()
+    info, keys = [], table.keys()
     keys.sort()
+    for k in keys:
+        image, mapped=None, table[k]
+        for m, l in  mapped:
+            image = images.get(m.id)
+            if image: break
+        info.append((k, image, mapped))
 
     context = Context({
-        'info': [(k, table.get(k)) for k in keys],
+        'info': info,
     })
     return render_to_response('movies_control.html', context)
 
