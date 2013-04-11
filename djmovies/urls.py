@@ -14,8 +14,9 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     #url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^movies$', 'movies.views.movies_control.index', name='#movies'),
 
-    url(r'^locations$', 'movies.common_views.locations', name='#locations'),
+    url(r'^locations$', 'movies.views.locations.index', name='#locations'),
     url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
     url(r'^locations_sync_update$', 'movies.views.locations_sync.update', name='#locations_sync_update'),
 

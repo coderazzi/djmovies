@@ -1,4 +1,4 @@
-import htmlentitydefs, os, re, urllib, urllib2
+import htmlentitydefs, os, re, urllib, urllib2, urlparse
 
 from BeautifulSoup import BeautifulSoup
 
@@ -78,7 +78,8 @@ def _getImdbInfo(link, browser):
                         bigImgSrc = imgTag and imgTag.get('src')
                     except:
                         bigImgSrc=None
-        return Struct.nonulls(url=link, title=title, year=year, duration=duration, 
+        url=urlparse.urlparse(link).path #we remove any parameters information. So far, is useless
+        return Struct.nonulls(url=url, title=title, year=year, duration=duration, 
             genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
 
 

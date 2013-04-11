@@ -1,0 +1,27 @@
+{% extends "generic.html" %}
+{% block body %}
+
+<ul>
+{%for key, value in info%}
+	<li>
+		{{key.0}} / {{key.1}} @ {{key.2}}
+		<ul>
+			{%for movie, locations in value%}
+				<li>
+					{{movie.format}} : {{movie.size}}Gb   / {{movie.audios}} / {{movie.subs}}
+					<ul>
+						{%for location, path in locations%}
+						<li>
+							{{location.id}} :: {{location.name}} @ {{path}}
+						</li>
+						{%endfor%}
+					</ul>
+				</li>
+			{%endfor%}
+		</ul>
+	</li>
+{%endfor%}
+</ul>
+
+{% endblock %}
+

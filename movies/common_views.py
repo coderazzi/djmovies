@@ -10,23 +10,14 @@ from movies.models import *
 
 
 
-def index(request):
-    movies=Movie.objects.order_by('title')#[:9]
-    images={}
-    for each in movies:
-        images=each.image_set.filter(size='B')[:1]
+def index(request):        
+    movies=Movie.objects.all()
+    for movie in movies:
+        images=movie.image_set.filter(size=Image.SIZE_BASIC)[:1]
         if images:
-            each.image=images[0].servepath()
+            movie.image=images[0].servepath()
         
     context = Context({
         'movies': movies,
     })
-    return render_to_response('movies.html', context)
-
-
-def locations(request):        
-    return render_to_response('locations.html', 
-        {'locations':  Location.objects.order_by('name')},
-        RequestContext(request))
-
-
+    return render_to_response('movies_control.html', context)
