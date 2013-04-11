@@ -9,7 +9,7 @@ def index(request):
     for image in Image.objects.filter(size=Image.SIZE_BASIC):
         images[image.movie_id]=image.servepath()
 
-    for movie in Movie.objects.order_by('title'):
+    for movie in Movie.objects.order_by('title')[:20]:
         imdb_link=movie.imdb_link
         key = (movie.title, movie.year, imdb_link)
         locations=[(each.location, each.path) for each in movie.movielocation_set.all()]
@@ -18,11 +18,11 @@ def index(request):
     info, keys = [], table.keys()
     keys.sort()
     for k in keys:
-        image, mapped=None, table[k]
+        image, mapped, cnt = None, table[k], 0
         for m, l in  mapped:
-            image = images.get(m.id)
-            if image: break
-        info.append((k, image, mapped))
+            if not image: image = images.get(m.id)
+            cnt += max(1, len(l))
+        info.append((k, image, cnt, [(m, l, max(1, len(l))) for m, l in mapped]))
 
     context = Context({
         'info': info,

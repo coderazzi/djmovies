@@ -1,27 +1,49 @@
 {% extends "generic.html" %}
 {% block body %}
 
-<ul>
-{%for key, image, value in info%}
-	<li>
-		{{key.0}} / {{key.1}} @ {{key.2}} / {{image}}
-		<ul>
-			{%for movie, locations in value%}
-				<li>
-					{{movie.format}} : {{movie.size}}Gb   / {{movie.audios}} / {{movie.subs}}
-					<ul>
-						{%for location, path in locations%}
-						<li>
-							{{location.id}} :: {{location.name}} @ {{path}}
-						</li>
-						{%endfor%}
-					</ul>
-				</li>
-			{%endfor%}
-		</ul>
-	</li>
-{%endfor%}
-</ul>
+<table id='movies_control' class='table no_table-bordered no_table-hover'>
+	<caption>Movies control</caption>
+	<thead>
+		<tr>
+			<th></th><th>Title</th><th>Year</th>
+			<th>Size</th><th>Format</th><th>Audios</th><th>Subs</th>
+			<th>Location</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for key, image, count, value in info%}
+	    <tr>
+			<td class='ic_link' rowspan='{{count}}'>
+				<a href='http://www.imdb.com{{key.2}}'>
+					<img src='{{image|default:"/static/noposter.jpg"}}' class='ic_tooltip_img'>
+				</a>
+			</td>
+			<td class='ic_title' rowspan='{{count}}'>{{key.0}}</td>
+			<td class='ic_year' rowspan='{{count}}'>{{key.1}}</td>
+			{% for movie, locations, lcount in value %}
+				{% if not forloop.first %}
+					</tr><tr>
+				{%endif%}
+				<td class='ic_size' rowspan='{{lcount}}'>{{movie.size}} Gb</td>
+				<td class='ic_format' rowspan='{{lcount}}'>{{movie.format}}</td>
+				<td class='ic_audios' rowspan='{{lcount}}'>{{movie.audios}}</td>
+				<td class='ic_subs' rowspan='{{lcount}}'>{{movie.subs}}</td>
+				{%for location in locations%}
+					{% if not forloop.first %}
+						</tr><tr>
+					{%endif%}
+					<td class='ic_location'>
+						<span class='ic_tooltip' data-title='{{location.1}}'>
+						{{location.0.name}}
+						</span>
+					</td>
+				{%endfor%}			
+			{%endfor%}			
+		</tr>
+	    {% endfor %}
+	</tbody>
+</table>
+
 
 {% endblock %}
 

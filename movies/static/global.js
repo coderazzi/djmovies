@@ -37,5 +37,11 @@ Messenger.options = {
 $(function() {
 	if ($('#locations').length) setupLocations();
 	if ($('#locations_sync').length) setupLocationsSync();
+	if ($('#movies_control').length) {
+		$('.ic_tooltip').tooltip();
+		$('.ic_tooltip_img').tooltip({html: true, placement:'right', title:function(){
+			return '<img src="'+$(this).attr('src')+'">';
+		}});
+	}
 	iconWhiteCheck();
 })

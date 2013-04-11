@@ -172,3 +172,27 @@ caption {
   font-family: "Courier New", Courier, monospace;
   font-size: 12px;
   font-weight: bold; }
+
+#movies_control {
+  width: 75%;
+  margin: 20px auto;
+  word-wrap: break-word; }
+
+#movies_control img.ic_tooltip_img {
+  width: 30px; }
+
+#movies_control .ic_title {
+  max-width: 150px; }
+
+#movies_control td {
+  vertical-align: top; }
+
+#movies_control .ic_audios {
+  max-width: 90px; }
+
+#movies_control .ic_subs {
+  max-width: 90px;
+  overflow-x: hidden; }
+
+#movies_control .ic_tooltip {
+  cursor: pointer; }

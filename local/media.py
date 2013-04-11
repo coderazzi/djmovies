@@ -243,8 +243,9 @@ def mediainfo(path, folder):
                 ret = mediainfo(os.path.basename(mpath), os.path.dirname(mpath))
                 if ret:
                     if ret.format=='BlueRay':
-                        extension='-Iso'
-                    ret.format = extension
+                        ret.format+=' '+extension
+                    else:
+                        ret.format = extension
                 return ret
             finally:
                 umount(mpath)
