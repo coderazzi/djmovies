@@ -8,6 +8,7 @@ from xml.parsers.expat import ExpatError
 from tempfile import mkstemp
 
 from dstruct import Struct
+from locations import LocationHandler
 
 _py3 = sys.version_info >= (3,)
 
@@ -150,7 +151,7 @@ def runProcess(exe):
       if(retcode is not None):
         break
 
-def mediainfo(path, folder=''):
+def mediainfo(path, folder):
     def mount(isoFile):   
         disk, path, first=None, None, True
         for line in runProcess(['hdiutil', 'mount', isoFile]):
@@ -223,12 +224,39 @@ def mediainfo(path, folder=''):
         return Struct.nonulls(name=name, size=size, duration=duration, width=width, height=height, 
             audios='/'.join(audios), texts='/'.join(texts))
 
+
     def process(path, folder):
-        if folder:
-            path=os.path.join(folder, path)
-        if os.path.isdir(path):
+        path=os.path.join(folder, path)
+        extension=os.path.splitext(path)[-1].lower()
+        if extension:
+            extension=extension[1:].title()
+        type = LocationHandler(folder).getType(path)
+        if type in [LocationHandler.VIDEO_FILE, LocationHandler.VIDEO_FILE_ALONE_IN_DIR]:
+            ret= invoke_mi([path])
+            ret.format=extension
+            return ret
+        if type==LocationHandler.IMAGE_FILE:
+            mpath=mount(path)
+            if not mpath:
+                raise Exception("Could not mount:"+path)
+            try:
+                ret = mediainfo(os.path.basename(mpath), os.path.dirname(mpath))
+                if ret:
+                    if ret.format=='BlueRay':
+                        extension='-Iso'
+                    ret.format = extension
+                return ret
+            finally:
+                umount(mpath)
+        if type in [LocationHandler.DVD_FOLDER, LocationHandler.DVD_FOLDER_DIRECT, LocationHandler.BLUE_RAY_FOLDER]:
             dirs, files = get_subs(path)
-            if 'VIDEO_TS' in dirs:
+            if type==LocationHandler.BLUE_RAY_FOLDER:
+                files=[f for f in files if f.lower().endswith('.m2ts')]
+                if files:
+                    mi = invoke_mi(files)
+                    mi.format='BlueRay'
+                    return mi
+            else:
                 mi = invoke_mi([path])
                 mi.format='DVD'
                 size=0
@@ -236,46 +264,12 @@ def mediainfo(path, folder=''):
                     size+=os.path.getsize(each)
                 mi.size=retSize(size)
                 return mi
-            if not 'BDMV' in dirs:
-                raise Exception("Invalid path:"+path)
-            files=[f for f in files if f.lower().endswith('.m2ts')]
-            if not files:
-                raise Exception("Invalid [empty?] path:"+path)
-            mi = invoke_mi(files)
-            mi.format='BlueRay'
-            return mi
-        else:
-            extension=os.path.splitext(path)[-1].lower()
-            if extension:
-                extension=extension[1:].title()
-            if extension in ['Iso', 'Img']:
-                mpath=mount(path)
-                if not mpath:
-                    raise Exception("Could not mount:"+path)
-                try:
-                    ret = mediainfo(mpath)                
-                    if ret.format=='BlueRay':
-                        extension+='x'
-                    ret.format = extension
-                    return ret
-                finally:
-                    umount(mpath)
-            elif extension in ['Jpg', 'Png', 'Gif', 'Srt', 'Sub', 'Idx', 'Txt']:
-                return None
-            elif extension in ['Avi', 'Mkv', 'Mp4', 'Divx', 'Vob', 'M2Ts', 'Wmv', 'Ts']:
-                ret= invoke_mi([path])
-                ret.format=extension
-                return ret
-            else:
-                raise Exception("'"+extension+"' is not a valid extension")
-
+        return None
 
     ret=process(path, folder)
     if ret and not ret.name:
         ret.name = getTitleFromFilename(path)
     return ret
-
-
 
 
 

@@ -145,7 +145,7 @@ class LocationHandler:
                             if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
                                 other_files+=ok_files+video_files.keys()
                             else:
-                                ret.append((full, False, LocationHandler.DVD_FOLDER_DIRECT))
+                                ret.append((filename, False, LocationHandler.DVD_FOLDER_DIRECT))
                                 other_files.extend(ok_files)
                     else:
                         other_files.extend(ok_files)
@@ -156,38 +156,45 @@ class LocationHandler:
         return ret
 
 
-    def DEPR_iterateAllFilesInPath(self):
-        stack=[self.folderBase]
-        while stack:
-            current = stack.pop()
-            if os.path.isdir(current):
-                try:
-                    subs = os.listdir(current)
-                except OSError:
-                    yield current, False
-                    continue
-                if not 'VIDEO_TS' in subs and not 'BDMV' in subs:
-                    stack.extend([os.path.join(current, each) for each in subs if each not in ['.Trashes', '.DS_Store', '.fseventsd']]) 
-                    continue
-            yield self.getRelativeName(current), True
-
     def normalizeFilename(self, path, imdbInfo):
-        def _normalizeFilename(filename, title, year):
-            if not title: return filename
-            year = (year and ('__'+year)) or ''
-            basename=re.sub('[^a-z0-9]+', '_', title.lower()).title()
-            return os.path.join(os.path.dirname(filename), basename+year+os.path.splitext(filename)[-1].lower())
-        fullpath = os.path.join(self.folderBase, path)
-        newName = _normalizeFilename(fullpath, imdbInfo.title, imdbInfo.year)
-        if newName != fullpath:
-            os.rename(fullpath, newName)
-        return self.getRelativeName(newName)
+        
+        title, year = imdbInfo.title, imdbInfo.year
+        if not title:
+            return path
+
+        newname=re.sub('[^a-z0-9]+', '_', title.lower()).title() + ((year and ('__'+year)) or '')
+        oldDirName=None
+
+        dirname, basename=os.path.dirname(path), os.path.basename(path)
+        if dirname and dirname!=newname:
+            #we rename it
+            oldDirName = os.path.join(self.folderBase, dirname)
+            newDirName = os.path.join(self.folderBase, newname)
+            os.rename(oldDirName, newDirName)
+            dirname=newname
+        newname+=os.path.splitext(basename)[-1].lower()
+        if newname!=basename:
+            oldPath = os.path.join(self.folderBase, dirname, basename)
+            newPath = os.path.join(self.folderBase, dirname, newname)
+            basename = newname
+            try:
+                #if this fails, we will rename the directory back
+                os.rename(oldPath, newPath)
+            except:
+                if oldDirName:
+                    os.rename(newDirName, oldDirName)
+                raise
+        return os.path.join(dirname, basename)
 
     def reverseNormalization(self, path, normalizedName):
-        fullpath = os.path.join(self.folderBase, path)
-        fullNormalizedPath = os.path.join(self.folderBase, normalizedName)
-        if fullNormalizedPath!=fullPath:
-            os.rename(fullNormalizedPath, fullpath)
+        oldDirname, normDirname = os.path.dirname(path), os.path.dirname(normalizedName)
+        oldName, normName = os.path.basename(path), os.path.basename(normalizedName)
+
+        if oldDirname!=normDirname:
+            os.rename(os.path.join(self.folderBase, normDirname), os.path.join(self.folderBase, oldDirname))
+
+        if oldName!=normName:
+            os.rename(os.path.join(self.folderBase, oldDirname, normName), os.path.join(self.folderBase, oldDirname, oldName))
 
     def getRelativeName(self, path):
         ret = path[len(self.folderBase):]
@@ -198,7 +205,16 @@ class LocationHandler:
 
 
 
-if __name__ == '__main__':
-    for each in LocationHandler('/tmp').newIterateAllFilesInPath():
-        print each
+# if __name__ == '__main__':
+#     from dstruct import Struct
+#     import time
+#     lc = LocationHandler('/tmp')
+#     name='kk/kk.mkv'
+#     newname=lc.normalizeFilename(name, Struct(year='1992', title='EL pajaro'))
+#     print newname
+#     time.sleep(5)
+#     lc.reverseNormalization(name, newname)
+#     print 'Done'
+
+
 
