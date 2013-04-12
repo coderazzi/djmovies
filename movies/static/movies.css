@@ -182,7 +182,8 @@ caption {
   width: 30px; }
 
 #movies_control .ic_title {
-  max-width: 150px; }
+  max-width: 150px;
+  font-weight: bold; }
 
 #movies_control td {
   vertical-align: top; }
