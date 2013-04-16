@@ -11,7 +11,7 @@ from movies.models import *
 
 
 def index(request):        
-    movies=Movie.objects.all()
+    movies=Movie.objects.order_by('title')
     for movie in movies:
         images=movie.image_set.filter(size=Image.SIZE_BASIC)[:1]
         if images:
@@ -20,4 +20,4 @@ def index(request):
     context = Context({
         'movies': movies,
     })
-    return render_to_response('movies_control.html', context)
+    return render_to_response('movies.html', context)

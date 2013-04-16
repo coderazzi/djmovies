@@ -24,6 +24,7 @@ def searchImdb(movieTitle):
                 if ref:
                     href=ref.get('href')
                     if href and title_search.match(href):
+                        href=urlparse.urlparse(href).path #we remove any parameters information. So far, is useless
                         title = _unescape(ref.text)
                         if title:
                             ret.append((href,title, _unescape(ref.nextSibling)))

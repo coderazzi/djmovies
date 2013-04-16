@@ -25,7 +25,7 @@
 					</tr><tr>
 				{%endif%}
 				<td class='ic_size' rowspan='{{lcount}}'>{{movie.size}} Gb</td>
-				<td class='ic_format' rowspan='{{lcount}}'>{{movie.format}}</td>
+				<td class='ic_format' rowspan='{{lcount}}'>{{movie.format}}:{{movie.width}}x{{movie.height}}</td>
 				<td class='ic_audios' rowspan='{{lcount}}'>{{movie.audios}}</td>
 				<td class='ic_subs' rowspan='{{lcount}}'>{{movie.subs}}</td>
 				{%for location in locations%}
