@@ -6,6 +6,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     url(r'^$', 'movies.common_views.index', name='#index'),
+    url(r'^test$', 'movies.common_views.test', name='#test'),
     # url(r'^djmovies/', include('djmovies.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -15,6 +16,8 @@ urlpatterns = patterns('',
     #url(r'^admin/', include(admin.site.urls)),
 
     url(r'^movies$', 'movies.views.movies_control.index', name='#movies'),
+    url(r'^subtitle_dialog$', 'movies.views.movies_control.subtitle_dialog', name='#movies_control_subtitle_dialog'),
+
 
     url(r'^locations$', 'movies.views.locations.index', name='#locations'),
     url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),

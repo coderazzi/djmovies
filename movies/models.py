@@ -15,6 +15,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from movies.images_manager import ImagesManager
 
 class Movie(models.Model):
+    class Meta:
+        db_table = 'movies'
+
     id = models.AutoField(primary_key=True)
     title = models.TextField(max_length=64)
     format = models.TextField(blank=True)
@@ -28,10 +31,30 @@ class Movie(models.Model):
     trailer_link = models.TextField(blank=True)
     genres = models.TextField(blank=True)
     actors = models.TextField(blank=True)
-    audios = models.TextField(blank=True)
-    subs = models.TextField(blank=True)
-    class Meta:
-        db_table = 'movies'
+    in_audios = models.TextField(blank=True)
+    in_subs = models.TextField(blank=True)
+    out_subs = models.TextField(blank=True)
+
+    @property
+    def subs(self):
+        return self._languages(self.in_subs, self.out_subs)
+
+    @property
+    def audios(self):
+        return self._languages(self.in_audios)
+
+    def _languages(self, a, b=None):
+        if b:
+            use = (a and (a+'/'+b)) or b
+        elif a:
+            use = a
+        else:
+            use= []
+        ret=[]
+        for each in ['English', 'Spanish', 'German', 'French']:
+            if each in use:
+                ret.append(each)
+        return (ret and (' / '.join(ret))) or ''
 
     def __unicode__(self):
         return "%s [%d]" % (self.title, self.id)
@@ -41,7 +64,7 @@ class Location(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.TextField(blank=True)
     description = models.TextField(blank=True)
-    movies = models.ManyToManyField(Movie, through='MovieLocation')
+    movies = models.ManyToManyField(Movie, through='MoviePath')
     class Meta:
         db_table = 'locations'
 
@@ -49,12 +72,21 @@ class Location(models.Model):
         return "%s [%d]" % (self.name, self.id)
 
 
-class MovieLocation(models.Model):
+class MoviePath(models.Model):
     movie = models.ForeignKey(Movie)
     location = models.ForeignKey(Location)
     path = models.TextField()
     class Meta:
-        db_table = 'mmap'
+        db_table = 'paths'
+
+
+class Subtitles(models.Model):
+    movie = models.ForeignKey(Movie)
+    location = models.ForeignKey(Location)
+    language = models.TextField()
+    filename = models.TextField()
+    class Meta:
+        db_table = 'subtitles'
 
 
 class Image(models.Model):

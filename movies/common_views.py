@@ -21,3 +21,6 @@ def index(request):
         'movies': movies,
     })
     return render_to_response('movies.html', context)
+
+def test(request):
+	return render_to_response('test.html', Context())

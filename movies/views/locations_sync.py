@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
-from movies.models import Location, MovieLocation, Movie, Image
+from movies.models import Location, MoviePath, Movie, Image
 
 from local.locations import LocationHandler
 from local.dstruct import Struct
@@ -18,7 +18,7 @@ def index(request):
 
     movies= {}
     location = Location.objects.get(id=locationId)
-    for each in MovieLocation.objects.filter(location=location):
+    for each in MoviePath.objects.filter(location=location):
         movies[each.path]=[each.movie.title, False, True] #title, in fs, in db
 
     problems=[]
@@ -26,7 +26,7 @@ def index(request):
         if error:
             problems.append((0, path))
         else:
-            if type==LocationHandler.ADDITIONAL_FILE_IN_DIR:
+            if type==LocationHandler.SUBTITLE_FILE_IN_DIR:
                 problems.append((2, path))
             elif type in [LocationHandler.UNVISITED_FOLDER, LocationHandler.UNHANDLED_FILE]:
                 problems.append((1, path))
@@ -79,15 +79,15 @@ def update(request):
                                     trailer_link=imdbinfo.trailer,
                                     genres=imdbinfo.genres,
                                     actors=imdbinfo.actors,
-                                    audios=mediainfo.audios,
-                                    subs=mediainfo.texts)
+                                    in_audios=mediainfo.audios,
+                                    in_subs=mediainfo.texts)
         try:            
             if imdbinfo.imageLink:
                 movie.image_set.create(url=imdbinfo.imageLink, size=Image.SIZE_BASIC)
             if imdbinfo.bigImageLink:
                 movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
             try:
-                MovieLocation.objects.create(movie=movie, location_id=locationId, path=path)
+                MoviePath.objects.create(movie=movie, location_id=locationId, path=path)
             except IntegrityError:
                 raise Exception('Movie (path) already exists on this location: repeated?')
         except:

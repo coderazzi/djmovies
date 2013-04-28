@@ -5,7 +5,7 @@ class LocationHandler:
 
     VIDEO_FILE='VIDEO_FILE'
     VIDEO_FILE_ALONE_IN_DIR='VIDEO_FILE_ALONE_IN_DIR'
-    ADDITIONAL_FILE_IN_DIR='ADDITIONAL_FILE_IN_DIR'
+    SUBTITLE_FILE_IN_DIR='SUBTITLE_FILE_IN_DIR'
     IMAGE_FILE='IMAGE_FILE'
     DVD_FOLDER='DVD_FOLDER'
     DVD_FOLDER_DIRECT='DVD_FOLDER_DIRECT'
@@ -15,7 +15,7 @@ class LocationHandler:
 
     VIDEO_EXTENSIONS=['avi', 'mkv', 'mp4', 'divx', 'vob', 'm2ts', 'wmv', 'ts']
     EXT_VIDEO_EXTENSIONS=VIDEO_EXTENSIONS+['ifo', 'bup']
-    OK_EXTENSIONS=['srt', 'sub', 'idx']
+    SUBTITLE_EXTENSIONS=['srt', 'sub', 'idx']
 
     def __init__(self, folderBase):
         self.folderBase=folderBase
@@ -26,7 +26,7 @@ class LocationHandler:
     def getType(self, filename):
         '''
         Returns the type of a file PROPERLY handled in a previous iteration, that is, not belonging
-        to ADDITIONAL_FILE_IN_DIR / UNVISITED_FOLDER / UNHANDLED_FILE
+        to UNVISITED_FOLDER / UNHANDLED_FILE
         '''
         fullname = os.path.join(self.folderBase, filename)
         if os.path.isdir(fullname):
@@ -62,7 +62,7 @@ class LocationHandler:
             A-VIDEO_FILE: a file with a proper video extension, not contained in any folder
             B-VIDEO_FILE_ALONE_IN_DIR: like A, but found in a top level folder (that is, not in folder
                 inside a folder). This folder cannot contain any subdirectory or other VIDEO files.
-            C-ADDITIONAL_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR file,
+            C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR file,
                 and with a valid extension (srt, sub, idx)
             D-IMAGE_FILE: a ISO or IMG file, on top folder
             E-DVD_FOLDER: a top folder that contains, optionally, a AUDIO_TS folder, and, definitely,
@@ -117,7 +117,7 @@ class LocationHandler:
                             if extension in LocationHandler.EXT_VIDEO_EXTENSIONS:
                                 video_files[fullname]=extension
                                 continue
-                            if extension in LocationHandler.OK_EXTENSIONS:
+                            if extension in LocationHandler.SUBTITLE_EXTENSIONS:
                                 ok_files.append(fullname)
                                 continue
                         other_files.append(fullname)
@@ -140,7 +140,7 @@ class LocationHandler:
                         if len(video_files)==1:
                             ret.append((video_files.popitem()[0], False, LocationHandler.VIDEO_FILE_ALONE_IN_DIR))
                             for each in ok_files:
-                                ret.append((each, False, LocationHandler.ADDITIONAL_FILE_IN_DIR))
+                                ret.append((each, False, LocationHandler.SUBTITLE_FILE_IN_DIR))
                         else:
                             if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
                                 other_files+=ok_files+video_files.keys()
