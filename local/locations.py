@@ -7,6 +7,7 @@ class LocationHandler:
     VIDEO_FILE_ALONE_IN_DIR='VIDEO_FILE_ALONE_IN_DIR'
     SUBTITLE_FILE_IN_DIR='SUBTITLE_FILE_IN_DIR'
     IMAGE_FILE='IMAGE_FILE'
+    IMAGE_FILE_ALONE_IN_DIR='IMAGE_FILE_ALONE_IN_DIR'
     DVD_FOLDER='DVD_FOLDER'
     DVD_FOLDER_DIRECT='DVD_FOLDER_DIRECT'
     BLUE_RAY_FOLDER='BLUE_RAY_FOLDER'
@@ -14,7 +15,8 @@ class LocationHandler:
     UNHANDLED_FILE='UNHANDLED_FILE'
 
     VIDEO_EXTENSIONS=['avi', 'mkv', 'mp4', 'divx', 'vob', 'm2ts', 'wmv', 'ts']
-    EXT_VIDEO_EXTENSIONS=VIDEO_EXTENSIONS+['ifo', 'bup']
+    IMAGE_EXTENSIONS=['iso', 'img']
+    EXT_VIDEO_EXTENSIONS=VIDEO_EXTENSIONS+IMAGE_EXTENSIONS+['ifo', 'bup']
     SUBTITLE_EXTENSIONS=['srt', 'sub', 'idx']
 
     def __init__(self, folderBase):
@@ -39,7 +41,9 @@ class LocationHandler:
         extension=os.path.splitext(filename)[-1].lower()
         if extension:
             extension = extension[1:].lower() 
-            if extension in ['iso', 'img']:
+            if extension in LocationHandler.IMAGE_EXTENSIONS:
+                if os.path.dirname(filename):
+                    return LocationHandler.IMAGE_FILE_ALONE_IN_DIR        
                 return LocationHandler.IMAGE_FILE
             if extension in LocationHandler.VIDEO_EXTENSIONS:
                 if os.path.dirname(filename):
@@ -62,9 +66,10 @@ class LocationHandler:
             A-VIDEO_FILE: a file with a proper video extension, not contained in any folder
             B-VIDEO_FILE_ALONE_IN_DIR: like A, but found in a top level folder (that is, not in folder
                 inside a folder). This folder cannot contain any subdirectory or other VIDEO files.
-            C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR file,
-                and with a valid extension (srt, sub, idx)
-            D-IMAGE_FILE: a ISO or IMG file, on top folder
+C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR file,
+    and with a valid extension (srt, sub, idx)
+            C-IMAGE_FILE: a ISO or IMG file, on top folder
+            D-IMAGE_FILE_ALONE_IN_DIR: a ISO or IMG file, alone in top subfolder
             E-DVD_FOLDER: a top folder that contains, optionally, a AUDIO_TS folder, and, definitely,
                 a VIDEO_TS folder, containing BUP & IFO & VOB files. Any additional files or folder is
                 reported separately
@@ -72,6 +77,7 @@ class LocationHandler:
             G-BLUE_RAY_FOLDER: a top folder containing a BDMV folder
             H-UNVISITED_FOLDER: any folder not treated above (or error)
             I-UNHANDLED_FILE: any file not treated above (or error)
+        4- IN CASE OF 
         '''
         files=None
         try: 
@@ -91,7 +97,7 @@ class LocationHandler:
                     type=LocationHandler.UNHANDLED_FILE
                     if extension:
                         extension=extension[1:].lower()
-                        if extension in ['iso', 'img']:
+                        if extension in LocationHandler.IMAGE_EXTENSIONS:
                             type=LocationHandler.IMAGE_FILE
                         elif extension in LocationHandler.VIDEO_EXTENSIONS:
                             type=LocationHandler.VIDEO_FILE
@@ -138,9 +144,18 @@ class LocationHandler:
                             ret.append((each, False, LocationHandler.UNVISITED_FOLDER))
                     if video_files:
                         if len(video_files)==1:
-                            ret.append((video_files.popitem()[0], False, LocationHandler.VIDEO_FILE_ALONE_IN_DIR))
-                            for each in ok_files:
-                                ret.append((each, False, LocationHandler.SUBTITLE_FILE_IN_DIR))
+                            unique, extension = video_files.popitem()
+                            if extension in LocationHandler.IMAGE_EXTENSIONS:
+                                assoc = LocationHandler.IMAGE_FILE_ALONE_IN_DIR
+                            elif extension in LocationHandler.VIDEO_EXTENSIONS:
+                                assoc=LocationHandler.VIDEO_FILE_ALONE_IN_DIR
+                            else:
+                                assoc=None
+                                other_files.append(unique)
+                            if assoc:
+                                ret.append((unique, False, assoc))
+                                for each in ok_files:
+                                    ret.append((each, False, LocationHandler.SUBTITLE_FILE_IN_DIR))
                         else:
                             if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
                                 other_files+=ok_files+video_files.keys()

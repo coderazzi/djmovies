@@ -13,34 +13,43 @@ from local.locations import LocationHandler
 
 class LocationTest(TestCase):
 
-    # def test_video_file(self):
-    #     self._test_basic_file('ok.avi', LocationHandler.VIDEO_FILE)
+    def test_iso_file(self):
+        self._test_basic_file('ok.iso', LocationHandler.IMAGE_FILE)
 
-    # def test_non_video_file(self):
-    #     self._test_basic_file('ok.srt', LocationHandler.UNHANDLED_FILE)
+    def test_video_file(self):
+        self._test_basic_file('ok.avi', LocationHandler.VIDEO_FILE)
 
-    # def test_iso_file(self):
-    #     self._test_basic_file('ok.iso', LocationHandler.IMAGE_FILE)
+    def test_non_video_file(self):
+        self._test_basic_file('ok.srt', LocationHandler.UNHANDLED_FILE)
 
-    # def test_video_files(self):
-    #     basename, basename2='ok.avi', 'mok.mkv'
-    #     folder = tempfile.mkdtemp()
-    #     self._create_file(folder, basename)
-    #     self._create_file(folder, basename2)
-    #     results=LocationHandler(folder).iterateAllFilesInPath()
-    #     results.sort()
-    #     expected=[(basename, False, LocationHandler.VIDEO_FILE), (basename2, False, LocationHandler.VIDEO_FILE)]
-    #     expected.sort()
-    #     self.assertEqual(results, expected)
+    def test_video_files(self):
+        basename, basename2='ok.avi', 'mok.mkv'
+        folder = tempfile.mkdtemp()
+        self._create_file(folder, basename)
+        self._create_file(folder, basename2)
+        results=LocationHandler(folder).iterateAllFilesInPath()
+        results.sort()
+        expected=[(basename, False, LocationHandler.VIDEO_FILE), (basename2, False, LocationHandler.VIDEO_FILE)]
+        expected.sort()
+        self.assertEqual(results, expected)
 
-    # def test_video_in_subdir(self):
-    #     self._mtest_in_folder(('ok.mkv', LocationHandler.UNHANDLED_FILE),
-    #         ('nok.mkv', LocationHandler.UNHANDLED_FILE),
-    #         ('ok.srt', LocationHandler.UNHANDLED_FILE), ('ok.gif', LocationHandler.UNHANDLED_FILE))
+    def test_image_in_subdir(self):
+        self._mtest_in_folder(('ok.iso', LocationHandler.IMAGE_FILE_ALONE_IN_DIR))
 
-    # def test_video_in_subdir(self):
-    #     self._mtest_in_folder(('ok.mkv', LocationHandler.VIDEO_FILE_ALONE_IN_DIR),
-    #         ('ok.srt', LocationHandler.SUBTITLE_FILE_IN_DIR), ('ok.gif', LocationHandler.UNHANDLED_FILE))
+    def test_images_in_subdir(self):
+        self._mtest_in_folder(('ok.iso', LocationHandler.UNHANDLED_FILE), ('nok.iso', LocationHandler.UNHANDLED_FILE))
+
+    def test_image_subtitles_in_subdir(self):
+        self._mtest_in_folder(('ok.iso', LocationHandler.IMAGE_FILE_ALONE_IN_DIR), ('nok.sub', LocationHandler.SUBTITLE_FILE_IN_DIR))
+
+    def test_video_in_subdir(self):
+        self._mtest_in_folder(('ok.mkv', LocationHandler.UNHANDLED_FILE),
+            ('nok.mkv', LocationHandler.UNHANDLED_FILE),
+            ('ok.srt', LocationHandler.UNHANDLED_FILE), ('ok.gif', LocationHandler.UNHANDLED_FILE))
+
+    def test_video_in_subdir(self):
+        self._mtest_in_folder(('ok.mkv', LocationHandler.VIDEO_FILE_ALONE_IN_DIR),
+            ('ok.srt', LocationHandler.SUBTITLE_FILE_IN_DIR), ('ok.gif', LocationHandler.UNHANDLED_FILE))
 
     def test_blue_ray(self):
         expected=[]
