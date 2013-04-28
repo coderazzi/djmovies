@@ -34,22 +34,22 @@ class LocationTest(TestCase):
         self.assertEqual(results, expected)
 
     def test_image_in_subdir(self):
-        self._mtest_in_folder(('ok.iso', LocationHandler.IMAGE_FILE_ALONE_IN_DIR))
+        self._mtest_in_folder(('ok.iso', LocationHandler.IMAGE_FILE_ALONE_IN_DIR, []))
 
     def test_images_in_subdir(self):
         self._mtest_in_folder(('ok.iso', LocationHandler.UNHANDLED_FILE), ('nok.iso', LocationHandler.UNHANDLED_FILE))
 
     def test_image_subtitles_in_subdir(self):
-        self._mtest_in_folder(('ok.iso', LocationHandler.IMAGE_FILE_ALONE_IN_DIR), ('nok.sub', LocationHandler.SUBTITLE_FILE_IN_DIR))
+        self._mtest_in_folder(('ok.iso', LocationHandler.IMAGE_FILE_ALONE_IN_DIR, ['nok.sub']), ('nok.sub', None))
 
     def test_video_in_subdir(self):
         self._mtest_in_folder(('ok.mkv', LocationHandler.UNHANDLED_FILE),
             ('nok.mkv', LocationHandler.UNHANDLED_FILE),
             ('ok.srt', LocationHandler.UNHANDLED_FILE), ('ok.gif', LocationHandler.UNHANDLED_FILE))
 
-    def test_video_in_subdir(self):
-        self._mtest_in_folder(('ok.mkv', LocationHandler.VIDEO_FILE_ALONE_IN_DIR),
-            ('ok.srt', LocationHandler.SUBTITLE_FILE_IN_DIR), ('ok.gif', LocationHandler.UNHANDLED_FILE))
+    def test_video_in_subdir_with_subs(self):
+        self._mtest_in_folder(('ok.mkv', LocationHandler.VIDEO_FILE_ALONE_IN_DIR, ['ok.srt']),
+            ('ok.srt', None), ('ok.gif', LocationHandler.UNHANDLED_FILE))
 
     def test_blue_ray(self):
         expected=[]
@@ -90,7 +90,20 @@ class LocationTest(TestCase):
         subfolder=os.path.join(folder,name)
         os.mkdir(subfolder)
         os.mkdir(os.path.join(subfolder,'VIDEO_TS'))
-        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER)])
+        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER, [])])
+        self.assertEqual(loc.getType(name), LocationHandler.DVD_FOLDER)
+
+    def test_dvd_folder_a_subtitles(self):
+        expected=[]
+        folder = tempfile.mkdtemp()
+        loc=LocationHandler(folder)
+        name='subdir'
+        subfolder=os.path.join(folder,name)
+        os.mkdir(subfolder)
+        subtitles='ok.sub'
+        self._create_file(subfolder, subtitles)
+        os.mkdir(os.path.join(subfolder,'VIDEO_TS'))
+        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER, [subtitles])])
         self.assertEqual(loc.getType(name), LocationHandler.DVD_FOLDER)
 
     def test_dvd_folder_b(self):
@@ -102,7 +115,7 @@ class LocationTest(TestCase):
         os.mkdir(subfolder)
         os.mkdir(os.path.join(subfolder,'VIDEO_TS'))
         os.mkdir(os.path.join(subfolder,'AUDIO_TS'))
-        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER)])
+        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER, [])])
         self.assertEqual(loc.getType(name), LocationHandler.DVD_FOLDER)
 
     def test_dvd_folder_c(self):
@@ -116,7 +129,7 @@ class LocationTest(TestCase):
         os.mkdir(os.path.join(subfolder,'AUDIO_TS'))
         dirty=os.path.join(subfolder,'added')
         os.mkdir(dirty)
-        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER),
+        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER, []),
             (loc.getRelativeName(dirty), False, LocationHandler.UNVISITED_FOLDER)])
         self.assertEqual(loc.getType(name), LocationHandler.DVD_FOLDER)
 
@@ -130,7 +143,7 @@ class LocationTest(TestCase):
         os.mkdir(os.path.join(subfolder,'VIDEO_TS'))
         os.mkdir(os.path.join(subfolder,'AUDIO_TS'))
         dirty=self._create_file(subfolder, 'dirty.mkv')
-        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER),
+        self.assertEqual(loc.iterateAllFilesInPath(), [(name, False, LocationHandler.DVD_FOLDER, []),
             (loc.getRelativeName(dirty), False, LocationHandler.UNHANDLED_FILE)])
         self.assertEqual(loc.getType(name), LocationHandler.DVD_FOLDER)
 
@@ -173,9 +186,18 @@ class LocationTest(TestCase):
         loc=LocationHandler(folder)
         folder=os.path.join(folder,'subdir')
         os.mkdir(folder)
-        for name, expectation in names_expectations:
+        for each in names_expectations:
+            if len(each)==2:
+                name, expectation = each
+                plus=None
+            else:
+                name, expectation, plus = each
             rname = loc.getRelativeName(self._create_file(folder, name))
-            expected.append((rname, False, expectation))
+            if expectation:
+                if plus==None:
+                    expected.append((rname, False, expectation))
+                else:
+                    expected.append((rname, False, expectation, plus))
         results=loc.iterateAllFilesInPath()
         results.sort()
         expected.sort()

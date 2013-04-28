@@ -5,7 +5,6 @@ class LocationHandler:
 
     VIDEO_FILE='VIDEO_FILE'
     VIDEO_FILE_ALONE_IN_DIR='VIDEO_FILE_ALONE_IN_DIR'
-    SUBTITLE_FILE_IN_DIR='SUBTITLE_FILE_IN_DIR'
     IMAGE_FILE='IMAGE_FILE'
     IMAGE_FILE_ALONE_IN_DIR='IMAGE_FILE_ALONE_IN_DIR'
     DVD_FOLDER='DVD_FOLDER'
@@ -66,8 +65,6 @@ class LocationHandler:
             A-VIDEO_FILE: a file with a proper video extension, not contained in any folder
             B-VIDEO_FILE_ALONE_IN_DIR: like A, but found in a top level folder (that is, not in folder
                 inside a folder). This folder cannot contain any subdirectory or other VIDEO files.
-C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR file,
-    and with a valid extension (srt, sub, idx)
             C-IMAGE_FILE: a ISO or IMG file, on top folder
             D-IMAGE_FILE_ALONE_IN_DIR: a ISO or IMG file, alone in top subfolder
             E-DVD_FOLDER: a top folder that contains, optionally, a AUDIO_TS folder, and, definitely,
@@ -77,7 +74,8 @@ C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR f
             G-BLUE_RAY_FOLDER: a top folder containing a BDMV folder
             H-UNVISITED_FOLDER: any folder not treated above (or error)
             I-UNHANDLED_FILE: any file not treated above (or error)
-        4- IN CASE OF 
+        4- In case of  VIDEO_FILE_ALONE_IN_DIR or IMAGE_FILE_ALONE_IN_DIR or DVD_FOLDER, a list
+            of subtitle files
         '''
         files=None
         try: 
@@ -129,8 +127,8 @@ C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR f
                         other_files.append(fullname)
                     if subdirs:                        
                         if 'VIDEO_TS' in subdirs:
-                            ret.append((filename, False, LocationHandler.DVD_FOLDER))
-                            other_files+=ok_files+video_files.keys()
+                            other_files+=video_files.keys()
+                            ret.append((filename, False, LocationHandler.DVD_FOLDER, [os.path.basename(each) for each in ok_files]))
                             ok_files=video_files=[]
                             subdirs.pop('VIDEO_TS')
                             try: subdirs.pop('AUDIO_TS')
@@ -153,9 +151,7 @@ C-SUBTITLE_FILE_IN_DIR: a file in the same folder as a VIDEO_FILE_ALONE_IN_DIR f
                                 assoc=None
                                 other_files.append(unique)
                             if assoc:
-                                ret.append((unique, False, assoc))
-                                for each in ok_files:
-                                    ret.append((each, False, LocationHandler.SUBTITLE_FILE_IN_DIR))
+                                ret.append((unique, False, assoc, [os.path.basename(each) for each in ok_files]))
                         else:
                             if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
                                 other_files+=ok_files+video_files.keys()

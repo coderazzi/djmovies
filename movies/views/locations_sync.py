@@ -22,20 +22,18 @@ def index(request):
         movies[each.path]=[each.movie.title, False, True] #title, in fs, in db
 
     problems=[]
-    for path, error, type in LocationHandler(locationPath).iterateAllFilesInPath():
+    for each in LocationHandler(locationPath).iterateAllFilesInPath():
+        path, error, type, subs = each[0], each[1], each[2], (len(each)==3 and []) or each[3]
         if error:
             problems.append((0, path))
+        elif type in [LocationHandler.UNVISITED_FOLDER, LocationHandler.UNHANDLED_FILE]:
+            problems.append((1, path))
         else:
-            if type==LocationHandler.SUBTITLE_FILE_IN_DIR:
-                problems.append((2, path))
-            elif type in [LocationHandler.UNVISITED_FOLDER, LocationHandler.UNHANDLED_FILE]:
-                problems.append((1, path))
+            info = movies.get(path)
+            if info:
+                info[1]=True #in fs, okay
             else:
-                info = movies.get(path)
-                if info:
-                    info[1]=True #in fs, okay
-                else:
-                    movies[path]=['', True, False] #in fs, not in db
+                movies[path]=['', True, False] #in fs, not in db
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):

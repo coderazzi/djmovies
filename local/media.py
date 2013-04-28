@@ -235,7 +235,7 @@ def mediainfo(path, folder):
             ret= invoke_mi([path])
             ret.format=extension
             return ret
-        if type==LocationHandler.IMAGE_FILE:
+        if type in [LocationHandler.IMAGE_FILE, LocationHandler.IMAGE_FILE_ALONE_IN_DIR]:
             mpath=mount(path)
             if not mpath:
                 raise Exception("Could not mount:"+path)
