@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
-from movies.models import Location, MoviePath, Movie, Image
+from movies.models import Location, MoviePath, Movie, Image, Subtitle
 
 from local.locations import LocationHandler
 from local.dstruct import Struct
@@ -16,10 +16,26 @@ def index(request):
     if request.method == 'GET': return redirect('#locations')
     locationId, locationPath = request.POST['location.id'], request.POST['location.path']
 
-    movies= {}
+    movies, subtitles = {}, {}
     location = Location.objects.get(id=locationId)
+    for each in Subtitle.objects.filter(location_id=locationId):
+        subtitles.setdefault(each.movie_id, []).append((each.filename, False, each.language))
+
+    #we access the movies via the MoviePath table
     for each in MoviePath.objects.filter(location=location):
-        movies[each.path]=[each.movie.title, False, True] #title, in fs, in db
+        #each.path is the full path, and each.movie the associated movie
+        movies[each.path]=[each.path, each.movie.title, False, True, subtitles.get(each.movie_id, [])]
+
+    #we will pass to the renderer a list of movies, sorted. Each is an array containing:
+    #1-The path
+    #2-The title
+    #3-True if the movie exists in filesystem
+    #4-True if the movie exists in database
+    #5-Number of subtitles (added later)
+    #6-list of subtitles. 
+        #1- path (in same folder as movie)
+        #2- true if the subtitle path exists in filesystem
+        #3- language (None if not found in database)
 
     problems=[]
     for each in LocationHandler(locationPath).iterateAllFilesInPath():
@@ -31,14 +47,27 @@ def index(request):
         else:
             info = movies.get(path)
             if info:
-                info[1]=True #in fs, okay
+                info[2]=True #in fs, okay
+                for subinfo in info[4]:
+                    try:
+                        subs.remove(info[0])
+                        subinfo[2]=True
+                    except ValueError:
+                        pass
+                for sub in subs:
+                    info[4].append((sub, True, None))
             else:
-                movies[path]=['', True, False] #in fs, not in db
+                movies[path]=[path, '', True, False, [(sub, True, None) for sub in subs]] 
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
-        movie=movies[key]
-        info.append((key, movie[0], movie[1], movie[2]))
+        movie = movies[key]
+        print movie
+        subs = movie[4]
+        movie[4] = max(1, len(subs))
+        subs.sort(unicode.lower)
+        movie.append(subs)
+        info.append(movie)
 
     problems.sort() 
     if problems and problems[0][0]==2:

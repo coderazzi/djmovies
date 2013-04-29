@@ -1,7 +1,12 @@
 <td>
   	{% if not in_db %}
 	    <a class="btn btn-mini btn-warning add_path" href="#">
-	    <i class="icon-plus icon-white"></i></a>
+    	    <i class="icon-plus icon-white"></i>
+        </a>
+    {% elif not in_fs %}
+        <a class="btn btn-mini btn-danger remove_path disabled" href="#">
+            <i class="icon-trash icon-white"></i>
+        </a>
     {% endif %}
 </td>
 <td>
@@ -10,7 +15,5 @@
 </td>
 <td>
   	{% if in_db and not in_fs %}
-	    <a class="btn btn-mini btn-danger remove_path disabled" href="#">
-	    <i class="icon-trash icon-white"></i></a>
     {% endif %}
 </td>

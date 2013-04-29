@@ -80,7 +80,7 @@ class MoviePath(models.Model):
         db_table = 'paths'
 
 
-class Subtitles(models.Model):
+class Subtitle(models.Model):
     movie = models.ForeignKey(Movie)
     location = models.ForeignKey(Location)
     language = models.TextField()
