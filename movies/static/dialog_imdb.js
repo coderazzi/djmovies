@@ -1,4 +1,4 @@
-var ImdbDialog = new function(){
+var DialogImdb = new function(){
 	var $dialog=null, $dialogBody, $form, $wait, $path, $hiddenPath, $error;
 	var $select, $title, $img, $movieInfo;
 	var urlSearchTitle, urlGetImdb;
@@ -22,7 +22,7 @@ var ImdbDialog = new function(){
 			$form=$('form', $dialogBody);
 			$wait=$('.progress', $dialogBody);
 			$path=$('.path', $dialogBody);
-			$error=$('.error', $dialogBody);
+			$error=$('.error_dialog', $dialogBody);
 			$hiddenPath=$('input[name="file.path"]', $dialogBody);
 			$title=$('input[name="movie.title"]', $dialogBody);	
 			$select = $('select[name="movie.imdb"]').change(loadImdbInfoCallback);
