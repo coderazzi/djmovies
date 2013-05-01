@@ -1,0 +1,22 @@
+<tr class='subtitle'>
+    <td>
+        <div class='btn-group'>
+            <a class="btn btn-mini {%if not in_fs or not in_db%}disabled{%endif%} edit_subtitle" href="#">
+                <i class="icon-{%if not in_fs%}white{%else%}pencil{%endif%}"></i>
+            </a>
+            <a class="btn btn-mini {%if in_fs or not in_db%}disabled{%endif%}" href="#">
+                <i class="icon-{%if in_fs%}white{%else%}minus{%endif%}"></i>
+            </a>
+        </div>
+    </td>
+    <td>
+        {{path}}
+    </td>
+    <td>
+        {%if language %}
+            {{language}}
+        {%else%}
+            <div class='missing_language'>?</div>
+        {%endif%}
+    </td>
+</tr>

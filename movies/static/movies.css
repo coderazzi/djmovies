@@ -141,6 +141,10 @@ caption {
 #locations_sync_problems_dialog .path-problem-2 {
   color: #0da; }
 
+#locations_sync .missing_language {
+  background: red;
+  padding: 0px 10px; }
+
 #imdb_dialog .path {
   font-family: "Courier New", Courier, monospace;
   font-size: 11px;

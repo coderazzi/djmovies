@@ -2,6 +2,7 @@
 {% block body %}
 
 	{%include "imdb_dialog.html"%}
+	{%include "locations_subtitle_dialog.html"%}
 
 	<div id='locations_sync_problems_dialog' class="modal hide fade container" tabindex='-1'>
 		<div class="modal-header">
@@ -21,12 +22,15 @@
 	<table id='locations_sync' class='table table-striped no_table-bordered table-hover'>
 		<caption>Movies for {{location}} under {{path}}</caption>
 		<thead>
-			<tr><th>Op</th><th>Path &amp; Title</th><th>Subtitles</th></tr>
+			<tr><th>Op</th><th>Path &amp; Title</th><th colpan='3'>Subtitles</th></tr>
 		</thead>
 		<tbody>
 		    {% for path, title, in_fs, in_db, lensubs, subs in movies %}
 		    <tr>
-				{%include "locations_sync_item.html"%}
+				{%include "locations_sync_movie.html"%}
+				{% for path, in_fs, language in subs %}
+					{%include "locations_sync_subtitle.html"%}
+				{%endfor%}
 			</tr>
 		    {% endfor %}
 		</tbody>

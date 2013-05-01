@@ -1,0 +1,24 @@
+<td rowspan='{{lensubs}}'>
+    <div class='btn-group'>
+        <a class="btn btn-mini {%if in_db %}disabled{%endif%}" href="#">
+            <i class="icon-{%if in_db%}white{%else%}plus{%endif%}"></i>
+        </a>
+        <a class="btn btn-mini {%if not in_db or not in_fs%}disabled{%endif%}" href="#">
+            <i class="icon-{%if not in_db or not in_fs%}white{%else%}pencil{%endif%}"></i>
+        </a>
+        <a class="btn btn-mini {%if in_fs%}disabled{%endif%}" href="#">
+            <i class="icon-{%if in_fs%}white{%else%}minus{%endif%}"></i>
+        </a>
+    </div>
+</td>
+<td rowspan='{{lensubs}}'>
+	<div class='path ok-{{in_db}}'>{{path}}</div>
+	<div class='title ok-{{in_fs}}'>{{title}}</div>
+</td>
+<td colspan='3'>
+    {%if in_fs %}
+    <a class="btn btn-mini add_subtitle disabled" href="#">
+        <i class="icon-plus"></i>
+    </a>
+    {%endif%}
+</td>

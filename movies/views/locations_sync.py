@@ -39,7 +39,7 @@ def index(request):
 
     problems=[]
     for each in LocationHandler(locationPath).iterateAllFilesInPath():
-        path, error, type, subs = each[0], each[1], each[2], (len(each)==3 and []) or each[3]
+        path, error, type, subs = each[0], each[1], each[2], (len(each)==4 and each[3]) or []
         if error:
             problems.append((0, path))
         elif type in [LocationHandler.UNVISITED_FOLDER, LocationHandler.UNHANDLED_FILE]:
@@ -62,12 +62,13 @@ def index(request):
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
         movie = movies[key]
-        print movie
-        subs = movie[4]
-        movie[4] = max(1, len(subs))
+        subs = (movie[2] and movie[4]) or [] #do not include subtitles if not in file system
+        movie[4] = 1 + len(subs)
         subs.sort(unicode.lower)
         movie.append(subs)
         info.append(movie)
+
+    print info
 
     problems.sort() 
     if problems and problems[0][0]==2:
