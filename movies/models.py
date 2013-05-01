@@ -40,6 +40,10 @@ class Movie(models.Model):
         return self._languages(self.in_subs, self.out_subs)
 
     @property
+    def embedded_subs(self):
+        return self._languages(self.in_subs)
+
+    @property
     def audios(self):
         return self._languages(self.in_audios)
 

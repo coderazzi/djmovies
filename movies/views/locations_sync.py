@@ -29,15 +29,16 @@ def index(request):
     #we access the movies via the MoviePath table
     for each in MoviePath.objects.filter(location=location):
         #each.path is the full path, and each.movie the associated movie
-        movies[each.path]=[each.path, each.movie.title, False, each.movie.id, subtitles.get(each.movie_id, [])]
+        movies[each.path]=[each.path, each.movie.title, False, each.movie.id, each.movie.embedded_subs, subtitles.get(each.movie_id, [])]
 
     #we will pass to the renderer a list of movies, sorted. Each is an array containing:
     #1-The path
     #2-The title
     #3-True if the movie if the movie exists in filesystem
     #4-Id of the movie if the movie exists in database, 0 otherwise
-    #5-Number of subtitles (added later)
-    #6-list of subtitles. 
+    #5-Media subtitles (embedded)
+    #6-Number of subtitles (added later)
+    #7-list of subtitles. 
         #1- path (in same folder as movie)
         #2- true if the subtitle path exists in filesystem
         #3- language (None if not found in database)
@@ -52,22 +53,22 @@ def index(request):
             info = movies.get(path)
             if info: #path, title, in_fs, movieId, subtitles
                 info[2]=True #in fs, okay
-                for subinfo in info[4]:
+                for subinfo in info[5]:
                     try:
                         subs.remove(subinfo[0])
                         subinfo[1]=True #in_fs
                     except ValueError:
                         pass
                 for sub in subs:
-                    info[4].append((sub, True, None))
+                    info[5].append((sub, True, None))
             else:
-                movies[path]=[path, '', True, 0, [(sub, True, None) for sub in subs]] 
+                movies[path]=[path, '', True, 0, '', [(sub, True, None) for sub in subs]] 
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
         movie = movies[key]
-        subs = (movie[2] and movie[3] and movie[4]) or [] #do not include subtitles if not in file system or db
-        movie[4] = 1 + len(subs)
+        subs = (movie[2] and movie[3] and movie[5]) or [] #do not include subtitles if not in file system or db
+        movie[5] = 1 + len(subs)
         sorted(subs, key=(lambda x: unicode.lower(x[0])))
         movie.append(subs)
         info.append(movie)
