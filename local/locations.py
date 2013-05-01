@@ -213,6 +213,30 @@ class LocationHandler:
             ret=ret[1:]
         return ret
 
+    def normalizeSubtitle(self, moviePath, subtitleFilename, lang_abbr):
+        '''
+        Normalizes the filename of the subtitle to use the given language.
+        This normalization will define the name as 'movie.language.extension'
+        For example: terminator.en.srt
+        Returns the new filename, or None if there is no renaming
+        '''
+        movieName = os.path.basename(moviePath)
+        newName = os.path.splitext(movieName)[0].lower()
+        subExtension = os.path.splitext(subtitleFilename)[-1].lower()
+        newSubtitle = newName+'.'+lang_abbr+subExtension
+        if subtitleFilename==newSubtitle: return None
+
+        oldName = os.path.join(self.folderBase, os.path.dirname(moviePath), subtitleFilename)
+        newName = os.path.join(self.folderBase, os.path.dirname(moviePath), newSubtitle)
+
+        if os.path.exists(newName): raise Exception('File '+newSubtitle+' already exists')
+        os.rename(oldName, newName)
+        return newSubtitle, [oldName, newName]
+
+    def renormalizeSubtitle(oldName, newName):
+        os.rename(newName, oldName)
+
+
 
 
 

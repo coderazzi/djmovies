@@ -25,8 +25,8 @@
 			<tr><th>Op</th><th>Path &amp; Title</th><th colpan='3'>Subtitles</th></tr>
 		</thead>
 		<tbody>
-		    {% for path, title, in_fs, in_db, lensubs, subs in movies %}
-		    <tr>
+		    {% for path, title, in_fs, db_id, lensubs, subs in movies %}
+		    <tr data-movie-id='{{db_id}}'>
 				{%include "locations_sync_movie.html"%}
 				{% for path, in_fs, language in subs %}
 					{%include "locations_sync_subtitle.html"%}

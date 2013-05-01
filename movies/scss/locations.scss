@@ -25,6 +25,10 @@
 	color: #b00;
 }
 
+#locations_sync .db-False {
+  color: #0b0;
+}
+
 #locations_sync tr.location_updated {
 	color: blue;
 }
@@ -41,7 +45,6 @@
 #locations_sync_problems_dialog .path-problem-0 {
   color: #a00;
 }
-
 
 #locations_sync_problems_dialog .path-problem-1 {
   color: #a70;

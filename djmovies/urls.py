@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
     url(r'^locations_sync_update$', 'movies.views.locations_sync.update', name='#locations_sync_update'),
 
-    url(r'^locations_subtitle$', 'movies.views.imdb_dialog.get_mediainfo', name='#locations_subtitle'),
+    url(r'^locations_sync_subtitle$', 'movies.views.locations_sync.subtitle_dialog', name='#subtitle_dialog'),
 
     url(r'^imdb_get_mediainfo$', 'movies.views.imdb_dialog.get_mediainfo', name='#imdb_get_mediainfo'),
     url(r'^imdb_search_title$', 'movies.views.imdb_dialog.search_title', name='#imdb_search_title'),

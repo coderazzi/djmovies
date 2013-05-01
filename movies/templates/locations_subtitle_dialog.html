@@ -1,26 +1,25 @@
 <div id='locations_subtitle_dialog' class="modal hide fade container" tabindex='-1'>
-	<form action='{%url "#locations_subtitle" %}' method='POST'>{% csrf_token %}
+	<form action='{%url "#subtitle_dialog" %}' method='POST'>{% csrf_token %}
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-			<div class='path'>This is the file to show</div>
+			<div class='path'></div>
 		</div>
 		<div class="modal-body">
 			<input type='hidden' name='location.id' value='{{location.id}}'>
+			<input type='hidden' name='location.path' value='{{path}}'>
 			<input type='hidden' name='movie.id'>
 			<input type='hidden' name='file.path'>
 			<select name='language' class='span6'>
-				<option value="en" selected>English</option>
-				<option value="fr">French</option>
-				<option value="de">German</option>
-				<option value="pt">Portuguese</option>
-				<option value="es">Spanish</option>
+				{%for lang in languages%}
+					<option value='{{lang}}' selected>{{lang}}</option>
+				{%endfor%}
 			</select>
 			<label class='checkbox'>
 				<input type="checkbox" name="normalize" value="normalize" checked>Normalize name
 			</label>
 		</div>
 		<div class="modal-footer">
-			<button type="submit" class="btn">Update</button>
+			<button type="submit" class="btn ajax">Update</button>
 		</div>
 	</form>
 </div>

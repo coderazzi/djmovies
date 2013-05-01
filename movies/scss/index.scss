@@ -16,6 +16,17 @@ caption{
 	margin: 12px;	
 }
 
+.error_dialog{
+	display: none;
+	background: #c00;
+	color: yellow;
+	text-align: center;
+	width: 100%;
+	padding: 6px 0;
+	margin-top: 4px;
+}
+
+@import "buttons";
 @import "menu";
 @import "movies";
 @import "locations";

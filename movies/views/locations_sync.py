@@ -12,6 +12,11 @@ from local.locations import LocationHandler
 from local.dstruct import Struct
 
 
+DEBUGGING=False
+
+LANGUAGES=['English', 'French', 'German', 'Portuguese', 'Spanish']
+LANGUAGE_ABBRVS=['en', 'fr', 'de', 'pt', 'es'] #http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
 def index(request):    
     if request.method == 'GET': return redirect('#locations')
     locationId, locationPath = request.POST['location.id'], request.POST['location.path']
@@ -19,24 +24,23 @@ def index(request):
     movies, subtitles = {}, {}
     location = Location.objects.get(id=locationId)
     for each in Subtitle.objects.filter(location_id=locationId):
-        subtitles.setdefault(each.movie_id, []).append((each.filename, False, each.language))
+        subtitles.setdefault(each.movie_id, []).append([each.filename, False, each.language])
 
     #we access the movies via the MoviePath table
     for each in MoviePath.objects.filter(location=location):
         #each.path is the full path, and each.movie the associated movie
-        movies[each.path]=[each.path, each.movie.title, False, True, subtitles.get(each.movie_id, [])]
+        movies[each.path]=[each.path, each.movie.title, False, each.movie.id, subtitles.get(each.movie_id, [])]
 
     #we will pass to the renderer a list of movies, sorted. Each is an array containing:
     #1-The path
     #2-The title
-    #3-True if the movie exists in filesystem
-    #4-True if the movie exists in database
+    #3-True if the movie if the movie exists in filesystem
+    #4-Id of the movie if the movie exists in database, 0 otherwise
     #5-Number of subtitles (added later)
     #6-list of subtitles. 
         #1- path (in same folder as movie)
         #2- true if the subtitle path exists in filesystem
         #3- language (None if not found in database)
-
     problems=[]
     for each in LocationHandler(locationPath).iterateAllFilesInPath():
         path, error, type, subs = each[0], each[1], each[2], (len(each)==4 and each[3]) or []
@@ -46,29 +50,27 @@ def index(request):
             problems.append((1, path))
         else:
             info = movies.get(path)
-            if info:
+            if info: #path, title, in_fs, movieId, subtitles
                 info[2]=True #in fs, okay
                 for subinfo in info[4]:
                     try:
-                        subs.remove(info[0])
-                        subinfo[2]=True
+                        subs.remove(subinfo[0])
+                        subinfo[1]=True #in_fs
                     except ValueError:
                         pass
                 for sub in subs:
                     info[4].append((sub, True, None))
             else:
-                movies[path]=[path, '', True, False, [(sub, True, None) for sub in subs]] 
+                movies[path]=[path, '', True, 0, [(sub, True, None) for sub in subs]] 
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
         movie = movies[key]
-        subs = (movie[2] and movie[4]) or [] #do not include subtitles if not in file system
+        subs = (movie[2] and movie[3] and movie[4]) or [] #do not include subtitles if not in file system or db
         movie[4] = 1 + len(subs)
-        subs.sort(unicode.lower)
+        sorted(subs, key=(lambda x: unicode.lower(x[0])))
         movie.append(subs)
         info.append(movie)
-
-    print info
 
     problems.sort() 
     if problems and problems[0][0]==2:
@@ -80,6 +82,7 @@ def index(request):
             'path'     : locationPath,
             'movies'   : info, 
             'problems' : problems,
+            'languages': LANGUAGES
         },
         RequestContext(request))
 
@@ -126,11 +129,74 @@ def update(request):
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
                             content_type="application/json")
 
-    return render_to_response('locations_sync_item.html', 
+    return render_to_response('locations_sync_movie.html', 
         {      
             'in_fs'    : True,
-            'in_db'    : True,
+            'db_id'    : movie.id,
             'path'     : path,
             'title'    : imdbinfo.title,
+            'languages': LANGUAGES
+        },
+        RequestContext(request))
+
+
+def subtitle_dialog(request):
+
+    if not request.is_ajax(): return redirect('#locations')
+    error, renormalizeInfo = None, None
+    try:
+        data = request.POST
+        locationId = data['location.id']
+        movieId, subpath, language = data['movie.id'], data['file.path'], data['language']
+        current = Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=subpath)
+
+        try:
+            lang=LANGUAGE_ABBRVS[LANGUAGES.index(language)]
+            try:
+                moviePath=MoviePath.objects.get(location_id=locationId, movie_id=movieId).path
+                try:
+                    if data.get('normalize'):
+                        locationHandler = LocationHandler(data['location.path'])
+                        normalize = locationHandler.normalizeSubtitle(moviePath, subpath, lang)
+                        if normalize: 
+                            subpath, renormalizeInfo = normalize
+                except Exception, ex:
+                    if DEBUGGING: raise
+                    error='Could not normalize subtitle: '+str(ex)
+            except:
+                if DEBUGGING: raise
+                error='Database error: no such movie/location'
+        except:
+            if DEBUGGING: raise
+            error='Invalid language: '+language
+    except:
+        if DEBUGGING: raise
+        error='Invalid request'
+
+    if not error:
+        try:
+            if current:
+                subtitle=current[0]
+                subtitle.filename=subpath
+                subtitle.language=language
+                subtitle.save()
+            else: #add new subtile
+                subtitle = Subtitle.objects.create(location_id=locationId, 
+                    movie_id=movieId, 
+                    language=language,
+                    filename=subpath)
+        except Exception as ex:
+            if DEBUGGING: raise
+            error = 'Server error: '+str(ex)
+
+    if error: 
+        if renormalizeInfo: locationHandler.renormalizeSubtitle(*renormalizeInfo)
+        return HttpResponse(json.dumps({'error': error}), content_type="application/json")
+
+    return render_to_response('locations_sync_subtitle.html', 
+        {      
+            'in_fs'    : True,
+            'language' : language,
+            'path'     : subpath
         },
         RequestContext(request))
