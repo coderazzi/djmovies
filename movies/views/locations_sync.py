@@ -141,7 +141,20 @@ def update(request):
         RequestContext(request))
 
 
-def subtitle_dialog(request):
+
+def remove_subtitle(request):
+    if not request.is_ajax(): return redirect('#locations')
+
+    data = json.loads(request.body)
+    locationId, movieId, path = data['locationId'], data['movieId'], data['path']
+    Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=path).delete()
+
+    return HttpResponse(json.dumps({'success': True}), 
+                        content_type="application/json")
+
+
+
+def edit_subtitle(request):
 
     if not request.is_ajax(): return redirect('#locations')
     error, renormalizeInfo = None, None

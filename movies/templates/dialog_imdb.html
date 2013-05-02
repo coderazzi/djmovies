@@ -1,4 +1,4 @@
-<div id='imdb_dialog' class="modal hide fade container" tabindex='-1'>
+<div id='dialog_imdb' class="modal hide fade container" tabindex='-1'>
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	</div>
@@ -12,14 +12,14 @@
 				<input name='movie.title' type='text' class='span5'>
 				<a href='{%url "#imdb_search_title" %}' 
 					id='imdb_search_title' 
-					class="btn">Search</a>
+					class="btn btn-primary">Search</a>
 			</div>
 
 			<div class='step4 row'>
 				<select name='movie.imdb' class='span5'
 				        data-href='{%url "#imdb_access_url" %}'>
 				</select>
-				<a href='#' id='location-sync-check-title' class="btn">Accept</a>
+				<a href='#' id='location-sync-check-title' class="btn btn-primary">Accept</a>
 			</div>
 
 			<hr class='step6'>

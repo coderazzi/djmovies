@@ -50,43 +50,50 @@ function addProgressToModal($modal){
 }
 
 function setupAjaxModal($modal, settings){
-	//Just adds a progress bar that will be automatically shown instead of the submit progress button
 	var submit = $("button[type='submit']", $modal);
-	if (submit.length) {
-		var $parent = submit.parent();
-		var $progress=$('.progress', $parent);
-		var $error=$('.error_dialog', $parent);
-		var oldErrorHandler = settings && settings.error;
-		var extSettings = settings && $.extend(settings, {error: showError});
-
-		function reset(){
-			submit.show();
-			if ($progress.length) $progress.hide();
-			if ($error.length) $error.hide();
-		}
-
-		function showProgress(){
-			submit.hide();
-			if ($error.length) $error.hide();
-			if (! $progress.length) $progress=$('<div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div>').appendTo($parent);
-			$progress.show();
-		}
-
-		function showError(error){
-			submit.show();
-			if ($progress.length) $progress.hide();
-			if (! $error.length) $error=$('<div class="error_dialog"></div>').appendTo($parent);
-			$error.text(error || 'Error accessing server').show();
-			if (oldErrorHandler) oldErrorHandler(error);
-		}
-		$modal.on('hidden', reset);
-
-		submit.click(function(){
-			showProgress();
-			if (settings==null) return true;
-			ajaxPostForm($('form', $modal), extSettings);
-			return false;
-		});
-		$(window).unload(reset);
+	if (!submit.length) {
+		submit = $(".modal-footer a.btn-primary", $modal);
+		if (!submit.length) return;
 	}
+	var $parent = submit.parent();
+	var $progress=$('.progress', $parent);
+	var $error=$('.error_dialog', $parent);
+	var superSettings={settings: settings, submit:submit};
+
+	function reset(){
+		submit.show();
+		if ($progress.length) $progress.hide();
+		if ($error.length) $error.hide();
+	}
+
+	function showProgress(){
+		submit.hide();
+		if ($error.length) $error.hide();
+		if (! $progress.length) $progress=$('<div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div>').appendTo($parent);
+		$progress.show();
+	}
+
+	function showError(error){
+		submit.show();
+		if ($progress.length) $progress.hide();
+		if (! $error.length) $error=$('<div class="error_dialog"></div>').appendTo($parent);
+		$error.text(error || 'Error accessing server').show();
+	}
+	$modal.on('hidden', reset);
+
+	submit.click(function(){
+		showProgress();
+		var settings = superSettings.settings;
+		if (settings==null) return true;
+		var extSettings = settings && $.extend(settings, {error: showError});
+		var $form = $('form', $modal);
+		if ($form.length){
+			ajaxPostForm($form, extSettings);
+		} else {
+			ajaxPost(extSettings);
+		}
+		return false;
+	});
+	$(window).unload(reset);
+	return superSettings;
 }

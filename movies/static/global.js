@@ -35,8 +35,9 @@ Messenger.options = {
 }
 
 $(function() {
+	var $selector;	
 	if ($('#locations').length) setupLocations();
-	if ($('#locations_sync').length) setupLocationsSync();
+	$selector=$('#locations_sync');if ($selector.length) setupLocationsSync($selector);
 	if ($('#movies_control').length) setupMoviesControl();
 	iconWhiteCheck();
 })

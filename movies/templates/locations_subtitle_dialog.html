@@ -1,5 +1,5 @@
 <div id='locations_subtitle_dialog' class="modal hide fade container" tabindex='-1'>
-	<form action='{%url "#subtitle_dialog" %}' method='POST'>{% csrf_token %}
+	<form action='{%url "#lsync_subtitle_edit" %}' method='POST'>{% csrf_token %}
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			<div class='path'></div>
@@ -19,7 +19,7 @@
 			</label>
 		</div>
 		<div class="modal-footer">
-			<button type="submit" class="btn ajax">Update</button>
+			<button type="submit" class="btn btn-primary">Update</button>
 		</div>
 	</form>
 </div>

@@ -28,7 +28,3 @@ def index(request):
         'info': info,
     })
     return render_to_response('movies_control.html', context)
-
-
-def subtitle_dialog(request):
-    pass

@@ -17,7 +17,7 @@ var DialogImdb = new function(){
 		shownDialogCallback = dialogCallback;
 		shownFilepath = filepath;
 		if (! $dialog) {
-			$dialog=$('#imdb_dialog').on('shown', dialogShownCallback);
+			$dialog=$('#dialog_imdb').on('shown', dialogShownCallback);
 			$dialogBody=$('.modal-body', $dialog);
 			$form=$('form', $dialogBody);
 			$wait=$('.progress', $dialogBody);

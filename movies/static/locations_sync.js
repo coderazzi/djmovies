@@ -1,9 +1,16 @@
-function setupLocationsSync(){
+function setupLocationsSync($locationsSyncSelector){
 
 	var $problemDialog = $('#locations_sync_problems_dialog');
 
 	var $subtitleDialog, $subtitlePathText, $subTitlePathInput, $subtitleLanguage, $subtitleMovie;
 	var $subtitleEditionTr;
+
+	var locationId, urlRemoveSubtitle;
+
+	function setupSubtitleHandlers(){
+		$('.edit_subtitle').off('click').click(editSubtitleCallback);
+		$('.remove_subtitle').off('click').click(removeSubtitleCallback);
+	}
 
 	function addPathCallback(){
 		var $tr=$(this).parent().parent();
@@ -24,10 +31,34 @@ function setupLocationsSync(){
 		return false;
 	}
 
-	function editSubtitleCallback(){
-		//var $this=$(this); //the edit icon associated to the subtitle
+	function removeSubtitleCallback(){
 		$subtitleEditionTr=$(this).parent().parent(); //group, td, tr
-		//we need to find the associated movie if
+		var $mainTr=$subtitleEditionTr, movieId;
+		while (!movieId && ($mainTr=$mainTr.prev()).length){
+			movieId=$mainTr.attr('data-movie-id');
+		}
+
+		var path=$.trim($subtitleEditionTr.find('.path').text())
+
+		DialogConfirm.show('Are you sure to remove from database the subtitle '+path+'?',
+			{
+				url:urlRemoveSubtitle,
+				success: function(response){
+					$subtitleEditionTr.html('');
+					DialogConfirm.hide();
+				},
+				message:'Subtitle database deletion',
+				data:{
+					movieId:movieId,
+					locationId: locationId,
+					path:path
+				}
+			});
+		return false;
+	}
+
+	function editSubtitleCallback(){
+		$subtitleEditionTr=$(this).parent().parent(); //group, td, tr
 		var $mainTr=$subtitleEditionTr, movieId;
 		while (!movieId && ($mainTr=$mainTr.prev()).length){
 			movieId=$mainTr.attr('data-movie-id');
@@ -40,10 +71,11 @@ function setupLocationsSync(){
 			$subtitleMovie = $('input[name="movie.id"]', $subtitleDialog);
 			$subtitlePathInput = $('input[name="file.path"]', $subtitleDialog);
 			setupAjaxModal($subtitleDialog, {
+				message: 'Subtitle update',
 				success: function(response){
 					$subtitleDialog.modal('hide');
 					$subtitleEditionTr.replaceWith(response);
-					$('.edit_subtitle').off('click').click(editSubtitleCallback);
+					setupSubtitleHandlers();
 				}
 			});
 		}
@@ -61,9 +93,13 @@ function setupLocationsSync(){
 		$subtitleLanguage.focus();
 	}
 
+
+	locationId = $locationsSyncSelector.attr('data-location-id');
+	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
+
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
 	}
 	$('.add_path').click(addPathCallback);
-	$('.edit_subtitle').click(editSubtitleCallback);
+	setupSubtitleHandlers();
 }

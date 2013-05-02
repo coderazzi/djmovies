@@ -16,16 +16,16 @@ urlpatterns = patterns('',
     #url(r'^admin/', include(admin.site.urls)),
 
     url(r'^movies$', 'movies.views.movies_control.index', name='#movies'),
-    url(r'^subtitle_dialog$', 'movies.views.movies_control.subtitle_dialog', name='#movies_control_subtitle_dialog'),
 
 
     url(r'^locations$', 'movies.views.locations.index', name='#locations'),
     url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
-    url(r'^locations_sync_update$', 'movies.views.locations_sync.update', name='#locations_sync_update'),
+    url(r'^ax_lsync_update$', 'movies.views.locations_sync.update', name='#locations_sync_update'),
 
-    url(r'^locations_sync_subtitle$', 'movies.views.locations_sync.subtitle_dialog', name='#subtitle_dialog'),
+    url(r'^ax_lsync_subtitle_edit$', 'movies.views.locations_sync.edit_subtitle', name='#lsync_subtitle_edit'),
+    url(r'^ax_lsync_subtitle_remove$', 'movies.views.locations_sync.remove_subtitle', name='#lsync_subtitle_remove'),
 
-    url(r'^imdb_get_mediainfo$', 'movies.views.imdb_dialog.get_mediainfo', name='#imdb_get_mediainfo'),
-    url(r'^imdb_search_title$', 'movies.views.imdb_dialog.search_title', name='#imdb_search_title'),
-    url(r'^imdb_access_url$', 'movies.views.imdb_dialog.access_url', name='#imdb_access_url'),
+    url(r'^ax_imdb_get_mediainfo$', 'movies.views.dialog_imdb.get_mediainfo', name='#imdb_get_mediainfo'),
+    url(r'^ax_imdb_search_title$', 'movies.views.dialog_imdb.search_title', name='#imdb_search_title'),
+    url(r'^ax_imdb_access_url$', 'movies.views.dialog_imdb.access_url', name='#imdb_access_url'),
 )
