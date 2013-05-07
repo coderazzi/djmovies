@@ -89,7 +89,9 @@ class LocationHandler:
             if filename[0]=='.': continue
             full=os.path.join(self.folderBase, filename)
             try:
-                if not os.path.isdir(full):
+                if os.path.isdir(full):
+                    ret.extend(self._iterateAllFilesInSubpath(full))
+                else:
                     #simple case: top path, or file is video_file, or iso/img, or just handled
                     extension=os.path.splitext(full)[-1].lower()
                     type=LocationHandler.UNHANDLED_FILE
@@ -100,70 +102,90 @@ class LocationHandler:
                         elif extension in LocationHandler.VIDEO_EXTENSIONS:
                             type=LocationHandler.VIDEO_FILE
                     ret.append((filename, False, type))
-                else:
-                    #complicated case: a subdir with content, let's classify what is inside
-                    #we do not recurse now to more subdir levels
-                    subdirs, video_files, ok_files, other_files={}, {}, [], []
-                    for each in os.listdir(full):
-                        if each[0]=='.': continue
-                        absname = os.path.join(full, each)
-                        fullname=self.getRelativeName(absname)
-                        try:
-                            if os.path.isdir(absname):
-                                subdirs[each]=fullname
-                                continue
-                        except OSError:
-                            ret.append((fullname, True, LocationHandler.UNHANDLED_FILE))
-                            continue
-                        extension=os.path.splitext(each)[-1].lower()
-                        if extension:
-                            extension=extension[1:].lower()
-                            if extension in LocationHandler.EXT_VIDEO_EXTENSIONS:
-                                video_files[fullname]=extension
-                                continue
-                            if extension in LocationHandler.SUBTITLE_EXTENSIONS:
-                                ok_files.append(fullname)
-                                continue
-                        other_files.append(fullname)
-                    if subdirs:                        
-                        if 'VIDEO_TS' in subdirs:
-                            other_files+=video_files.keys()
-                            ret.append((filename, False, LocationHandler.DVD_FOLDER, [os.path.basename(each) for each in ok_files]))
-                            ok_files=video_files=[]
-                            subdirs.pop('VIDEO_TS')
-                            try: subdirs.pop('AUDIO_TS')
-                            except: pass
-                        elif 'BDMV' in subdirs:
-                            ret.append((filename, False, LocationHandler.BLUE_RAY_FOLDER))
-                            subdirs.pop('BDMV')
-                            other_files+=ok_files+video_files.keys()
-                            ok_files=video_files=[]
-                        for each in subdirs.values():
-                            ret.append((each, False, LocationHandler.UNVISITED_FOLDER))
-                    if video_files:
-                        if len(video_files)==1:
-                            unique, extension = video_files.popitem()
-                            if extension in LocationHandler.IMAGE_EXTENSIONS:
-                                assoc = LocationHandler.IMAGE_FILE_ALONE_IN_DIR
-                            elif extension in LocationHandler.VIDEO_EXTENSIONS:
-                                assoc=LocationHandler.VIDEO_FILE_ALONE_IN_DIR
-                            else:
-                                assoc=None
-                                other_files.append(unique)
-                            if assoc:
-                                ret.append((unique, False, assoc, [os.path.basename(each) for each in ok_files]))
-                        else:
-                            if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
-                                other_files+=ok_files+video_files.keys()
-                            else:
-                                ret.append((filename, False, LocationHandler.DVD_FOLDER_DIRECT))
-                                other_files.extend(ok_files)
-                    else:
-                        other_files.extend(ok_files)
-                    for each in other_files:
-                        ret.append((each, False, LocationHandler.UNHANDLED_FILE))
             except OSError:
                 ret.append((filename, True, LocationHandler.UNHANDLED_FILE)) #even for dirs, it is okay
+        return ret
+
+
+    def getSubtitles(self, moviePath):
+        '''
+        Returns only the subtitles information for the given path
+        '''        
+        try:
+            dirname = os.path.dirname(moviePath)
+            if dirname:
+                fileinfo = self._iterateAllFilesInSubpath(os.path.join(self.folderBase, dirname))
+                if len(fileinfo)==1 and len(fileinfo[0])==4:
+                    return [(sub, True, None) for sub in fileinfo[0][3]]
+        except:
+            pass
+        return []
+
+
+    def _iterateAllFilesInSubpath(self, fullpath):
+        '''
+        Like iterateAllFilesInPath, but restrained to a specific folder (under top directory)
+        Has no full exception handling: can fail if fullpath is not listable
+        '''        
+        ret, subdirs, video_files, ok_files, other_files=[], {}, {}, [], []
+        for each in os.listdir(fullpath):
+            if each[0]=='.': continue
+            absname = os.path.join(fullpath, each)
+            fullname=self.getRelativeName(absname)
+            try:
+                if os.path.isdir(absname):
+                    subdirs[each]=fullname
+                    continue
+            except OSError:
+                ret.append((fullname, True, LocationHandler.UNHANDLED_FILE))
+                continue
+            extension=os.path.splitext(each)[-1].lower()
+            if extension:
+                extension=extension[1:].lower()
+                if extension in LocationHandler.EXT_VIDEO_EXTENSIONS:
+                    video_files[fullname]=extension
+                    continue
+                if extension in LocationHandler.SUBTITLE_EXTENSIONS:
+                    ok_files.append(fullname)
+                    continue
+            other_files.append(fullname)
+        if subdirs:                        
+            if 'VIDEO_TS' in subdirs:
+                other_files+=video_files.keys()
+                ret.append((filename, False, LocationHandler.DVD_FOLDER, [os.path.basename(each) for each in ok_files]))
+                ok_files=video_files=[]
+                subdirs.pop('VIDEO_TS')
+                try: subdirs.pop('AUDIO_TS')
+                except: pass
+            elif 'BDMV' in subdirs:
+                ret.append((filename, False, LocationHandler.BLUE_RAY_FOLDER))
+                subdirs.pop('BDMV')
+                other_files+=ok_files+video_files.keys()
+                ok_files=video_files=[]
+            for each in subdirs.values():
+                ret.append((each, False, LocationHandler.UNVISITED_FOLDER))
+        if video_files:
+            if len(video_files)==1:
+                unique, extension = video_files.popitem()
+                if extension in LocationHandler.IMAGE_EXTENSIONS:
+                    assoc = LocationHandler.IMAGE_FILE_ALONE_IN_DIR
+                elif extension in LocationHandler.VIDEO_EXTENSIONS:
+                    assoc=LocationHandler.VIDEO_FILE_ALONE_IN_DIR
+                else:
+                    assoc=None
+                    other_files.append(unique)
+                if assoc:
+                    ret.append((unique, False, assoc, [os.path.basename(each) for each in ok_files]))
+            else:
+                if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
+                    other_files+=ok_files+video_files.keys()
+                else:
+                    ret.append((filename, False, LocationHandler.DVD_FOLDER_DIRECT))
+                    other_files.extend(ok_files)
+        else:
+            other_files.extend(ok_files)
+        for each in other_files:
+            ret.append((each, False, LocationHandler.UNHANDLED_FILE))
         return ret
 
 
@@ -238,6 +260,9 @@ class LocationHandler:
 
 
 
+# if __name__ == '__main__':
+#     lc = LocationHandler('/Users/coderazzi/development/test')
+#     print lc.getSubtitles('The_Terminator__1984/The_Terminator__1984.mp4')
 
 
 # if __name__ == '__main__':

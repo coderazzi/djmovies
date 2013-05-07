@@ -134,12 +134,16 @@ def add_movie(request):
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
                             content_type="application/json")
 
+    subtitles = locationHandler.getSubtitles(path)
+
     return render_to_response('locations_sync_movie.html', 
         {      
             'in_fs'    : True,
             'db_id'    : movie.id,
             'path'     : path,
             'title'    : imdbinfo.title,
+            'subs'     : subtitles,
+            'lensubs'  : len(subtitles)+1,
             'languages': LANGUAGES
         },
         RequestContext(request))
