@@ -1,4 +1,4 @@
-import htmlentitydefs, os, re, urllib, urllib2, urlparse
+import htmlentitydefs, os, re, urllib, urllib2, urlparse, zipfile
 
 from BeautifulSoup import BeautifulSoup
 
@@ -9,8 +9,26 @@ from dstruct import Struct
 title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
 IMDB_COM='http://www.imdb.com'
+SUBTITLES_COM='http://www.moviesubtitles.org/'
 
 def searchImdb(movieTitle):
+    ret=[]
+    #http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
+    url=IMDB_COM+'/search/title?'+urllib.urlencode({'count': '250', 'title_type':'feature,tv_movie', 'title': movieTitle, 'view':'simple'})
+    with Browser() as browser:
+        page = browser.open(url)
+        soup = BeautifulSoup(page.read())
+        for td in soup.findAll('td', attrs={'class':'title'}):
+            ref=td.find('a')
+            if ref:
+                href=urlparse.urlparse(ref.get('href')).path #we remove any parameters information. So far, is useless
+                title = _unescape(ref.text)
+                if title:
+                    ret.append((href,title, _unescape(ref.nextSibling))) #this is the year
+        return (ret, ret and _getImdbInfo(ret[0][0], browser))
+
+def searchImdbBasic(movieTitle):
+    '''Not used any longer, would return movies in incorrect language'''
     ret=[]
     url=IMDB_COM+'/find?'+urllib.urlencode({'q': movieTitle, 's':'all'})
     with Browser() as browser:
@@ -107,3 +125,42 @@ def _unescape(text):
     if not text: return ''
     return re.sub("&#?\w+;", fixup, text).strip()
 
+
+def getSubtitles(movieTitle, year, language):
+    ret, url, title=[], SUBTITLES_COM, unicode('%s (%s)' % (movieTitle, year))
+    with Browser() as browser:
+        browser.open(url)
+        browser.select_form(nr=0)
+        browser.form['q'] = movieTitle
+        try:
+            browser.submit()
+        except:
+            pass #responds with 500 error, always
+        soup = BeautifulSoup(browser.response().read())
+        for tag in soup.findAll('a', href=True):
+            if title == _unescape(tag.text):
+                page = browser.open(urlparse.urljoin(url, tag['href']))
+                soup = BeautifulSoup(page.read())
+                subrefs=[]
+                for each in soup.findAll('a', attrs={'title':'Download %s subtitles' % language.lower()}):
+                    parts=each.parent.find('td', attrs={'title':'parts'})
+                    if parts and parts.text=='1':
+                        subrefs.append(each['href'])
+                for each in subrefs:
+                    page = browser.open(urlparse.urljoin(url, each))
+                    soup = BeautifulSoup(page.read())
+                    img = soup.find('img', attrs={'title':'Download'})
+                    if img:
+                        ref=img.parent.parent.parent
+                        ref=ref and ref.get('href')
+                        if ref:
+                            f = browser.retrieve(urlparse.urljoin(url, ref))
+                            with zipfile.ZipFile(f[0]) as z:
+                                names = z.namelist()
+                                if len(names)==1:
+                                    ret.append(z.read(names[0]))
+                break
+    return ret
+
+
+#print getSubtitles('American Gangster', '2007', 'Spanish')

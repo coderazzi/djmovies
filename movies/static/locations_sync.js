@@ -100,6 +100,6 @@ function setupLocationsSync($locationsSyncSelector){
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
 	}
-	$('.add_path').click(addPathCallback);
+	$('.add-path').click(addPathCallback);
 	setupSubtitleHandlers();
 }
