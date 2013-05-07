@@ -5,7 +5,7 @@ function setupLocationsSync($locationsSyncSelector){
 	var $subtitleDialog, $subtitlePathText, $subTitlePathInput, $subtitleLanguage, $subtitleMovie;
 	var $subtitleEditionTr;
 
-	var locationId, urlRemoveSubtitle;
+	var locationId, urlRemoveSubtitle, urlUpdateMovie;
 
 	function setupSubtitleHandlers(){
 		$('.edit_subtitle').off('click').click(editSubtitleCallback);
@@ -18,12 +18,22 @@ function setupLocationsSync($locationsSyncSelector){
 		if (path.length){
 			DialogImdb.show(path.text(), function(info){
 				ajaxPost({
-					url: '/locations_sync_update',
+					url: urlUpdateMovie,
 					message: 'Adding movie information',
 					data: info,
 					success: function(response){
-						$tr.addClass('location_updated').html(response);
+						//we remove the existing TR, but also any following TRs
+						//containing no data-movie-id attribute (or subtitle class)
+						//this is so far not needed while adding a movie
+						// var $next=$tr.next();
+						// while ($next.length && $next.hasClass('subtitle')){
+						// 	var $rem = $next;
+						// 	$next = $next.next();
+						// 	$rem.remove();
+						// }
+						$tr.replaceWith(response);
 						$('.add_path', $tr).click(addPathCallback);
+						setupSubtitleHandlers();
 					}
 				});
 			});
@@ -96,6 +106,7 @@ function setupLocationsSync($locationsSyncSelector){
 
 	locationId = $locationsSyncSelector.attr('data-location-id');
 	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
+	urlUpdateMovie = $locationsSyncSelector.attr('data-update-movie-url');
 
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');

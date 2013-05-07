@@ -20,19 +20,18 @@
 	</div>
 
 	
-	<table id='locations_sync' class='table table-striped no_table-bordered table-hover' data-remove-subtitle-url='{%url "#lsync_subtitle_remove" %}' data-location-id='{{location.id}}'>
+	<table id='locations_sync' 
+	       class='table table-striped no_table-bordered table-hover' 
+	       data-remove-subtitle-url='{%url "#lsync_subtitle_remove" %}' 
+	       data-update-movie-url='{%url "#locations_sync_add" %}' 
+	       data-location-id='{{location.id}}'>
 		<caption>Movies for {{location}} under {{path}}</caption>
 		<thead>
 			<tr><th>Op</th><th>Path &amp; Title</th><th colpan='3'>Subtitles</th></tr>
 		</thead>
 		<tbody>
 		    {% for path, title, in_fs, db_id, insubs, lensubs, subs in movies %}
-		    <tr data-movie-id='{{db_id}}'>
 				{%include "locations_sync_movie.html"%}
-				{% for path, in_fs, language in subs %}
-					{%include "locations_sync_subtitle.html"%}
-				{%endfor%}
-			</tr>
 		    {% endfor %}
 		</tbody>
 	</table>

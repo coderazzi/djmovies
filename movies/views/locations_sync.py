@@ -88,7 +88,11 @@ def index(request):
         RequestContext(request))
 
 
-def update(request):
+def add_movie(request):
+    '''
+    adds information for a new movie
+    It returns the new TR element or elements to replace the existing one
+    '''
     if not request.is_ajax(): return redirect('#locations')
 
     data = json.loads(request.body)

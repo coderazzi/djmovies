@@ -1,23 +1,28 @@
-<td rowspan='{{lensubs}}'>
-    {%if db_id %}
-        {%if in_fs %}
-        <a class="btn btn-mini btn-color-yellow" href="#"><i class="icon-pencil"></i>
+<tr data-movie-id='{{db_id}}'>
+    <td rowspan='{{lensubs}}'>
+        {%if db_id %}
+            {%if in_fs %}
+            <a class="btn btn-mini btn-color-yellow" href="#"><i class="icon-pencil"></i>
+            {% else %}
+            <a class="btn btn-mini btn-color-red" href="#"><i class="icon-minus"></i>
+            {% endif %}
         {% else %}
-        <a class="btn btn-mini btn-color-red" href="#"><i class="icon-minus"></i>
+            <a class="btn btn-mini btn-color-green add-path" href="#"><i class="icon-plus"></i>
         {% endif %}
-    {% else %}
-        <a class="btn btn-mini btn-color-green add-path" href="#"><i class="icon-plus"></i>
-    {% endif %}
-</td>
-<td rowspan='{{lensubs}}'>
-	<div class='path {%if not db_id %}db-False{%endif%}'>{{path}}</div>
-	<div class='title ok-{{in_fs}}'>{{title}}</div>
-</td>
-<td colspan='3'>
-    {%if in_fs and db_id%}
-    <a class="btn btn-mini add_subtitle disabled" href="#">
-        <i class="icon-plus"></i>
-    </a>
-    <span class='subtitles'>{{insubs}}</span>
-    {%endif%}
-</td>
+    </td>
+    <td rowspan='{{lensubs}}'>
+    	<div class='path {%if not db_id %}db-False{%endif%}'>{{path}}</div>
+    	<div class='title ok-{{in_fs}}'>{{title}}</div>
+    </td>
+    <td colspan='3'>
+        {%if in_fs and db_id%}
+        <a class="btn btn-mini add_subtitle disabled" href="#">
+            <i class="icon-plus"></i>
+        </a>
+        <span class='subtitles'>{{insubs}}</span>
+        {%endif%}
+    </td>
+</tr>
+{% for path, in_fs, language in subs %}
+    {%include "locations_sync_subtitle.html"%}
+{%endfor%}

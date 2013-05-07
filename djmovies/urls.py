@@ -20,7 +20,8 @@ urlpatterns = patterns('',
 
     url(r'^locations$', 'movies.views.locations.index', name='#locations'),
     url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
-    url(r'^ax_lsync_update$', 'movies.views.locations_sync.update', name='#locations_sync_update'),
+
+    url(r'^ax_lsync_add$', 'movies.views.locations_sync.add_movie', name='#locations_sync_add'),
 
     url(r'^ax_lsync_subtitle_edit$', 'movies.views.locations_sync.edit_subtitle', name='#lsync_subtitle_edit'),
     url(r'^ax_lsync_subtitle_remove$', 'movies.views.locations_sync.remove_subtitle', name='#lsync_subtitle_remove'),
