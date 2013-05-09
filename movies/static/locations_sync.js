@@ -2,13 +2,16 @@ function setupLocationsSync($locationsSyncSelector){
 
 	var $problemDialog = $('#locations_sync_problems_dialog');
 
-	var $subtitleDialog, $subtitleTitleText, $subtitlePathText, $subtitlePathInput;
-	var $subtitleLanguage, $subtitleMovie, $subtitleSubmitButton, $subtitleNormalize;	
-	var $subtitle
-	var $editionTr;
+	var $stDialog, $stTitleText, $stPathText, $stPathInput;
+	var $stLanguage, $stMovie, $stNormalize;	
 
-	var locationId, subtitleDialogSettings;
-	var urlEditSubtitle, urlFetchSubtitle, urlRemoveSubtitle, urlEditMovie, urlRemoveMovie;
+	var $fetchDialog, $fetchTitleText;
+	var $fetchLanguage, $fetchMovie, $fetchSelection;	
+	
+	var $updatingTr;
+
+	var locationId, fetchingMatches;
+	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie;
 
 	function setupEventHandlers(){
 		$('.edit-movie').click(editMovieCallback);
@@ -57,16 +60,16 @@ function setupLocationsSync($locationsSyncSelector){
 	}
 
 	function removeMovieCallback(){
-		$editionTr=$(this).parent().parent(); 
+		$updatingTr=$(this).parent().parent(); 
 
-		var movieId=$editionTr.attr('data-movie-id');
-		var title=$.trim($editionTr.find('.title').text())
+		var movieId=$updatingTr.attr('data-movie-id');
+		var title=$.trim($updatingTr.find('.title').text())
 
 		DialogConfirm.show('Are you sure to remove from database the movie '+title+'?',
 			{
 				url:urlRemoveMovie,
 				success: function(response){
-					updateMovieInfo($editionTr);
+					updateMovieInfo($updatingTr);
 					DialogConfirm.hide();
 				},
 				message:'Movie deletion',
@@ -79,19 +82,19 @@ function setupLocationsSync($locationsSyncSelector){
 	}
 
 	function removeSubtitleCallback(){
-		$editionTr=$(this).parent().parent(); 
-		var $mainTr=$editionTr, movieId;
+		$updatingTr=$(this).parent().parent(); 
+		var $mainTr=$updatingTr, movieId;
 		while (!movieId && ($mainTr=$mainTr.prev()).length){
 			movieId=$mainTr.attr('data-movie-id');
 		}
 
-		var path=$.trim($editionTr.find('.path').text())
+		var path=$.trim($updatingTr.find('.path').text())
 
 		DialogConfirm.show('Are you sure to remove from database the subtitle '+path+'?',
 			{
 				url:urlRemoveSubtitle,
 				success: function(response){
-					$editionTr.html('');
+					$updatingTr.html('');
 					DialogConfirm.hide();
 				},
 				message:'Subtitle database deletion',
@@ -105,48 +108,28 @@ function setupLocationsSync($locationsSyncSelector){
 	}
 
 
-	function setupSubtitleDialog(callback, forFetching){
-		if (!$subtitleDialog){
-			$subtitleDialog = $('#locations_subtitle_dialog').on('shown', function(){$subtitleLanguage.focus();});
-			$subtitleTitleText = $('.title', $subtitleDialog);
-			$subtitlePathText = $('.path', $subtitleDialog);
-			$subtitleLanguage = $('select', $subtitleDialog).val('English');
-			$subtitleNormalize = $('.checkbox', $subtitleDialog);
-			$subtitleMovie = $('input[name="movie.id"]', $subtitleDialog);
-			$subtitlePathInput = $('input[name="file.path"]', $subtitleDialog);
-			$subtitleSubmitButton = $('button[type="submit"]', $subtitleDialog);
-			subtitleDialogSettings = setupAjaxModal($subtitleDialog, {}).settings;
-		}
-		if (forFetching){
-			subtitleDialogSettings.message='Subtitles fetch';
-			subtitleDialogSettings.url = urlFetchSubtitle;
-			$subtitlePathInput.val('');
-			$subtitlePathText.hide();
-			$subtitleTitleText.show();
-			$subtitleNormalize.hide();
-			$subtitleSubmitButton.text('Fetch subtitles');
-		} else {
-			subtitleDialogSettings.message='Subtitle update';
-			subtitleDialogSettings.url = urlEditSubtitle;
-			$subtitlePathText.show();
-			$subtitleTitleText.hide();
-			$subtitleNormalize.show();
-			$subtitleSubmitButton.text('Update');
-		}
-		subtitleDialogSettings.success = callback;
-	}
-
 	function editSubtitleCallback(){
-		function success(response){
-			$subtitleDialog.modal('hide');
-			$editionTr.replaceWith(response);
-			setupEventHandlers();			
+		if (!$stDialog){
+			$stDialog = $('#locations_subtitle_dialog').on('shown', function(){$stLanguage.focus();});
+			$stPathText = $('.path', $stDialog);
+			$stLanguage = $('select', $stDialog).val('English');
+			$stNormalize = $('.checkbox', $stDialog);
+			$stMovie = $('input[name="movie.id"]', $stDialog);
+			$stPathInput = $('input[name="file.path"]', $stDialog);
+			setupAjaxModal($stDialog, {
+				message : 'Subtitle update',
+				success : function(response){
+					$stDialog.modal('hide');
+					$updatingTr.replaceWith(response);
+					setupEventHandlers();								
+				}
+			});
 		}
 
-		$editionTr=$(this).parent().parent(); //group, td, tr
+		$updatingTr=$(this).parent().parent(); //group, td, tr
 
-		var $mainTr=$editionTr,
-			$path=$editionTr.find('.path'), 
+		var $mainTr=$updatingTr,
+			$path=$updatingTr.find('.path'), 
 		    language=$path.attr('data-language'), 
 		    path=$.trim($path.text()),
 		    movieId;
@@ -155,34 +138,49 @@ function setupLocationsSync($locationsSyncSelector){
 			movieId=$mainTr.attr('data-movie-id');
 		}
 
-		setupSubtitleDialog(success, false);
-		$subtitlePathText.text(path);
-		$subtitlePathInput.val(path);
-		$subtitleMovie.val(movieId);
-		if (language) $subtitleLanguage.val(language);
-		$subtitleDialog.modal('show');
+		$stPathText.text(path);
+		$stPathInput.val(path);
+		$stMovie.val(movieId);
+		if (language) $stLanguage.val(language);
+		$stDialog.modal('show');
 		return false;
 	}
 
 	function fetchSubtitleCallback(){
-		function success(response){
-			updateMovieInfo($editionTr, response);
-			$subtitleDialog.modal('hide');
+		if (!$fetchDialog){
+			$fetchDialog = $('#locations_subtitle_fetch_dialog').on('shown', function(){
+				$fetchSelection.focus();
+				dialogSettings.submit.click();
+			});
+			$fetchTitleText = $('.title', $fetchDialog);
+			$fetchLanguage = $('select[name="language"]', $fetchDialog).val('English');
+			$fetchSelection = $('select[name="subtitle"]', $fetchDialog);
+			$fetchMovie = $('input[name="movie.id"]', $fetchDialog);
+			var dialogSettings = setupAjaxModal($fetchDialog, {
+				message : 'Subtitles fetch',
+				success : function(response){
+					if (fetchingMatches){
+						fetchingMatches=false;
+						$fetchSelection.html(response);
+					} else {
+						updateMovieInfo($updatingTr, response);
+					}
+					dialogSettings.hideProgress();
+				}
+			});
 		}
 
-		setupSubtitleDialog(success, true);
-
-		$editionTr=$(this).parent().parent(); //group, td, tr
-		$subtitleTitleText.text($('.title', $editionTr).text());
-		$subtitleMovie.val($editionTr.attr('data-movie-id'));
-		$subtitleDialog.modal('show');
+		fetchingMatches=true;
+		$updatingTr=$(this).parent().parent();
+		$fetchTitleText.text($('.title', $updatingTr).text());
+		$fetchSelection.html('');
+		$fetchMovie.val($updatingTr.attr('data-movie-id'));
+		$fetchDialog.modal('show');
 		return false;
 	}
 
 
 	locationId = $locationsSyncSelector.attr('data-location-id');
-	urlEditSubtitle = $locationsSyncSelector.attr('data-edit-subtitle-url');
-	urlFetchSubtitle = $locationsSyncSelector.attr('data-fetch-subtitle-url');
 	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
 	urlEditMovie = $locationsSyncSelector.attr('data-edit-movie-url');
 	urlRemoveMovie = $locationsSyncSelector.attr('data-remove-movie-url');

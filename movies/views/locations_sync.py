@@ -8,7 +8,7 @@ from django.template import RequestContext
 
 from movies.models import Location, MoviePath, Movie, Image, Subtitle
 
-from local.imdb import getSubtitles
+from local.imdb import getSubtitles, searchSubtitles
 from local.locations import LocationHandler
 from local.dstruct import Struct
 
@@ -284,10 +284,25 @@ def fetch_subtitles(request):
     movieId, locationId, language = data['movie.id'], data['location.id'], data['language']
     locationHandler = LocationHandler(data['location.path'])
 
+    href = data.get('subtitle')
+    if not href:
+        #just return the possible subtitles
+        try:
+            movie=Movie.objects.get(id=movieId)
+            print searchSubtitles(movie.title)
+            matches = sorted(searchSubtitles(movie.title), key=(lambda x: unicode.lower(x[0])))
+            if not matches:
+                return HttpResponse(json.dumps({'error': 'No such title found'}), content_type="application/json")    
+        except Exception, ex:
+            return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
+        return render_to_response('locations_sync_subtitle_matches.html', 
+            { 'subtitles'  : matches },
+            RequestContext(request))
+
     try:
         movie=Movie.objects.get(id=movieId)
         moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId)
-        subtitlesContent = getSubtitles(movie.title, movie.year, language)
+        subtitlesContent = getSubtitles(href, language)
         if not subtitlesContent:
             return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
         newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language),subtitlesContent)

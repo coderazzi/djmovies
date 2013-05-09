@@ -244,7 +244,7 @@ class LocationHandler:
         '''
         movieName = os.path.basename(moviePath)
         dirName = os.path.dirname(moviePath) or movieName
-        newName = os.path.splitext(movieName)[0].lower()
+        newName = os.path.splitext(movieName)[0]
         subExtension = os.path.splitext(subtitleFilename)[-1].lower()
         newSubtitle = newName+'.'+lang_abbr+subExtension
         if subtitleFilename==newSubtitle: return None
@@ -269,7 +269,7 @@ class LocationHandler:
             dirname = os.path.join(self.folderBase, dirname)
         else:
             oldMoviePath = os.path.join(self.folderBase, moviePath)
-            dirname=basename=os.path.splitext(moviePath)[0].lower()
+            dirname=basename=os.path.splitext(moviePath)[0]
             moviePath = os.path.join(dirname, moviePath)
             dirname = os.path.join(self.folderBase, dirname)
             if not os.path.exists(dirname):

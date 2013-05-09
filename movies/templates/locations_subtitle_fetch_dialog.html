@@ -1,0 +1,28 @@
+<div id='locations_subtitle_fetch_dialog' class="modal hide fade container" tabindex='-1'>
+	<form action='{%url "#lsync_subtitle_fetch" %}' method='POST'>{% csrf_token %}
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<div class='title'></div>
+		</div>
+		<div class="modal-body">
+			<input type='hidden' name='location.id' value='{{location.id}}'>
+			<input type='hidden' name='location.path' value='{{path}}'>
+			<input type='hidden' name='movie.id'>
+			<label>
+				<span class='span1'>Title</span>
+				<select name='subtitle' class='span5'></select>
+			</label>
+			<label>
+				<span class='span2'>Language</span>
+				<select name='language' class='span4'>
+					{%for lang in languages%}
+						<option value='{{lang}}' selected>{{lang}}</option>
+					{%endfor%}
+				</select>
+			</label>
+		</div>
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-primary">Fetch subtitles</button>
+		</div>
+	</form>
+</div>

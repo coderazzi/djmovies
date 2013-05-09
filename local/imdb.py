@@ -127,10 +127,10 @@ def _unescape(text):
     return re.sub("&#?\w+;", fixup, text).strip()
 
 
-def getSubtitles(movieTitle, year, language):
-    ret, url, title=[], SUBTITLES_COM, unicode('%s (%s)' % (movieTitle, year))
+def searchSubtitles(movieTitle):
+    pattern = re.compile('.*/movie-(?:[^\.]+).htm.*')
     with Browser() as browser:
-        browser.open(url)
+        browser.open(SUBTITLES_COM)
         browser.select_form(nr=0)
         browser.form['q'] = movieTitle
         try:
@@ -138,34 +138,42 @@ def getSubtitles(movieTitle, year, language):
         except:
             pass #responds with 500 error, always
         soup = BeautifulSoup(browser.response().read())
+        ret=[]
         for tag in soup.findAll('a', href=True):
-            if title == _unescape(tag.text):
-                page = browser.open(urlparse.urljoin(url, tag['href']))
-                soup = BeautifulSoup(page.read())
-                subrefs=[]
-                for each in soup.findAll('a', attrs={'title':'Download %s subtitles' % language.lower()}):
-                    parts=each.parent.find('td', attrs={'title':'parts'})
-                    if parts and parts.text=='1':
-                        subrefs.append(each['href'])
-                for each in subrefs:
-                    page = browser.open(urlparse.urljoin(url, each))
-                    soup = BeautifulSoup(page.read())
-                    img = soup.find('img', attrs={'title':'Download'})
-                    if img:
-                        ref=img.parent.parent.parent
-                        ref=ref and ref.get('href')
-                        if ref:
-                            f = browser.retrieve(urlparse.urljoin(url, ref))
-                            with zipfile.ZipFile(f[0]) as z:
-                                names = z.namelist()
-                                if len(names)==1:
-                                    content=z.read(names[0])
-                                    try:
-                                        content=content.decode('iso-8859-1').encode('utf8')
-                                    except:
-                                        pass
-                                    ret.append(content)
-                break
+            href=tag['href']
+            if pattern.match(href):
+                ret.append((_unescape(tag.text), href))
+        return ret
+
+
+def getSubtitles(subTitleRef, language):
+    ret, url =[], SUBTITLES_COM
+    with Browser() as browser:
+        page = browser.open(urlparse.urljoin(url, subTitleRef))
+        soup = BeautifulSoup(page.read())
+        subrefs=[]
+        for each in soup.findAll('a', attrs={'title':'Download %s subtitles' % language.lower()}):
+            parts=each.parent.find('td', attrs={'title':'parts'})
+            if parts and parts.text=='1':
+                subrefs.append(each['href'])
+        for each in subrefs:
+            page = browser.open(urlparse.urljoin(url, each))
+            soup = BeautifulSoup(page.read())
+            img = soup.find('img', attrs={'title':'Download'})
+            if img:
+                ref=img.parent.parent.parent
+                ref=ref and ref.get('href')
+                if ref:
+                    f = browser.retrieve(urlparse.urljoin(url, ref))
+                    with zipfile.ZipFile(f[0]) as z:
+                        names = z.namelist()
+                        if len(names)==1:
+                            content=z.read(names[0])
+                            try:
+                                content=content.decode('iso-8859-1').encode('utf8')
+                            except:
+                                pass
+                            ret.append(content)
     return ret
 
 

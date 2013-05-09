@@ -4,6 +4,7 @@
 	{%include "dialog_confirm.html"%}
 	{%include "dialog_imdb.html"%}
 	{%include "locations_subtitle_dialog.html"%}
+	{%include "locations_subtitle_fetch_dialog.html"%}
 
 	<div id='locations_sync_problems_dialog' class="modal hide fade container" tabindex='-1'>
 		<div class="modal-header">
@@ -22,8 +23,6 @@
 	
 	<table id='locations_sync' 
 	       class='table table-striped no_table-bordered table-hover' 
-	       data-fetch-subtitle-url='{%url "#lsync_subtitle_fetch" %}' 
-	       data-edit-subtitle-url='{%url "#lsync_subtitle_edit" %}' 
 	       data-remove-subtitle-url='{%url "#lsync_subtitle_remove" %}' 
 	       data-edit-movie-url='{%url "#locations_sync_edit" %}' 
 	       data-remove-movie-url='{%url "#locations_sync_remove" %}' 

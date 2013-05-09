@@ -58,7 +58,12 @@ function setupAjaxModal($modal, settings){
 	var $parent = submit.parent();
 	var $progress=$('.progress', $parent);
 	var $error=$('.error_dialog', $parent);
-	var superSettings={settings: settings, submit:submit};
+	var superSettings={
+		settings: settings, 
+		submit:submit,
+		showError: showError,
+		hideProgress: hideProgress
+	};
 
 	function reset(){
 		submit.show();
@@ -71,6 +76,11 @@ function setupAjaxModal($modal, settings){
 		if ($error.length) $error.hide();
 		if (! $progress.length) $progress=$('<div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div>').appendTo($parent);
 		$progress.show();
+	}
+
+	function hideProgress(){
+		if ($progress.length) $progress.hide();
+		submit.show();
 	}
 
 	function showError(error){
