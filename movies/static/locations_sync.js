@@ -5,11 +5,28 @@ function setupLocationsSync($locationsSyncSelector){
 	var $subtitleDialog, $subtitlePathText, $subTitlePathInput, $subtitleLanguage, $subtitleMovie;
 	var $subtitleEditionTr;
 
-	var locationId, urlRemoveSubtitle, urlEditMovie;
+	var locationId, urlRemoveSubtitle, urlEditMovie, urlRemoveMovie;
 
 	function setupSubtitleHandlers(){
 		$('.edit_subtitle').off('click').click(editSubtitleCallback);
 		$('.remove_subtitle').off('click').click(removeSubtitleCallback);
+	}
+
+	function updateMovieInfo($tr, html){
+		var $next=$tr.next();
+		while ($next.length && $next.hasClass('subtitle')){
+			var $rem = $next;
+			$next = $next.next();
+			$rem.remove();
+		}
+		if (html){
+			$tr.replaceWith(html);
+			$('.edit-movie').off('click').click(editMovieCallback);
+			setupSubtitleHandlers();
+		} else {
+			$tr.remove();
+		}
+
 	}
 
 	function editMovieCallback(){
@@ -26,21 +43,36 @@ function setupLocationsSync($locationsSyncSelector){
 					message: 'Adding movie information',
 					data: info,
 					success: function(response){
-						//we remove the existing TR, but also any following TRs
-						//containing no data-movie-id attribute (or subtitle class)
-						var $next=$tr.next();
-						while ($next.length && $next.hasClass('subtitle')){
-							var $rem = $next;
-							$next = $next.next();
-							$rem.remove();
-						}
-						$tr.replaceWith(response);
-						$('.edit-movie').off('click').click(editMovieCallback);
-						setupSubtitleHandlers();
+						updateMovieInfo($tr, response);
 					}
 				});
 			});
 		} 
+		return false;
+	}
+
+	function removeMovieCallback(){
+		$subtitleEditionTr=$(this).parent().parent(); //group, td, tr
+		var $mainTr=$subtitleEditionTr, movieId;
+		while (!movieId && ($mainTr=$mainTr.prev()).length){
+			movieId=$mainTr.attr('data-movie-id');
+		}
+
+		var title=$.trim($subtitleEditionTr.find('.title').text())
+
+		DialogConfirm.show('Are you sure to remove from database the movie '+title+'?',
+			{
+				url:urlRemoveMovie,
+				success: function(response){
+					updateMovieInfo($subtitleEditionTr);
+					DialogConfirm.hide();
+				},
+				message:'Movie deletion',
+				data:{
+					movieId:movieId,
+					locationId: locationId
+				}
+			});
 		return false;
 	}
 
@@ -110,10 +142,12 @@ function setupLocationsSync($locationsSyncSelector){
 	locationId = $locationsSyncSelector.attr('data-location-id');
 	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
 	urlEditMovie = $locationsSyncSelector.attr('data-edit-movie-url');
+	urlRemoveMovie = $locationsSyncSelector.attr('data-remove-movie-url');
 
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
 	}
 	$('.edit-movie').click(editMovieCallback);
+	$('.remove-movie').click(removeMovieCallback);
 	setupSubtitleHandlers();
 }

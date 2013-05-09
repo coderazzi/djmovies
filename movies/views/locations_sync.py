@@ -182,6 +182,20 @@ def edit_movie(request):
         RequestContext(request))
 
 
+def remove_movie(request):
+    if not request.is_ajax(): return redirect('#locations')
+
+    data = json.loads(request.body)
+    locationId, movieId = data['locationId'], data['movieId']
+
+    Subtitle.objects.filter(location_id=locationId, movie_id=movieId).delete()
+    MoviePath.objects.filter(movie_id=movieId, location_id=locationId).delete()
+    if not MoviePath.objects.filter(movie_id=movieId):
+        Movie.objects.filter(id=movieId).delete()
+
+    return HttpResponse(json.dumps({'success': True}), 
+                        content_type="application/json")
+
 
 def remove_subtitle(request):
     if not request.is_ajax(): return redirect('#locations')

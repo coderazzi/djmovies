@@ -19,7 +19,6 @@ def _json_response(f):
 
 def get_mediainfo(request):
     def inner():
-        print request.POST['file.path'], request.POST['location.path']
         ret = mediainfo(request.POST['file.path'], request.POST['location.path'])
         if ret:
             return {'mediainfo' : ret.__dict__}
