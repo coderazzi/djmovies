@@ -107,7 +107,7 @@ class LocationHandler:
         return ret
 
 
-    def getSubtitles(self, moviePath):
+    def getSubtitles(self, moviePath, dbInfo):
         '''
         Returns only the subtitles information for the given path
         '''        
@@ -116,7 +116,7 @@ class LocationHandler:
             if dirname:
                 fileinfo = self._iterateAllFilesInSubpath(os.path.join(self.folderBase, dirname))
                 if len(fileinfo)==1 and len(fileinfo[0])==4:
-                    return [(sub, True, None) for sub in fileinfo[0][3]]
+                    return [(sub, True, dbInfo.get(sub)) for sub in fileinfo[0][3]]
         except:
             pass
         return []

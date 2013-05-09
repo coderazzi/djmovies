@@ -28,8 +28,8 @@ def get_mediainfo(request):
 
 
 def search_title(request):
-    def inner():
-        references, firstInfo = searchImdb(request.POST['movie.title'])
+    def inner():        
+        references, firstInfo = searchImdb(request.POST['movie.title'].encode('ascii', 'ignore'))
         return {'links' : references, 
                 'first_movie_info': firstInfo and firstInfo.__dict__}
     return _json_response(inner)

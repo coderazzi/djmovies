@@ -5,34 +5,37 @@ function setupLocationsSync($locationsSyncSelector){
 	var $subtitleDialog, $subtitlePathText, $subTitlePathInput, $subtitleLanguage, $subtitleMovie;
 	var $subtitleEditionTr;
 
-	var locationId, urlRemoveSubtitle, urlUpdateMovie;
+	var locationId, urlRemoveSubtitle, urlEditMovie;
 
 	function setupSubtitleHandlers(){
 		$('.edit_subtitle').off('click').click(editSubtitleCallback);
 		$('.remove_subtitle').off('click').click(removeSubtitleCallback);
 	}
 
-	function addPathCallback(){
+	function editMovieCallback(){
 		var $tr=$(this).parent().parent();
-		var path = $('.path', $tr);
+		var path = $('.path', $tr), title=$('.title', $tr);
 		if (path.length){
-			DialogImdb.show(path.text(), function(info){
+			DialogImdb.show(
+				path.text(), 
+				$tr.attr('data-movie-id'), 
+				title && title.text(),
+				function(info){
 				ajaxPost({
-					url: urlUpdateMovie,
+					url: urlEditMovie,
 					message: 'Adding movie information',
 					data: info,
 					success: function(response){
 						//we remove the existing TR, but also any following TRs
 						//containing no data-movie-id attribute (or subtitle class)
-						//this is so far not needed while adding a movie
-						// var $next=$tr.next();
-						// while ($next.length && $next.hasClass('subtitle')){
-						// 	var $rem = $next;
-						// 	$next = $next.next();
-						// 	$rem.remove();
-						// }
+						var $next=$tr.next();
+						while ($next.length && $next.hasClass('subtitle')){
+							var $rem = $next;
+							$next = $next.next();
+							$rem.remove();
+						}
 						$tr.replaceWith(response);
-						$('.add_path', $tr).click(addPathCallback);
+						$('.edit-movie').off('click').click(editMovieCallback);
 						setupSubtitleHandlers();
 					}
 				});
@@ -106,11 +109,11 @@ function setupLocationsSync($locationsSyncSelector){
 
 	locationId = $locationsSyncSelector.attr('data-location-id');
 	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
-	urlUpdateMovie = $locationsSyncSelector.attr('data-update-movie-url');
+	urlEditMovie = $locationsSyncSelector.attr('data-edit-movie-url');
 
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
 	}
-	$('.add-path').click(addPathCallback);
+	$('.edit-movie').click(editMovieCallback);
 	setupSubtitleHandlers();
 }

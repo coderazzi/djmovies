@@ -11,19 +11,18 @@ var DialogImdb = new function(){
 	var STEP_5_SERVER_MOVIE_INFO=5;
 	var STEP_6_EXPECT_CONFIRMATION=6;
 
-	var shownDialogCallback, shownFilepath;
+	var shownDialogCallback, callbackData;
 
-	this.show=function(filepath, dialogCallback){
+	this.show=function(filepath, movieId, title, dialogCallback){
 		shownDialogCallback = dialogCallback;
-		shownFilepath = filepath;
 		if (! $dialog) {
-			$dialog=$('#dialog_imdb').on('shown', dialogShownCallback);
+			$dialog=$('#dialog_imdb');
 			$dialogBody=$('.modal-body', $dialog);
 			$form=$('form', $dialogBody);
 			$wait=$('.progress', $dialogBody);
 			$path=$('.path', $dialogBody);
-			$error=$('.error_dialog', $dialogBody);
 			$hiddenPath=$('input[name="file.path"]', $dialogBody);
+			$error=$('.error_dialog', $dialogBody);
 			$title=$('input[name="movie.title"]', $dialogBody);	
 			$select = $('select[name="movie.imdb"]').change(loadImdbInfoCallback);
 
@@ -40,14 +39,13 @@ var DialogImdb = new function(){
 		    	}
 			});
 
-			var callbackData = {
+			callbackData = {
 				location: $('input[name="location.id"]', $dialogBody).val(),
 				dirpath: $('input[name="location.path"]', $dialogBody).val()
 			};
 
 			$('#location-sync-check-title', $dialogBody).click(function(){
 				$dialog.modal('hide');
-				callbackData.filepath=shownFilepath;
 				callbackData.mediainfo=mediainfo;
 				callbackData.imdbinfo=imdbCache[$select.val()];
 				shownDialogCallback(callbackData);
@@ -56,8 +54,18 @@ var DialogImdb = new function(){
 		}
 		$path.text(filepath);
 		$hiddenPath.val(filepath);
+		callbackData.movieId = movieId;
+		callbackData.filepath=filepath;
+
 		showStep(STEP_1_SERVER_MEDIAINFO);
-		$dialog.modal('show');
+
+		var callback=requestMediaInfo;
+		if (title){
+			$title.val(title);
+			mediainfo=null;
+			callback = titleLoadedCallback;
+		}
+		$dialog.off('shown').on('shown', callback).modal('show');
 	}
 
 	function invalidResponse(){handleError('Server error: invalid response');}
@@ -140,7 +148,11 @@ var DialogImdb = new function(){
 		return false;
 	}
 
-	function dialogShownCallback(){		
+	function titleLoadedCallback(){		
+		showStep(STEP_2_EXPECT_TITLE);
+	}
+
+	function requestMediaInfo(){		
 		ajaxPostForm($form, {
 			error: handleError,
 			success: function(response){
@@ -149,7 +161,7 @@ var DialogImdb = new function(){
 					invalidResponse();
 				} else {
 					$title.val(mediainfo.name);
-					showStep(STEP_2_EXPECT_TITLE);
+					titleLoadedCallback();
 				}
 			}
 		});

@@ -88,53 +88,85 @@ def index(request):
         RequestContext(request))
 
 
-def add_movie(request):
+def edit_movie(request):
     '''
-    adds information for a new movie
+    adds information for a new movie or edits an existing one
     It returns the new TR element or elements to replace the existing one
     '''
     if not request.is_ajax(): return redirect('#locations')
 
-    data = json.loads(request.body)
-    mediainfo, imdbinfo = Struct.fromjs(**data['mediainfo']), Struct.fromjs(**data['imdbinfo'])
-    filepath, locationId = data['filepath'], data['location']
-    locationHandler = LocationHandler(data['dirpath'])
-    path = locationHandler.normalizeFilename(filepath, imdbinfo)
-    # for k, v in imdbinfo.__dict__.items():
-    #     print k, v
     try:
+        data            = json.loads(request.body)
+        imdbinfo        = Struct.fromjs(**data['imdbinfo'])
+        locationId      = data['location']
+        filepath        = data['filepath']
+        movieId         = int(data['movieId'])
+        locationHandler = LocationHandler(data['dirpath'])
+        oldMovie        = None
+
+        if movieId:
+            #we create the new movie information
+            oldMovie  = Movie.objects.get(id=movieId)
+            mediainfo = Struct( format=oldMovie.format,
+                                duration=oldMovie.duration,
+                                width=oldMovie.width,
+                                height=oldMovie.height,
+                                size=oldMovie.size,
+                                audios=oldMovie.in_audios,
+                                texts=oldMovie.in_subs)
+        else:
+            mediainfo = Struct.fromjs(**data['mediainfo'])
+
         movie = Movie.objects.create(title = imdbinfo.title,
-                                    format=mediainfo.format, 
-                                    year=imdbinfo.year,
-                                    duration=mediainfo.duration,
-                                    imdb_duration=imdbinfo.duration,
-                                    width=mediainfo.width,
-                                    height=mediainfo.height,
-                                    size=mediainfo.size,
-                                    imdb_link=imdbinfo.url,
-                                    trailer_link=imdbinfo.trailer,
-                                    genres=imdbinfo.genres,
-                                    actors=imdbinfo.actors,
-                                    in_audios=mediainfo.audios,
-                                    in_subs=mediainfo.texts)
-        try:            
+                                     format=mediainfo.format, 
+                                     year=imdbinfo.year,
+                                     duration=mediainfo.duration,
+                                     imdb_duration=imdbinfo.duration,
+                                     width=mediainfo.width,
+                                     height=mediainfo.height,
+                                     size=mediainfo.size,
+                                     imdb_link=imdbinfo.url,
+                                     trailer_link=imdbinfo.trailer,
+                                     genres=imdbinfo.genres,
+                                     actors=imdbinfo.actors,
+                                     in_audios=mediainfo.audios,
+                                     in_subs=mediainfo.texts)
+        try:
             if imdbinfo.imageLink:
                 movie.image_set.create(url=imdbinfo.imageLink, size=Image.SIZE_BASIC)
             if imdbinfo.bigImageLink:
                 movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
+
+            #create now the correct MoviePath entry    
+            path = locationHandler.normalizeFilename(filepath, imdbinfo)
             try:
                 MoviePath.objects.create(movie=movie, location_id=locationId, path=path)
             except IntegrityError:
+                locationHandler.reverseNormalization(filepath, path)
                 raise Exception('Movie (path) already exists on this location: repeated?')
-        except:
+        except Exception as ex:
             movie.delete()
             raise
+
+        currentSubtitles={}
+        if oldMovie:
+            for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId):
+                lang=LANGUAGE_ABBRVS[LANGUAGES.index(each.language)]
+                normalize = locationHandler.normalizeSubtitle(path, each.filename, lang)
+                normalizedName = (normalize and normalize[0]) or each.filename
+                each.movie_id = movie.id
+                if normalize:
+                    each.filename = normalize[0]
+                each.save()
+                currentSubtitles[each.filename] = each.language
+            oldMovie.delete()
+
+        subtitles = locationHandler.getSubtitles(path, currentSubtitles)
+
     except Exception as ex:
-        locationHandler.reverseNormalization(filepath, path)
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
                             content_type="application/json")
 
-    subtitles = locationHandler.getSubtitles(path)
 
     return render_to_response('locations_sync_movie.html', 
         {      
@@ -142,6 +174,7 @@ def add_movie(request):
             'db_id'    : movie.id,
             'path'     : path,
             'title'    : imdbinfo.title,
+            'insubs'   : movie.embedded_subs, 
             'subs'     : subtitles,
             'lensubs'  : len(subtitles)+1,
             'languages': LANGUAGES
