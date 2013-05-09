@@ -188,6 +188,8 @@ def remove_movie(request):
     data = json.loads(request.body)
     locationId, movieId = data['locationId'], data['movieId']
 
+    #print 'Removing movie loc/id:',locationId, movieId
+
     Subtitle.objects.filter(location_id=locationId, movie_id=movieId).delete()
     MoviePath.objects.filter(movie_id=movieId, location_id=locationId).delete()
     if not MoviePath.objects.filter(movie_id=movieId):

@@ -53,11 +53,8 @@ function setupLocationsSync($locationsSyncSelector){
 
 	function removeMovieCallback(){
 		$subtitleEditionTr=$(this).parent().parent(); //group, td, tr
-		var $mainTr=$subtitleEditionTr, movieId;
-		while (!movieId && ($mainTr=$mainTr.prev()).length){
-			movieId=$mainTr.attr('data-movie-id');
-		}
-
+		
+		var movieId=$subtitleEditionTr.attr('data-movie-id');
 		var title=$.trim($subtitleEditionTr.find('.title').text())
 
 		DialogConfirm.show('Are you sure to remove from database the movie '+title+'?',
