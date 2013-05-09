@@ -159,7 +159,12 @@ def getSubtitles(movieTitle, year, language):
                             with zipfile.ZipFile(f[0]) as z:
                                 names = z.namelist()
                                 if len(names)==1:
-                                    ret.append(z.read(names[0]))
+                                    content=z.read(names[0])
+                                    try:
+                                        content=content.decode('iso-8859-1').encode('utf8')
+                                    except:
+                                        pass
+                                    ret.append(content)
                 break
     return ret
 

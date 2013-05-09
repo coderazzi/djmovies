@@ -90,7 +90,7 @@ class LocationHandler:
             full=os.path.join(self.folderBase, filename)
             try:
                 if os.path.isdir(full):
-                    ret.extend(self._iterateAllFilesInSubpath(full))
+                    ret.extend(self._iterateAllFilesInSubpath(filename, full))
                 else:
                     #simple case: top path, or file is video_file, or iso/img, or just handled
                     extension=os.path.splitext(full)[-1].lower()
@@ -114,7 +114,7 @@ class LocationHandler:
         try:
             dirname = os.path.dirname(moviePath)
             if dirname:
-                fileinfo = self._iterateAllFilesInSubpath(os.path.join(self.folderBase, dirname))
+                fileinfo = self._iterateAllFilesInSubpath(dirname, os.path.join(self.folderBase, dirname))
                 if len(fileinfo)==1 and len(fileinfo[0])==4:
                     return [(sub, True, dbInfo.get(sub)) for sub in fileinfo[0][3]]
         except:
@@ -122,7 +122,7 @@ class LocationHandler:
         return []
 
 
-    def _iterateAllFilesInSubpath(self, fullpath):
+    def _iterateAllFilesInSubpath(self, filename, fullpath):
         '''
         Like iterateAllFilesInPath, but restrained to a specific folder (under top directory)
         Has no full exception handling: can fail if fullpath is not listable
@@ -264,12 +264,12 @@ class LocationHandler:
         '''
         returns the new path for the movie, and the found subtitles
         '''
-        dirname=os.path.dirname(moviePath)
+        dirname=basename=os.path.dirname(moviePath)
         if dirname:
             dirname = os.path.join(self.folderBase, dirname)
         else:
             oldMoviePath = os.path.join(self.folderBase, moviePath)
-            dirname=os.path.splitext(moviePath)[0].lower()
+            dirname=basename=os.path.splitext(moviePath)[0].lower()
             moviePath = os.path.join(dirname, moviePath)
             dirname = os.path.join(self.folderBase, dirname)
             if not os.path.exists(dirname):
@@ -283,7 +283,7 @@ class LocationHandler:
                 index+=1
             with open(subtitleName, 'w') as f:
                 f.write(content)
-        ret = self._iterateAllFilesInSubpath(dirname)
+        ret = self._iterateAllFilesInSubpath(basename, dirname)
         if len(ret)!=1:
             #can happen if directory already existed with some content
             raise Exception, 'Invalid setup for directory '+dirname
