@@ -243,20 +243,52 @@ class LocationHandler:
         Returns the new filename, or None if there is no renaming
         '''
         movieName = os.path.basename(moviePath)
+        dirName = os.path.dirname(moviePath) or movieName
         newName = os.path.splitext(movieName)[0].lower()
         subExtension = os.path.splitext(subtitleFilename)[-1].lower()
         newSubtitle = newName+'.'+lang_abbr+subExtension
         if subtitleFilename==newSubtitle: return None
 
-        oldName = os.path.join(self.folderBase, os.path.dirname(moviePath), subtitleFilename)
-        newName = os.path.join(self.folderBase, os.path.dirname(moviePath), newSubtitle)
+        oldName = os.path.join(self.folderBase, dirName, subtitleFilename)
+        newName = os.path.join(self.folderBase, dirName, newSubtitle)
 
         if os.path.exists(newName): raise Exception('File '+newSubtitle+' already exists')
         os.rename(oldName, newName)
         return newSubtitle, [oldName, newName]
 
-    def renormalizeSubtitle(oldName, newName):
+    def renormalizeSubtitle(self, oldName, newName):
         os.rename(newName, oldName)
+
+
+    def storeSubtitles(self, moviePath, lang_abbr, subtitles):
+        '''
+        returns the new path for the movie, and the found subtitles
+        '''
+        dirname=os.path.dirname(moviePath)
+        if dirname:
+            dirname = os.path.join(self.folderBase, dirname)
+        else:
+            oldMoviePath = os.path.join(self.folderBase, moviePath)
+            dirname=os.path.splitext(moviePath)[0].lower()
+            moviePath = os.path.join(dirname, moviePath)
+            dirname = os.path.join(self.folderBase, dirname)
+            if not os.path.exists(dirname):
+                os.mkdir(dirname)
+            os.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
+        index=1
+        for content in subtitles:
+            while True:
+                subtitleName = os.path.join(dirname, '%d.%s.srt' % (index, lang_abbr))
+                if not os.path.exists(subtitleName): break
+                index+=1
+            with open(subtitleName, 'w') as f:
+                f.write(content)
+        ret = self._iterateAllFilesInSubpath(dirname)
+        if len(ret)!=1:
+            #can happen if directory already existed with some content
+            raise Exception, 'Invalid setup for directory '+dirname
+        return ret[0][0], ret[0][3]
+        
 
 
 

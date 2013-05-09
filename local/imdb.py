@@ -14,7 +14,8 @@ SUBTITLES_COM='http://www.moviesubtitles.org/'
 def searchImdb(movieTitle):
     ret=[]
     #http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
-    url=IMDB_COM+'/search/title?'+urllib.urlencode({'count': '250', 'title_type':'feature,tv_movie', 'title': movieTitle, 'view':'simple'})
+    url=IMDB_COM+'/search/title?'+urllib.urlencode({'count': '50', 'title_type':'feature,tv_movie', 'title': movieTitle, 'view':'simple'})
+    #note that count could be up to 250
     with Browser() as browser:
         page = browser.open(url)
         soup = BeautifulSoup(page.read())

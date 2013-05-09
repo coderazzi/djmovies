@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^ax_lsync_edit$', 'movies.views.locations_sync.edit_movie', name='#locations_sync_edit'),
     url(r'^ax_lsync_remove$', 'movies.views.locations_sync.remove_movie', name='#locations_sync_remove'),
 
+    url(r'^ax_lsync_subtitle_fetch$', 'movies.views.locations_sync.fetch_subtitles', name='#lsync_subtitle_fetch'),
     url(r'^ax_lsync_subtitle_edit$', 'movies.views.locations_sync.edit_subtitle', name='#lsync_subtitle_edit'),
     url(r'^ax_lsync_subtitle_remove$', 'movies.views.locations_sync.remove_subtitle', name='#lsync_subtitle_remove'),
 

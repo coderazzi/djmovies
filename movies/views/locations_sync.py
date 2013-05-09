@@ -8,6 +8,7 @@ from django.template import RequestContext
 
 from movies.models import Location, MoviePath, Movie, Image, Subtitle
 
+from local.imdb import getSubtitles
 from local.locations import LocationHandler
 from local.dstruct import Struct
 
@@ -16,6 +17,13 @@ DEBUGGING=False
 
 LANGUAGES=['English', 'French', 'German', 'Portuguese', 'Spanish']
 LANGUAGE_ABBRVS=['en', 'fr', 'de', 'pt', 'es'] #http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+def getLanguageAbbr(language):
+    return LANGUAGE_ABBRVS[LANGUAGES.index(language)]
+
+def getLanguage(languageAbbr):
+    return LANGUAGES[LANGUAGE_ABBRVS.index(languageAbbr)]
+
 
 def index(request):    
     if request.method == 'GET': return redirect('#locations')
@@ -151,7 +159,7 @@ def edit_movie(request):
         currentSubtitles={}
         if oldMovie:
             for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId):
-                lang=LANGUAGE_ABBRVS[LANGUAGES.index(each.language)]
+                lang=getLanguageAbbr(each.language)
                 normalize = locationHandler.normalizeSubtitle(path, each.filename, lang)
                 normalizedName = (normalize and normalize[0]) or each.filename
                 each.movie_id = movie.id
@@ -183,32 +191,29 @@ def edit_movie(request):
 
 
 def remove_movie(request):
-    if not request.is_ajax(): return redirect('#locations')
-
-    data = json.loads(request.body)
-    locationId, movieId = data['locationId'], data['movieId']
-
-    #print 'Removing movie loc/id:',locationId, movieId
-
-    Subtitle.objects.filter(location_id=locationId, movie_id=movieId).delete()
-    MoviePath.objects.filter(movie_id=movieId, location_id=locationId).delete()
-    if not MoviePath.objects.filter(movie_id=movieId):
-        Movie.objects.filter(id=movieId).delete()
-
-    return HttpResponse(json.dumps({'success': True}), 
-                        content_type="application/json")
-
+    def handler(data):
+        locationId, movieId = data['locationId'], data['movieId']
+        Subtitle.objects.filter(location_id=locationId, movie_id=movieId).delete()
+        MoviePath.objects.filter(movie_id=movieId, location_id=locationId).delete()
+        if not MoviePath.objects.filter(movie_id=movieId):
+            Movie.objects.filter(id=movieId).delete()
+        
+    return _handle_ajax_json(request, handler)
 
 def remove_subtitle(request):
+    def handler(data):
+        locationId, movieId, path = data['locationId'], data['movieId'], data['path']
+        Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=path).delete()
+
+    return _handle_ajax_json(request, handler)
+
+
+def _handle_ajax_json(request, handler):
     if not request.is_ajax(): return redirect('#locations')
 
-    data = json.loads(request.body)
-    locationId, movieId, path = data['locationId'], data['movieId'], data['path']
-    Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=path).delete()
+    handler(json.loads(request.body))
 
-    return HttpResponse(json.dumps({'success': True}), 
-                        content_type="application/json")
-
+    return HttpResponse(json.dumps({'success': True}), content_type="application/json")
 
 
 def edit_subtitle(request):
@@ -222,7 +227,7 @@ def edit_subtitle(request):
         current = Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=subpath)
 
         try:
-            lang=LANGUAGE_ABBRVS[LANGUAGES.index(language)]
+            lang=getLanguageAbbr(language)
             try:
                 moviePath=MoviePath.objects.get(location_id=locationId, movie_id=movieId).path
                 try:
@@ -269,5 +274,52 @@ def edit_subtitle(request):
             'in_fs'    : True,
             'language' : language,
             'path'     : subpath
+        },
+        RequestContext(request))
+
+
+def fetch_subtitles(request):
+    if not request.is_ajax(): return redirect('#locations')
+    data = request.POST
+    movieId, locationId, language = data['movie.id'], data['location.id'], data['language']
+    locationHandler = LocationHandler(data['location.path'])
+
+    try:
+        movie=Movie.objects.get(id=movieId)
+        moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId)
+        subtitlesContent = getSubtitles(movie.title, movie.year, language)
+        if not subtitlesContent:
+            return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
+        newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language),subtitlesContent)
+    except Exception, ex:
+        raise
+        return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
+
+    if newPath!=moviePath.path:
+        moviePath.path=newPath
+        moviePath.save()
+
+
+    dbSubtitles = {}
+    for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId):
+        dbSubtitles[each.filename] = [each.filename, False, each.language]
+    for each in subtitles:
+        assoc = dbSubtitles.get(each)
+        if assoc:
+            assoc[1]=True
+        else:
+            dbSubtitles[each]=[each, True, None]
+    subtitles=sorted(dbSubtitles.values(), key=(lambda x: unicode.lower(x[0])))
+
+    return render_to_response('locations_sync_movie.html', 
+        {      
+            'in_fs'    : True,
+            'db_id'    : movie.id,
+            'path'     : newPath,
+            'title'    : movie.title,
+            'insubs'   : movie.embedded_subs, 
+            'subs'     : subtitles,
+            'lensubs'  : len(subtitles)+1,
+            'languages': LANGUAGES
         },
         RequestContext(request))
