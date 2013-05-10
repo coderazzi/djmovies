@@ -87,15 +87,18 @@ var DialogImdb = new function(){
 
 	function updateMovieInfo(info){
 		if (info){
-			imdbCache[info.url]=info;
-			showUrlMovieInfo(info.url);
+			imdbCache[info.uid]=info;
+			console.dir(imdbCache)
+			//imdb returns the name in the current country, but we have already the correct one!
+			//info.title = $title.val(); 
+			showUrlMovieInfo(info.uid);
 		} else {
 			invalidResponse();
 		}		
 	}
 
-	function showUrlMovieInfo(url){
-		var info = imdbCache[url];
+	function showUrlMovieInfo(uid){
+		var info = imdbCache[uid];
 		if (info){
 			var src=info.imageLink || '/static/noposter.jpg';
 			var html=info.actors+'<br>'+info.genres+'<br>'+info.year;

@@ -25,7 +25,7 @@ def searchImdb(movieTitle):
                 href=urlparse.urlparse(ref.get('href')).path #we remove any parameters information. So far, is useless
                 title = _unescape(ref.text)
                 if title:
-                    ret.append((href,title, _unescape(ref.nextSibling))) #this is the year
+                    ret.append((getUid(href, title),title, _unescape(ref.nextSibling))) #this is the year
         return (ret, ret and _getImdbInfo(ret[0][0], browser))
 
 def searchImdbBasic(movieTitle):
@@ -46,16 +46,23 @@ def searchImdbBasic(movieTitle):
                         href=urlparse.urlparse(href).path #we remove any parameters information. So far, is useless
                         title = _unescape(ref.text)
                         if title:
-                            ret.append((href,title, _unescape(ref.nextSibling)))
+                            ret.append((getUid(href, title), title, _unescape(ref.nextSibling)))
         return (ret, ret and _getImdbInfo(ret[0][0], browser))
 
+def getUid(href, title):
+    #when we retrieve movies by name (searchImdb), we obtain a list of URLs, and the associated title.
+    #However, when visiting those URLs, the retrieved title could have a different value (normally due
+    # to some translation). For this reason, we encode the url and the title in a single uid
+    return href+' '+title
 
 def getImdbInfo(link):
     with Browser() as browser:
         return _getImdbInfo(link, browser)
 
-def _getImdbInfo(link, browser):
+def _getImdbInfo(uid, browser):
+    #the link includes, in fact, the URL, an space, and the title
     title, year, duration, genres, actors, trailer, imgSrc, bigImgSrc = [None]*8
+    link, title = uid.split(' ', 1)
     page = browser.open(IMDB_COM+link)
     soup = BeautifulSoup(page.read())
     divMain = soup.find('div', attrs={'id':'pagecontent'})
@@ -70,9 +77,10 @@ def _getImdbInfo(link, browser):
                 yearRef = titleTag.find('span', attrs={'class':'nobr'})
                 match = yearRef and re.search('(\d\d\d\d)', _unescape(yearRef.text))
                 year = match and match.group(1)
-            titleTag = titleTag.find('span', attrs={'itemprop':'name'})
-            if titleTag:
-                title = _unescape(titleTag.contents[0])
+            if not title:
+                titleTag = titleTag.find('span', attrs={'itemprop':'name'})
+                if titleTag:
+                    title = _unescape(titleTag.contents[0])
         #duration
         infoBar = divMain.find('div', attrs={'class':'infobar'})
         if infoBar:
@@ -99,7 +107,7 @@ def _getImdbInfo(link, browser):
                     except:
                         bigImgSrc=None
         url=urlparse.urlparse(link).path #we remove any parameters information. So far, is useless
-        return Struct.nonulls(url=url, title=title, year=year, duration=duration, 
+        return Struct.nonulls(url=url, title=title, year=year, duration=duration, uid=uid,
             genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
 
 

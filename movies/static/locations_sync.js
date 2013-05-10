@@ -161,6 +161,7 @@ function setupLocationsSync($locationsSyncSelector){
 				success : function(response){
 					if (fetchingMatches){
 						fetchingMatches=false;
+						dialogSettings.settings.message='Fetching subtitle'
 						$fetchSelection.html(response);
 					} else {
 						updateMovieInfo($updatingTr, response);
@@ -171,6 +172,7 @@ function setupLocationsSync($locationsSyncSelector){
 		}
 
 		fetchingMatches=true;
+		dialogSettings.settings.message='Retrieving correct title'
 		$updatingTr=$(this).parent().parent();
 		$fetchTitleText.text($('.title', $updatingTr).text());
 		$fetchSelection.html('');

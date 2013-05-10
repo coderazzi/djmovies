@@ -277,8 +277,8 @@ def mediainfo(path, folder):
     
 if __name__ == '__main__':
     # movie='/Volumes/Movies_III/How_The_West_Was_Won__1962.iso'
-    folder='/Volumes/TTC7/'
-    movie='The Wackness.mkv'
+    folder='/Volumes/Movies_V/'
+    movie='American_Gangster__2007.mkv'
     info= mediainfo(movie, folder)
     for i in dir(info):
         print i, getattr(info, i)

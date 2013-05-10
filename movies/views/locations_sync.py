@@ -112,6 +112,8 @@ def edit_movie(request):
         locationHandler = LocationHandler(data['dirpath'])
         oldMovie        = None
 
+        #print imdbinfo.__dict__.items()
+
         if movieId:
             #we create the new movie information
             oldMovie  = Movie.objects.get(id=movieId)
@@ -148,9 +150,11 @@ def edit_movie(request):
             #create now the correct MoviePath entry    
             path = locationHandler.normalizeFilename(filepath, imdbinfo)
             try:
+                print 'Creating ',movie.id, locationId, path
                 MoviePath.objects.create(movie=movie, location_id=locationId, path=path)
             except IntegrityError:
                 locationHandler.reverseNormalization(filepath, path)
+                raise
                 raise Exception('Movie (path) already exists on this location: repeated?')
         except Exception as ex:
             movie.delete()
