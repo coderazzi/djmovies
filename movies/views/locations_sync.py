@@ -18,6 +18,58 @@ DEBUGGING=False
 LANGUAGES=['English', 'French', 'German', 'Portuguese', 'Spanish']
 LANGUAGE_ABBRVS=['en', 'fr', 'de', 'pt', 'es'] #http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
+
+class MovieSyncInfo:
+
+    def __init__(self, path, movie=None, subtitlesInfo=None, in_fs=None):
+        self.path  = path
+        self.title = (movie and movie.title) or ''
+        self.id = (movie and movie.id) or 0
+        self.embedded_subs = movie and movie.embedded_subs
+        self.audios = (movie and movie.audios) or ''
+        self.exsubs = subtitlesInfo or []
+        if in_fs==None:
+            self.in_fs = movie!=None
+        else:
+            self.in_fs = in_fs
+
+        #[each.path, each.movie.title, False, each.movie.id, each.movie.embedded_subs, subtitles.get(each.movie_id, [])]
+
+    def getSubtitles(self):
+        return (self.id and self.in_fs and self.exsubs) or []
+
+    def getSubtitlesLength(self):
+        return 1+len(self.getSubtitles())
+
+    def setSubtitlesInPath(self, filenames):
+        if self.title and self.title[0]=='4':
+            print [e.filename for e in self.exsubs]
+            print filenames
+        self.in_fs=True
+        for each in filenames:
+            for st in self.exsubs:
+                if st.filename==each:
+                    st.in_fs=True
+                    break
+            else:
+                self.exsubs.append(SubtitleSyncInfo(filename=each))
+        sorted(self.exsubs, key=(lambda x: unicode.lower(x.filename)))
+
+
+class SubtitleSyncInfo:
+
+    def __init__(self, filename, language=None, in_fs=None):
+        self.filename = filename
+        self.language = language
+        if in_fs==None:
+            self.in_fs = language==None
+        else:
+            self.in_fs = in_fs
+
+    def __str__(self):
+        return self.filename
+
+
 def getLanguageAbbr(language):
     return LANGUAGE_ABBRVS[LANGUAGES.index(language)]
 
@@ -32,24 +84,12 @@ def index(request):
     movies, subtitles = {}, {}
     location = Location.objects.get(id=locationId)
     for each in Subtitle.objects.filter(location_id=locationId):
-        subtitles.setdefault(each.movie_id, []).append([each.filename, False, each.language])
+        subtitles.setdefault(each.movie_id, []).append(SubtitleSyncInfo(each.filename, each.language))
 
     #we access the movies via the MoviePath table
     for each in MoviePath.objects.filter(location=location):
-        #each.path is the full path, and each.movie the associated movie
-        movies[each.path]=[each.path, each.movie.title, False, each.movie.id, each.movie.embedded_subs, subtitles.get(each.movie_id, [])]
+        movies[each.path]=MovieSyncInfo(each.path, each.movie, subtitles.get(each.movie_id))
 
-    #we will pass to the renderer a list of movies, sorted. Each is an array containing:
-    #1-The path
-    #2-The title
-    #3-True if the movie if the movie exists in filesystem
-    #4-Id of the movie if the movie exists in database, 0 otherwise
-    #5-Media subtitles (embedded)
-    #6-Number of subtitles (added later)
-    #7-list of subtitles. 
-        #1- path (in same folder as movie)
-        #2- true if the subtitle path exists in filesystem
-        #3- language (None if not found in database)
     problems=[]
     for each in LocationHandler(locationPath).iterateAllFilesInPath():
         path, error, type, subs = each[0], each[1], each[2], (len(each)==4 and each[3]) or []
@@ -60,26 +100,13 @@ def index(request):
         else:
             info = movies.get(path)
             if info: #path, title, in_fs, movieId, subtitles
-                info[2]=True #in fs, okay
-                for subinfo in info[5]:
-                    try:
-                        subs.remove(subinfo[0])
-                        subinfo[1]=True #in_fs
-                    except ValueError:
-                        pass
-                for sub in subs:
-                    info[5].append((sub, True, None))
+                info.setSubtitlesInPath(subs)
             else:
-                movies[path]=[path, '', True, 0, '', [(sub, True, None) for sub in subs]] 
+                movies[path]=MovieSyncInfo(path)
     
     info=[]
     for key in sorted(movies.keys(), key=unicode.lower):
-        movie = movies[key]
-        subs = (movie[2] and movie[3] and movie[5]) or [] #do not include subtitles if not in file system or db
-        movie[5] = 1 + len(subs)
-        sorted(subs, key=(lambda x: unicode.lower(x[0])))
-        movie.append(subs)
-        info.append(movie)
+        info.append(movies[key])
 
     problems.sort() 
     if problems and problems[0][0]==2:
@@ -182,13 +209,7 @@ def edit_movie(request):
 
     return render_to_response('locations_sync_movie.html', 
         {      
-            'in_fs'    : True,
-            'db_id'    : movie.id,
-            'path'     : path,
-            'title'    : imdbinfo.title,
-            'insubs'   : movie.embedded_subs, 
-            'subs'     : subtitles,
-            'lensubs'  : len(subtitles)+1,
+            'movie'    : MovieSyncInfo(path, movie, subtitles, in_fs=True),
             'languages': LANGUAGES
         },
         RequestContext(request))
@@ -275,9 +296,7 @@ def edit_subtitle(request):
 
     return render_to_response('locations_sync_subtitle.html', 
         {      
-            'in_fs'    : True,
-            'language' : language,
-            'path'     : subpath
+            'sub' : SubtitleSyncInfo(subpath, language, in_fs=True)
         },
         RequestContext(request))
 
@@ -290,7 +309,7 @@ def fetch_subtitles(request):
 
     href = data.get('subtitle')
     if not href:
-        #just return the possible subtitles
+        #case A - just return the possible subtitles
         try:
             movie=Movie.objects.get(id=movieId)
             print searchSubtitles(movie.title)
@@ -303,20 +322,20 @@ def fetch_subtitles(request):
             { 'subtitles'  : matches },
             RequestContext(request))
 
+    #normal case - fetch the requested subtitle
     try:
         movie=Movie.objects.get(id=movieId)
         moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId)
         subtitlesContent = getSubtitles(href, language)
         if not subtitlesContent:
             return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
-        newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language),subtitlesContent)
+        newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language), subtitlesContent)
     except Exception, ex:
         return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
 
     if newPath!=moviePath.path:
         moviePath.path=newPath
         moviePath.save()
-
 
     dbSubtitles = {}
     for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId):
@@ -331,13 +350,7 @@ def fetch_subtitles(request):
 
     return render_to_response('locations_sync_movie.html', 
         {      
-            'in_fs'    : True,
-            'db_id'    : movie.id,
-            'path'     : newPath,
-            'title'    : movie.title,
-            'insubs'   : movie.embedded_subs, 
-            'subs'     : subtitles,
-            'lensubs'  : len(subtitles)+1,
+            'movie'    : MovieSyncInfo(newPath, movie, subtitles, in_fs=True),
             'languages': LANGUAGES
         },
         RequestContext(request))

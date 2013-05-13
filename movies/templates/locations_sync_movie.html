@@ -1,7 +1,7 @@
-<tr data-movie-id='{{db_id}}'>
-    <td rowspan='{{lensubs}}'>
-        {%if db_id %}
-            {%if in_fs %}
+<tr data-movie-id='{{movie.id}}'>
+    <td rowspan='{{movie.getSubtitlesLength}}'>
+        {%if movie.id %}
+            {%if movie.in_fs %}
             <a class="btn btn-mini btn-color-yellow edit-movie" href="#"><i class="icon-pencil"></i>
             {% else %}
             <a class="btn btn-mini btn-color-red remove-movie" href="#"><i class="icon-minus"></i>
@@ -10,19 +10,22 @@
             <a class="btn btn-mini btn-color-green edit-movie" href="#"><i class="icon-plus"></i>
         {% endif %}
     </td>
-    <td rowspan='{{lensubs}}'>
-    	<div class='path {%if not db_id %}db-False{%endif%}'>{{path}}</div>
-    	<div class='title ok-{{in_fs}}'>{{title}}</div>
+    <td rowspan='{{movie.getSubtitlesLength}}'>
+    	<div class='path {%if not movie.id %}db-False{%endif%}'>{{movie.path}}</div>
+    	<div class='title ok-{{movie.in_fs}}'>{{movie.title}}</div>
+    </td>
+    <td rowspan='{{movie.getSubtitlesLength}}'>
+        <div class='audios'>{{movie.audios}}</div>
     </td>
     <td colspan='3'>
-        {%if in_fs and db_id%}
+        {%if movie.in_fs and movie.id%}
         <a class="btn btn-mini fetch-subtitle disabled" href="#">
             <i class="icon-plus"></i>
         </a>
-        <span class='subtitles'>{{insubs}}</span>
+        <span class='subtitles'>{{movie.embedded_subs}}</span>
         {%endif%}
     </td>
 </tr>
-{% for path, in_fs, language in subs %}
+{% for sub in movie.getSubtitles %}
     {%include "locations_sync_subtitle.html"%}
 {%endfor%}

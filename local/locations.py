@@ -21,6 +21,11 @@ class LocationHandler:
     def __init__(self, folderBase):
         self.folderBase=folderBase
 
+    def rename(self, source, destination):
+        if os.path.exists(destination):
+            raise Exception(destination+' already exists, cannot rename '+source)
+        os.rename(source, destination)
+
     def isValid(self):
         return os.path.isdir(self.folderBase)
 
@@ -203,7 +208,7 @@ class LocationHandler:
             #we rename it
             oldDirName = os.path.join(self.folderBase, dirname)
             newDirName = os.path.join(self.folderBase, newname)
-            os.rename(oldDirName, newDirName)
+            self.rename(oldDirName, newDirName)
             dirname=newname
         newname+=os.path.splitext(basename)[-1].lower()
         if newname!=basename:
@@ -212,10 +217,10 @@ class LocationHandler:
             basename = newname
             try:
                 #if this fails, we will rename the directory back
-                os.rename(oldPath, newPath)
+                self.rename(oldPath, newPath)
             except:
                 if oldDirName:
-                    os.rename(newDirName, oldDirName)
+                    self.rename(newDirName, oldDirName)
                 raise
         return os.path.join(dirname, basename)
 
@@ -224,10 +229,10 @@ class LocationHandler:
         oldName, normName = os.path.basename(path), os.path.basename(normalizedName)
 
         if oldDirname!=normDirname:
-            os.rename(os.path.join(self.folderBase, normDirname), os.path.join(self.folderBase, oldDirname))
+            self.rename(os.path.join(self.folderBase, normDirname), os.path.join(self.folderBase, oldDirname))
 
         if oldName!=normName:
-            os.rename(os.path.join(self.folderBase, oldDirname, normName), os.path.join(self.folderBase, oldDirname, oldName))
+            self.rename(os.path.join(self.folderBase, oldDirname, normName), os.path.join(self.folderBase, oldDirname, oldName))
 
     def getRelativeName(self, path):
         ret = path[len(self.folderBase):]
@@ -253,11 +258,11 @@ class LocationHandler:
         newName = os.path.join(self.folderBase, dirName, newSubtitle)
 
         if os.path.exists(newName): raise Exception('File '+newSubtitle+' already exists')
-        os.rename(oldName, newName)
+        self.rename(oldName, newName)
         return newSubtitle, [oldName, newName]
 
     def renormalizeSubtitle(self, oldName, newName):
-        os.rename(newName, oldName)
+        self.rename(newName, oldName)
 
 
     def storeSubtitles(self, moviePath, lang_abbr, subtitles):
@@ -274,7 +279,7 @@ class LocationHandler:
             dirname = os.path.join(self.folderBase, dirname)
             if not os.path.exists(dirname):
                 os.mkdir(dirname)
-            os.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
+            self.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
         index=1
         for content in subtitles:
             while True:
