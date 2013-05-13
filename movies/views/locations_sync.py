@@ -22,12 +22,19 @@ LANGUAGE_ABBRVS=['en', 'fr', 'de', 'pt', 'es'] #http://en.wikipedia.org/wiki/Lis
 class MovieSyncInfo:
 
     def __init__(self, path, movie=None, subtitlesInfo=None, in_fs=None):
+        def get_image():
+            if movie:
+                ret=movie.image_set.order_by('size')[:1]
+                return ret and ret[0].servepath()
+
         self.path  = path
         self.title = (movie and movie.title) or ''
         self.id = (movie and movie.id) or 0
         self.embedded_subs = movie and movie.embedded_subs
         self.audios = (movie and movie.audios) or ''
         self.exsubs = subtitlesInfo or []
+        self.image = get_image()
+        self.imdb_link= movie and movie.imdb_link
         if in_fs==None:
             self.in_fs = movie!=None
         else:

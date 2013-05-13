@@ -191,4 +191,9 @@ function setupLocationsSync($locationsSyncSelector){
 		$problemDialog.modal('show');
 	}
 	setupEventHandlers();
+
+	$('.ic_tooltip').tooltip();
+	$('.ic_tooltip_img').tooltip({html: true, placement:'right', title:function(){
+		return '<img src="'+$(this).attr('src')+'">';
+	}});
 }
