@@ -59,7 +59,7 @@ function setupAjaxModal($modal, settings){
 	var $progress=$('.progress', $parent);
 	var $error=$('.error_dialog', $parent);
 	var superSettings={
-		settings: settings, 
+		settings: settings || {}, 
 		submit:submit,
 		showError: showError,
 		hideProgress: hideProgress

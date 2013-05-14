@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     url(r'^locations$', 'movies.views.locations.index', name='#locations'),
     url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
 
+    url(r'^ax_moved_langs$', 'movies.views.movie_edition.langs', name='#moved_langs'),
+
     url(r'^ax_lsync_edit$', 'movies.views.locations_sync.edit_movie', name='#locations_sync_edit'),
     url(r'^ax_lsync_remove$', 'movies.views.locations_sync.remove_movie', name='#locations_sync_remove'),
 

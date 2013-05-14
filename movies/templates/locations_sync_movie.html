@@ -22,14 +22,31 @@
     	<div class='title ok-{{movie.in_fs}}'>{{movie.title}}</div>
     </td>
     <td rowspan='{{movie.getSubtitlesLength}}'>
-        <div class='audios'>{{movie.audios}}</div>
+        {% if movie.id %}
+        <div class='lang_dialog_wrapper'>
+            <a class="btn btn-mini audio-choice" href="#">
+                <i class="icon-list"></i>
+            </a>
+            <span class='in-audios'>{{movie.audios}}</span>
+        </div>
+        {%endif%}
     </td>
     <td colspan='3'>
         {%if movie.in_fs and movie.id%}
-        <div class='subtitles'>{{movie.embedded_subs}}</div>
-        <a class="btn btn-mini fetch-subtitle disabled" href="#">
-            <i class="icon-plus"></i>
-        </a>
+        <div class='lang_dialog_wrapper'>
+            <div class="btn-group">
+                <a class="btn btn-mini fetch-subtitle" href="#">
+                    <i class="icon-plus"></i>
+                </a>
+                <a class="btn btn-mini refresh-subtitles" href="#">
+                    <i class="icon-refresh"></i>
+                </a>
+                <a class="btn btn-mini subtitle-choice" href="#">
+                    <i class="icon-list"></i>
+                </a>
+            </div>
+            <span class='in-subtitles'>{{movie.embedded_subs}}</span>
+        </div>
         {%endif%}
     </td>
 </tr>

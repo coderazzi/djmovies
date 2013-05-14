@@ -173,12 +173,21 @@ function setupLocationsSync($locationsSyncSelector){
 
 		fetchingMatches=true;
 		dialogSettings.settings.message='Retrieving correct title'
-		$updatingTr=$(this).parent().parent();
+		$updatingTr=$(this).parent().parent().parent();
 		$fetchTitleText.text($('.title', $updatingTr).text());
 		$fetchSelection.html('');
 		$fetchMovie.val($updatingTr.attr('data-movie-id'));
 		$fetchDialog.modal('show');
 		return false;
+	}
+
+	function getMovieId($languageSelector){
+		var $tr=$languageSelector.parent().parent(); 
+		while (($tr=$tr.parent()).length){
+			var ret = $tr.attr('data-movie-id');
+			if (ret) return [ret, $tr.find('.title').text()];
+		}
+
 	}
 
 
@@ -191,9 +200,5 @@ function setupLocationsSync($locationsSyncSelector){
 		$problemDialog.modal('show');
 	}
 	setupEventHandlers();
-
-	$('.ic_tooltip').tooltip();
-	$('.ic_tooltip_img').tooltip({html: true, placement:'right', title:function(){
-		return '<img src="'+$(this).attr('src')+'">';
-	}});
+	movieEdition(getMovieId);
 }
