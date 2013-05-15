@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     url(r'^ax_lsync_subtitle_fetch$', 'movies.views.locations_sync.fetch_subtitles', name='#lsync_subtitle_fetch'),
     url(r'^ax_lsync_subtitle_edit$', 'movies.views.locations_sync.edit_subtitle', name='#lsync_subtitle_edit'),
     url(r'^ax_lsync_subtitle_remove$', 'movies.views.locations_sync.remove_subtitle', name='#lsync_subtitle_remove'),
+    url(r'^ax_lsync_subtitle_trash$', 'movies.views.locations_sync.trash_subtitle', name='#lsync_subtitle_trash'),
 
     url(r'^ax_imdb_get_mediainfo$', 'movies.views.dialog_imdb.get_mediainfo', name='#imdb_get_mediainfo'),
     url(r'^ax_imdb_search_title$', 'movies.views.dialog_imdb.search_title', name='#imdb_search_title'),

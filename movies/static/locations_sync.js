@@ -11,7 +11,7 @@ function setupLocationsSync($locationsSyncSelector){
 	var $updatingTr;
 
 	var locationId, locationPath, fetchingMatches, fetchDialogSettings;
-	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie, urlRefreshInfo;
+	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie, urlRefreshInfo, urlTrashSubtitle;
 
 	function setupEventHandlers(){
 		$('.edit-movie').click(editMovieCallback);
@@ -20,6 +20,7 @@ function setupLocationsSync($locationsSyncSelector){
 		$('.remove-subtitle').off('click').click(removeSubtitleCallback);
 		$('.fetch-subtitle').off('click').click(fetchSubtitlesCallback);
 		$('.refresh-subtitles').off('click').click(refreshSubtitlesCallback);
+		$('.trash-subtitle').off('click').click(trashSubtitleCallback);
 	}
 
 	function updateMovieInfo($tr, html){
@@ -39,12 +40,12 @@ function setupLocationsSync($locationsSyncSelector){
 	}
 
 	function editMovieCallback(){
-		var $tr=$(this).parent().parent();
-		var path = $('.path', $tr), title=$('.title', $tr);
+		$updatingTr=getMainRow($(this)); 
+		var path = $('.path', $updatingTr), title=$('.title', $updatingTr);
 		if (path.length){
 			DialogImdb.show(
 				path.text(), 
-				$tr.attr('data-movie-id'), 
+				$updatingTr.attr('data-movie-id'), 
 				title && title.text(),
 				function(info){
 				ajaxPost({
@@ -52,7 +53,7 @@ function setupLocationsSync($locationsSyncSelector){
 					message: 'Adding movie information',
 					data: info,
 					success: function(response){
-						updateMovieInfo($tr, response);
+						updateMovieInfo($updatingTr, response);
 					}
 				});
 			});
@@ -61,7 +62,7 @@ function setupLocationsSync($locationsSyncSelector){
 	}
 
 	function removeMovieCallback(){
-		$updatingTr=$(this).parent().parent(); 
+		$updatingTr=getMainRow($(this)); 
 
 		var movieId=$updatingTr.attr('data-movie-id');
 		var title=$.trim($updatingTr.find('.title').text())
@@ -82,15 +83,36 @@ function setupLocationsSync($locationsSyncSelector){
 		return false;
 	}
 
+	function trashSubtitleCallback(){
+		var info = getSubtitleRow($(this)), 
+			path = $.trim(info.$subSelector.find('.path').text()),
+			movieId = info.movieId;
+		$updatingTr = info.$mainRow;
+		DialogConfirm.show('Are you sure to remove from database / file system the subtitle '+path+'?',
+			{
+				url:urlTrashSubtitle,
+				success: function(response){
+					updateMovieInfo($updatingTr, response);
+					DialogConfirm.hide();
+				},
+				message:'Subtitle file trashing',
+				data:{
+					movieId:movieId,
+					locationId: locationId,
+					locationPath: locationPath,
+					subpath:path
+				}
+			});
+		return false;
+	}
+
 	function removeSubtitleCallback(){
-		$updatingTr=$(this).parent().parent(); 
-		var $mainTr=$updatingTr, movieId;
-		while (!movieId && ($mainTr=$mainTr.prev()).length){
-			movieId=$mainTr.attr('data-movie-id');
-		}
 
-		var path=$.trim($updatingTr.find('.path').text())
+		var info = getSubtitleRow($(this)), 
+			path = $.trim(info.$subSelector.find('.path').text()),
+			movieId = info.movieId;
 
+		$updatingTr=info.$subSelector; 
 		DialogConfirm.show('Are you sure to remove from database the subtitle '+path+'?',
 			{
 				url:urlRemoveSubtitle,
@@ -127,18 +149,13 @@ function setupLocationsSync($locationsSyncSelector){
 			});
 		}
 
-		$updatingTr=$(this).parent().parent(); //group, td, tr
-
-		var $mainTr=$updatingTr,
-			$path=$updatingTr.find('.path'), 
+		var info = getSubtitleRow($(this)), 
+			movieId=info.movieId,
+			$path=info.$subSelector.find('.path'), 
 		    language=$path.attr('data-language'), 
-		    path=$.trim($path.text()),
-		    movieId;
+		    path=$.trim($path.text());
 
-		while (!movieId && ($mainTr=$mainTr.prev()).length){
-			movieId=$mainTr.attr('data-movie-id');
-		}
-
+		$updatingTr=info.$subSelector;
 		$stPathText.text(path);
 		$stPathInput.val(path);
 		$stMovie.val(movieId);
@@ -174,7 +191,7 @@ function setupLocationsSync($locationsSyncSelector){
 
 		fetchingMatches=true;
 		fetchDialogSettings.settings.message='Retrieving correct title';
-		$updatingTr=$(this).parent().parent().parent().parent();
+		$updatingTr=getMainRow($(this));
 		$fetchTitleText.text($('.title', $updatingTr).text());
 		$fetchSelection.html('');
 		$fetchMovie.val($updatingTr.attr('data-movie-id'));
@@ -183,35 +200,56 @@ function setupLocationsSync($locationsSyncSelector){
 	}
 
 	function refreshSubtitlesCallback(){
-		$updatingTr=$(this).parent().parent().parent().parent();
+		var $main=getMainRow($(this));
 		ajaxPost({
 			url: urlRefreshInfo,
 			data: {
 				locationId: locationId,
-				movieId: $updatingTr.attr('data-movie-id'),
+				movieId: $main.attr('data-movie-id'),
 				path: locationPath, 
 			},
 			message: 'Refreshing subtitles',
 			success: function(response){
-				updateMovieInfo($updatingTr, response);
+				updateMovieInfo($main, response);
 			}
 		});
 		return false;
 	}
 
-	function getMovieId($languageSelector){
-		var $tr=$languageSelector.parent().parent(); 
-		while (($tr=$tr.parent()).length){
-			var ret = $tr.attr('data-movie-id');
-			if (ret) return [ret, $tr.find('.title').text()];
-		}
+	function getMainRow($subSelector){
+		while ($subSelector.length){
+			if ($subSelector.attr('data-movie-id')) return $subSelector;
+			$subSelector=$subSelector.parent();
+		}		
+	}
 
+	function getSubtitleRow($subSelector){
+		while ($subSelector.length){
+			if ($subSelector.hasClass('subtitle')) {
+				var movieId, $tmp=$subSelector;
+				while (!movieId && ($tmp=$tmp.prev()).length){
+					movieId=$tmp.attr('data-movie-id');
+				}
+				return {
+					$subSelector: $subSelector, 
+					$mainRow:  $tmp,
+					movieId: movieId
+				};
+			}
+			$subSelector=$subSelector.parent();
+		}		
+	}
+
+	function getMovieId($languageSelector){
+		var $tr=getMainRow($languageSelector); 
+		return [$tr.attr('data-movie-id'), $tr.find('.title').text()];
 	}
 
 
 	locationId = $locationsSyncSelector.attr('data-location-id');
 	locationPath = $locationsSyncSelector.attr('data-location-path'); 
 	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
+	urlTrashSubtitle = $locationsSyncSelector.attr('data-trash-subtitle-url');
 	urlEditMovie = $locationsSyncSelector.attr('data-edit-movie-url');
 	urlRemoveMovie = $locationsSyncSelector.attr('data-remove-movie-url');
 	urlRefreshInfo = $locationsSyncSelector.attr('data-info-movie-url');

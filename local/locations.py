@@ -126,6 +126,15 @@ class LocationHandler:
         return ret
 
 
+    def removeSubtitle(self, moviePath, subpath):
+        dirname = os.path.dirname(moviePath)
+        if dirname:
+            fullpath=os.path.join(self.folderBase, dirname, subpath)
+            print fullpath
+            if os.path.exists(fullpath) and subpath.lower().endswith('.srt'):
+                os.remove(fullpath)
+                return True
+        return False
 
     def getSubtitles(self, moviePath, dbInfo):
         '''

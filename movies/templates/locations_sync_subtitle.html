@@ -1,9 +1,17 @@
 <tr class='subtitle'>
     <td>
         {%if sub.in_fs %}          
-            <a class="btn btn-mini btn-color-{%if sub.language%}yellow{%else%}green{%endif%} edit-subtitle" href="#">
-                <i class="icon-pencil"></i>
-            </a>
+            <div class="btn-group">
+                <a class="btn btn-mini btn-color-{%if sub.language%}yellow{%else%}green{%endif%} edit-subtitle" href="#">
+                    <i class="icon-pencil"></i>
+                </a>
+                <a class="btn btn-mini shift-subtitle" href="#">
+                    <i class="icon-wrench"></i>
+                </a>
+                <a class="btn btn-mini btn-color-red trash-subtitle" href="#">
+                    <i class="icon-trash"></i>
+                </a>
+            </div>
         {%else%}
             <a class="btn btn-mini btn-color-red remove-subtitle" href="#">
                 <i class="icon-minus"></i>

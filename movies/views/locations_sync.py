@@ -227,11 +227,29 @@ def remove_subtitle(request):
 
 
 def _handle_ajax_json(request, handler):
-    if not request.is_ajax(): return redirect('#locations')
-
     handler(json.loads(request.body))
 
     return HttpResponse(json.dumps({'success': True}), content_type="application/json")
+
+
+def trash_subtitle(request):
+    data=json.loads(request.body)
+    locationId, movieId, subpath = data['locationId'], data['movieId'], data['subpath']
+    locationHandler = LocationHandler(data['locationPath'])
+    moviePath=MoviePath.objects.get(location_id=locationId, movie_id=movieId).path
+    if not locationHandler.removeSubtitle(moviePath, subpath):
+        return HttpResponse(json.dumps({'error': 'Could not remove such file. Try a refresh'}), content_type="application/json")    
+
+    Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=subpath).delete()
+    
+    movie=Movie.objects.get(id=movieId)
+    subtitles = locationHandler.getSubtitles(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
+    return render_to_response('locations_sync_movie.html', 
+        {      
+            'movie'    : MovieSyncInfo(moviePath, movie, subtitles, in_fs=True),
+            'languages': LANGUAGES
+        },
+        RequestContext(request))
 
 
 def edit_subtitle(request):
