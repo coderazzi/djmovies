@@ -1,6 +1,20 @@
 import re
 import os
 
+class SubtitleInfo:
+
+    def __init__(self, filename, language=None, in_fs=None):
+        self.filename = filename
+        self.language = language
+        if in_fs==None:
+            self.in_fs = language==None
+        else:
+            self.in_fs = in_fs
+
+    def __str__(self):
+        return self.filename
+
+
 class LocationHandler:
 
     VIDEO_FILE='VIDEO_FILE'
@@ -112,19 +126,28 @@ class LocationHandler:
         return ret
 
 
+
     def getSubtitles(self, moviePath, dbInfo):
         '''
-        Returns only the subtitles information for the given path
+        Returns only the subtitles information for the given path.
+        @param dbInfo: list of SubtitleInfo instances (db instances)
         '''        
         try:
             dirname = os.path.dirname(moviePath)
             if dirname:
                 fileinfo = self._iterateAllFilesInSubpath(dirname, os.path.join(self.folderBase, dirname))
                 if len(fileinfo)==1 and len(fileinfo[0])==4:
-                    return [(sub, True, dbInfo.get(sub)) for sub in fileinfo[0][3]]
+                    for sub in fileinfo[0][3]:
+                        for each in dbInfo:
+                            if each.filename==sub:
+                                each.in_fs=True
+                                break
+                        else:
+                            dbInfo.append(SubtitleInfo(sub))
         except:
             pass
-        return []
+        sorted(dbInfo, key=(lambda x: unicode.lower(x.filename)))
+        return dbInfo
 
 
     def _iterateAllFilesInSubpath(self, filename, fullpath):

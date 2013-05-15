@@ -199,6 +199,7 @@ caption {
   color: #0da; }
 
 #locations_sync .in-subtitles,
+#locations_sync .subtitles,
 #locations_sync .in-audios {
   font-size: 12px; }
 
@@ -207,7 +208,7 @@ caption {
   padding: 0px 10px; }
 
 #locations_sync img.ic_tooltip_img {
-  width: 30px; }
+  width: 48px; }
 
 #locations_sync .ic_title {
   max-width: 150px;

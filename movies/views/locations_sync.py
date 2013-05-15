@@ -9,7 +9,7 @@ from django.template import RequestContext
 from movies.models import Location, MoviePath, Movie, Image, Subtitle
 
 from local.imdb import getSubtitles, searchSubtitles
-from local.locations import LocationHandler
+from local.locations import LocationHandler, SubtitleInfo
 from local.dstruct import Struct
 
 
@@ -59,22 +59,8 @@ class MovieSyncInfo:
                     st.in_fs=True
                     break
             else:
-                self.exsubs.append(SubtitleSyncInfo(filename=each))
+                self.exsubs.append(SubtitleInfo(filename=each))
         sorted(self.exsubs, key=(lambda x: unicode.lower(x.filename)))
-
-
-class SubtitleSyncInfo:
-
-    def __init__(self, filename, language=None, in_fs=None):
-        self.filename = filename
-        self.language = language
-        if in_fs==None:
-            self.in_fs = language==None
-        else:
-            self.in_fs = in_fs
-
-    def __str__(self):
-        return self.filename
 
 
 def getLanguageAbbr(language):
@@ -91,7 +77,7 @@ def index(request):
     movies, subtitles = {}, {}
     location = Location.objects.get(id=locationId)
     for each in Subtitle.objects.filter(location_id=locationId):
-        subtitles.setdefault(each.movie_id, []).append(SubtitleSyncInfo(each.filename, each.language))
+        subtitles.setdefault(each.movie_id, []).append(SubtitleInfo(each.filename, each.language))
 
     #we access the movies via the MoviePath table
     for each in MoviePath.objects.filter(location=location):
@@ -194,7 +180,7 @@ def edit_movie(request):
             movie.delete()
             raise
 
-        currentSubtitles={}
+        subtitles=[]
         if oldMovie:
             for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId):
                 lang=getLanguageAbbr(each.language)
@@ -204,10 +190,10 @@ def edit_movie(request):
                 if normalize:
                     each.filename = normalize[0]
                 each.save()
-                currentSubtitles[each.filename] = each.language
+                subtitles.append(SubtitleInfo(each.filename, each.language))
             oldMovie.delete()
 
-        subtitles = locationHandler.getSubtitles(path, currentSubtitles)
+        subtitles = locationHandler.getSubtitles(path, subtitles)
 
     except Exception as ex:
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
@@ -303,7 +289,7 @@ def edit_subtitle(request):
 
     return render_to_response('locations_sync_subtitle.html', 
         {      
-            'sub' : SubtitleSyncInfo(subpath, language, in_fs=True)
+            'sub' : SubtitleInfo(subpath, language, in_fs=True)
         },
         RequestContext(request))
 
@@ -344,20 +330,29 @@ def fetch_subtitles(request):
         moviePath.path=newPath
         moviePath.save()
 
-    dbSubtitles = {}
-    for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId):
-        dbSubtitles[each.filename] = [each.filename, False, each.language]
-    for each in subtitles:
-        assoc = dbSubtitles.get(each)
-        if assoc:
-            assoc[1]=True
-        else:
-            dbSubtitles[each]=[each, True, None]
-    subtitles=sorted(dbSubtitles.values(), key=(lambda x: unicode.lower(x[0])))
+    subtitles = locationHandler.getSubtitles(moviePath.path, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
 
     return render_to_response('locations_sync_movie.html', 
         {      
             'movie'    : MovieSyncInfo(newPath, movie, subtitles, in_fs=True),
+            'languages': LANGUAGES
+        },
+        RequestContext(request))
+
+
+
+def get_movie_info(request):
+    data =  json.loads(request.body)
+    movieId, locationId = data['movieId'], data['locationId']
+    locationHandler = LocationHandler(data['path'])
+
+    movie=Movie.objects.get(id=movieId)
+    moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId).path
+    subtitles = locationHandler.getSubtitles(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
+
+    return render_to_response('locations_sync_movie.html', 
+        {      
+            'movie'    : MovieSyncInfo(moviePath, movie, subtitles, in_fs=True),
             'languages': LANGUAGES
         },
         RequestContext(request))

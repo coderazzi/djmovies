@@ -10,15 +10,16 @@ function setupLocationsSync($locationsSyncSelector){
 	
 	var $updatingTr;
 
-	var locationId, fetchingMatches;
-	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie;
+	var locationId, locationPath, fetchingMatches, fetchDialogSettings;
+	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie, urlRefreshInfo;
 
 	function setupEventHandlers(){
 		$('.edit-movie').click(editMovieCallback);
 		$('.remove-movie').click(removeMovieCallback);
 		$('.edit-subtitle').off('click').click(editSubtitleCallback);
 		$('.remove-subtitle').off('click').click(removeSubtitleCallback);
-		$('.fetch-subtitle').off('click').click(fetchSubtitleCallback);
+		$('.fetch-subtitle').off('click').click(fetchSubtitlesCallback);
+		$('.refresh-subtitles').off('click').click(refreshSubtitlesCallback);
 	}
 
 	function updateMovieInfo($tr, html){
@@ -146,38 +147,55 @@ function setupLocationsSync($locationsSyncSelector){
 		return false;
 	}
 
-	function fetchSubtitleCallback(){
+	function fetchSubtitlesCallback(){
 		if (!$fetchDialog){
 			$fetchDialog = $('#locations_subtitle_fetch_dialog').on('shown', function(){
 				$fetchSelection.focus();
-				dialogSettings.submit.click();
+				fetchDialogSettings.submit.click();
 			});
 			$fetchTitleText = $('.title', $fetchDialog);
 			$fetchLanguage = $('select[name="language"]', $fetchDialog).val('English');
 			$fetchSelection = $('select[name="subtitle"]', $fetchDialog);
 			$fetchMovie = $('input[name="movie.id"]', $fetchDialog);
-			var dialogSettings = setupAjaxModal($fetchDialog, {
+			fetchDialogSettings = setupAjaxModal($fetchDialog, {
 				message : 'Subtitles fetch',
 				success : function(response){
 					if (fetchingMatches){
 						fetchingMatches=false;
-						dialogSettings.settings.message='Fetching subtitle'
+						fetchDialogSettings.settings.message='Fetching subtitle'
 						$fetchSelection.html(response);
 					} else {
 						updateMovieInfo($updatingTr, response);
 					}
-					dialogSettings.hideProgress();
+					fetchDialogSettings.hideProgress();
 				}
 			});
 		}
 
 		fetchingMatches=true;
-		dialogSettings.settings.message='Retrieving correct title'
-		$updatingTr=$(this).parent().parent().parent();
+		fetchDialogSettings.settings.message='Retrieving correct title';
+		$updatingTr=$(this).parent().parent().parent().parent();
 		$fetchTitleText.text($('.title', $updatingTr).text());
 		$fetchSelection.html('');
 		$fetchMovie.val($updatingTr.attr('data-movie-id'));
 		$fetchDialog.modal('show');
+		return false;
+	}
+
+	function refreshSubtitlesCallback(){
+		$updatingTr=$(this).parent().parent().parent().parent();
+		ajaxPost({
+			url: urlRefreshInfo,
+			data: {
+				locationId: locationId,
+				movieId: $updatingTr.attr('data-movie-id'),
+				path: locationPath, 
+			},
+			message: 'Refreshing subtitles',
+			success: function(response){
+				updateMovieInfo($updatingTr, response);
+			}
+		});
 		return false;
 	}
 
@@ -192,9 +210,11 @@ function setupLocationsSync($locationsSyncSelector){
 
 
 	locationId = $locationsSyncSelector.attr('data-location-id');
+	locationPath = $locationsSyncSelector.attr('data-location-path'); 
 	urlRemoveSubtitle = $locationsSyncSelector.attr('data-remove-subtitle-url');
 	urlEditMovie = $locationsSyncSelector.attr('data-edit-movie-url');
 	urlRemoveMovie = $locationsSyncSelector.attr('data-remove-movie-url');
+	urlRefreshInfo = $locationsSyncSelector.attr('data-info-movie-url');
 
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
