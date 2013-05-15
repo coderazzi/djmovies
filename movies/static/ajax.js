@@ -35,6 +35,14 @@ function _luajax(settings){
 	$.ajax(settings);
 }
 
+function alertError(error){
+	Messenger().post({
+			message:error,
+			type: 'error',
+			showCloseButton: true
+		});
+}
+
 function ajaxPost(settings) {
 	_luajax($.extend({type: 'POST'}, settings));
 }
@@ -46,7 +54,7 @@ function ajaxPostForm(form, settings) {
 }
 
 function addProgressToModal($modal){
-	setupAjaxModal($modal);
+	setupAjaxModal($modal, null);
 }
 
 function setupAjaxModal($modal, settings){
@@ -58,8 +66,9 @@ function setupAjaxModal($modal, settings){
 	var $parent = submit.parent();
 	var $progress=$('.progress', $parent);
 	var $error=$('.error_dialog', $parent);
+	if (settings===undefined) settings={};
 	var superSettings={
-		settings: settings || {}, 
+		settings: settings, 
 		submit:submit,
 		showError: showError,
 		hideProgress: hideProgress

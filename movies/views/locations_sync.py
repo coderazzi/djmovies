@@ -36,7 +36,7 @@ class MovieSyncInfo:
         self.image = get_image()
         self.imdb_link= movie and movie.imdb_link
         if in_fs==None:
-            self.in_fs = movie!=None
+            self.in_fs = movie==None
         else:
             self.in_fs = in_fs
 
@@ -45,7 +45,7 @@ class MovieSyncInfo:
     def getSubtitles(self):
         return (self.id and self.in_fs and self.exsubs) or []
 
-    def getSubtitlesLength(self):
+    def getRowspan(self):
         return 1+len(self.getSubtitles())
 
     def setSubtitlesInPath(self, filenames):
@@ -193,7 +193,7 @@ def edit_movie(request):
                 subtitles.append(SubtitleInfo(each.filename, each.language))
             oldMovie.delete()
 
-        subtitles = locationHandler.getSubtitles(path, subtitles)
+        subtitles = locationHandler.syncSubtitleInfos(path, subtitles)
 
     except Exception as ex:
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
@@ -241,9 +241,9 @@ def trash_subtitle(request):
         return HttpResponse(json.dumps({'error': 'Could not remove such file. Try a refresh'}), content_type="application/json")    
 
     Subtitle.objects.filter(location_id=locationId, movie_id=movieId, filename=subpath).delete()
-    
+
     movie=Movie.objects.get(id=movieId)
-    subtitles = locationHandler.getSubtitles(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
+    subtitles = locationHandler.syncSubtitleInfos(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
     return render_to_response('locations_sync_movie.html', 
         {      
             'movie'    : MovieSyncInfo(moviePath, movie, subtitles, in_fs=True),
@@ -348,7 +348,7 @@ def fetch_subtitles(request):
         moviePath.path=newPath
         moviePath.save()
 
-    subtitles = locationHandler.getSubtitles(moviePath.path, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
+    subtitles = locationHandler.syncSubtitleInfos(moviePath.path, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
 
     return render_to_response('locations_sync_movie.html', 
         {      
@@ -366,7 +366,7 @@ def get_movie_info(request):
 
     movie=Movie.objects.get(id=movieId)
     moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId).path
-    subtitles = locationHandler.getSubtitles(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
+    subtitles = locationHandler.syncSubtitleInfos(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)])
 
     return render_to_response('locations_sync_movie.html', 
         {      

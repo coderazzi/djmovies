@@ -1,5 +1,5 @@
 <tr data-movie-id='{{movie.id}}'>
-    <td rowspan='{{movie.getSubtitlesLength}}'>
+    <td rowspan='{{movie.getRowspan}}'>
         {%if movie.id %}
             {%if movie.in_fs %}
             <a class="btn btn-mini btn-color-yellow edit-movie" href="#"><i class="icon-pencil"></i>
@@ -10,19 +10,19 @@
             <a class="btn btn-mini btn-color-green edit-movie" href="#"><i class="icon-plus"></i>
         {% endif %}
     </td>
-    <td class='ic_link' rowspan='{{movie.getSubtitlesLength}}'>
+    <td class='ic_link' rowspan='{{movie.getRowspan}}'>
         {% if movie.imdb_link and movie.image %}
         <a href='http://www.imdb.com{{movie.imdb_link}}'>
             <img src='{{movie.image}}' class='ic_tooltip_img'>
         </a>
         {%endif%}
     </td>
-    <td rowspan='{{movie.getSubtitlesLength}}'>
+    <td rowspan='{{movie.getRowspan}}'>
     	<div class='path {%if not movie.id %}db-False{%endif%}'>{{movie.path}}</div>
     	<div class='title ok-{{movie.in_fs}}'>{{movie.title}}</div>
     </td>
-    <td rowspan='{{movie.getSubtitlesLength}}'>
-        {% if movie.id %}
+    <td rowspan='{{movie.getRowspan}}'>
+        {% if movie.in_fs and movie.id %}
         <div class='lang_dialog_wrapper'>
             <a class="btn btn-mini audio-choice" href="#">
                 <i class="icon-list"></i>

@@ -125,18 +125,21 @@ class LocationHandler:
                 ret.append((filename, True, LocationHandler.UNHANDLED_FILE)) #even for dirs, it is okay
         return ret
 
-
-    def removeSubtitle(self, moviePath, subpath):
+    def getSubtitlePath(self, moviePath, subpath):
         dirname = os.path.dirname(moviePath)
         if dirname:
             fullpath=os.path.join(self.folderBase, dirname, subpath)
-            print fullpath
             if os.path.exists(fullpath) and subpath.lower().endswith('.srt'):
-                os.remove(fullpath)
-                return True
+                return fullpath
+
+    def removeSubtitle(self, moviePath, subpath):
+        fullpath = self.getSubtitlePath(moviePath, subpath)
+        if fullpath:
+            os.remove(fullpath)
+            return True
         return False
 
-    def getSubtitles(self, moviePath, dbInfo):
+    def syncSubtitleInfos(self, moviePath, dbInfo):
         '''
         Returns only the subtitles information for the given path.
         @param dbInfo: list of SubtitleInfo instances (db instances)

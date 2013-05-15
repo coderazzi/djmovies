@@ -1,0 +1,86 @@
+{% extends "generic.html" %}
+{% block body %}
+
+    <div id='subtitles-file-content'> 
+
+        {% if error %}
+            <div class='error'>{{error}}</div>
+        {%endif%}
+
+        {% if subHandler.hasErrors %}
+
+            <div class='error'>Cannot work on this file, it contains errors</div>
+
+            <table id='subtitles-content-errors' 
+                   class='table table-striped table-bordered'>
+                <caption>{{subHandler.filename}}</caption>
+                <thead>
+                    <tr><th>Line number</th><th>Line text</th></tr>
+                </thead>
+                <tbody>
+                    {% for line, text in subHandler.getErrors %}
+                    <tr>
+                        <td class='line-number'>{{line}}</td>
+                        <td class='line-text'>{{text}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {%else%}
+       
+            <form id='subtitles-handling-form' class='form-horizontal' method='POST' action='{%url "#subtitle_update"%}'>{% csrf_token %}
+                <input type='hidden' name='path' value='{{subHandler.fullpath}}'>
+                <fieldset>
+                    <legend>Time updates</legend>
+                    <div class='control-group'>
+                        <div class='span3'>
+                            <label>Time in subtitle file</label>
+                            <input type="text" name='t1f' value='{{times.0}}' placeholder="hh:mm:ss" autofocus>
+                        </div>
+                        <div class='span3'>
+                            <label>-&gt; Time in movie</label>
+                            <input type="text" name='t1t' value='{{times.1}}' placeholder="hh:mm:ss">
+                        </div>
+                    </div>
+                    <div class='control-group'>
+                        <div class='span3'>
+                            <label>[Second time in subtitle file]</label>
+                            <input type="text" name='t2f' value='{{times.2}}' placeholder="hh:mm:ss">
+                        </div>
+                        <div class='span3'>
+                            <label>-&gt; Second time in movie</label>
+                            <input type="text" name='t2t' value='{{times.3}}' placeholder="hh:mm:ss">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Update</button>
+                </fieldset>
+            </form>
+
+            <table id='subtitles-content' 
+                   class='table table-striped table-bordered'>
+                <caption>{{subHandler.filename}}</caption>
+                <thead>
+                    <tr><th>Time</th><th>Subtitles</th></tr>
+                </thead>
+                <tbody>
+                    {% for period, content in subHandler.getSubtitleLines %}
+                    <tr>
+                        <td class='period'>{{period}}</td>
+                        <td class='subtitles'>
+                            {% for each in content %}
+                                {% if not forloop.first%}<br>{%endif%}
+                                {{each}}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {%endif%}
+
+    </div>
+
+{% endblock %}
+

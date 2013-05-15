@@ -1,0 +1,36 @@
+#subtitles-file-content {
+    width: 90%;
+    margin: 20px auto;
+}
+
+#subtitles-content th,
+#subtitles-content-errors th{
+    text-align: center;
+}
+
+#subtitles-content .period,
+#subtitles-content-errors .line-number {
+    text-align: center;
+}
+
+#subtitles-content-errors caption,
+#subtitles-content-errors th,
+#subtitles-file-content .error{
+    color: #a00;
+}
+
+#subtitles-file-content .error{
+    text-align: center;
+    font-size: 140%;
+    width: 100%;
+    padding: 12px 0px;
+    margin-bottom: 24px;
+    border: 2px solid #a00;
+}
+
+#subtitles-file-content form {
+//    width: 600px;
+    padding: 12px 60px;
+    float: right;
+    border: 1px solid #ccc;
+}

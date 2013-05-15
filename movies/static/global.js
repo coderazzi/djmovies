@@ -35,9 +35,15 @@ Messenger.options = {
 }
 
 $(function() {
-	var $selector;	
-	if ($('#locations').length) setupLocations();
-	$selector=$('#locations_sync');if ($selector.length) setupLocationsSync($selector);
-	if ($('#movies_control').length) setupMoviesControl();
+    function setupIf(selector, setupFunction){
+        var $selector=$(selector);
+        if ($selector.length) setupFunction($selector);
+    }
+
+    setupIf('#locations', setupLocations);
+    setupIf('#locations_sync', setupLocationsSync);
+    setupIf('#movies_control', setupMoviesControl);
+    setupIf('#subtitles-handling-form', setupSubtitlesHandling);
+
 	iconWhiteCheck();
 })

@@ -7,6 +7,8 @@ function setupLocationsSync($locationsSyncSelector){
 
 	var $fetchDialog, $fetchTitleText;
 	var $fetchLanguage, $fetchMovie, $fetchSelection;	
+
+	var $subShowForm, $subShowMovieId, $subShowPath;
 	
 	var $updatingTr;
 
@@ -21,6 +23,7 @@ function setupLocationsSync($locationsSyncSelector){
 		$('.fetch-subtitle').off('click').click(fetchSubtitlesCallback);
 		$('.refresh-subtitles').off('click').click(refreshSubtitlesCallback);
 		$('.trash-subtitle').off('click').click(trashSubtitleCallback);
+		$('.shift-subtitle').off('click').click(showSubtitleCallback);
 	}
 
 	function updateMovieInfo($tr, html){
@@ -36,7 +39,6 @@ function setupLocationsSync($locationsSyncSelector){
 		} else {
 			$tr.remove();
 		}
-
 	}
 
 	function editMovieCallback(){
@@ -83,9 +85,23 @@ function setupLocationsSync($locationsSyncSelector){
 		return false;
 	}
 
+	function showSubtitleCallback(){
+		var info = getSubtitleRow($(this));
+
+		if (!$subShowForm){
+			$subShowForm = $('#subtitle_show');
+			$subShowMovieId = $('input[name="movie.id"]', $subShowForm);
+			$subShowPath = $('input[name="subtitle.path"]', $subShowForm);
+		}
+
+		$subShowMovieId.val(info.movieId);
+		$subShowPath.val(info.subpath);
+		$subShowForm.submit();
+	}
+
 	function trashSubtitleCallback(){
 		var info = getSubtitleRow($(this)), 
-			path = $.trim(info.$subSelector.find('.path').text()),
+			path = info.subpath,
 			movieId = info.movieId;
 		$updatingTr = info.$mainRow;
 		DialogConfirm.show('Are you sure to remove from database / file system the subtitle '+path+'?',
@@ -109,7 +125,7 @@ function setupLocationsSync($locationsSyncSelector){
 	function removeSubtitleCallback(){
 
 		var info = getSubtitleRow($(this)), 
-			path = $.trim(info.$subSelector.find('.path').text()),
+			path = info.subpath,
 			movieId = info.movieId;
 
 		$updatingTr=info.$subSelector; 
@@ -151,9 +167,8 @@ function setupLocationsSync($locationsSyncSelector){
 
 		var info = getSubtitleRow($(this)), 
 			movieId=info.movieId,
-			$path=info.$subSelector.find('.path'), 
 		    language=$path.attr('data-language'), 
-		    path=$.trim($path.text());
+		    path=info.subpath;
 
 		$updatingTr=info.$subSelector;
 		$stPathText.text(path);
@@ -233,6 +248,7 @@ function setupLocationsSync($locationsSyncSelector){
 				return {
 					$subSelector: $subSelector, 
 					$mainRow:  $tmp,
+					subpath: $.trim($subSelector.find('.path').text()),
 					movieId: movieId
 				};
 			}
