@@ -167,7 +167,7 @@ function setupLocationsSync($locationsSyncSelector){
 
 		var info = getSubtitleRow($(this)), 
 			movieId=info.movieId,
-		    language=$path.attr('data-language'), 
+		    language=info.$subpath.attr('data-language'), 
 		    path=info.subpath;
 
 		$updatingTr=info.$subSelector;
@@ -245,10 +245,12 @@ function setupLocationsSync($locationsSyncSelector){
 				while (!movieId && ($tmp=$tmp.prev()).length){
 					movieId=$tmp.attr('data-movie-id');
 				}
+				$path=$subSelector.find('.path');
 				return {
 					$subSelector: $subSelector, 
 					$mainRow:  $tmp,
-					subpath: $.trim($subSelector.find('.path').text()),
+					$subpath: $path,
+					subpath: $.trim($path.text()),
 					movieId: movieId
 				};
 			}
