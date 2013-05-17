@@ -1,6 +1,6 @@
 import htmlentitydefs, os, re, urllib, urllib2, urlparse, zipfile
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 from browser import Browser
 from dstruct import Struct
@@ -10,6 +10,7 @@ title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
 IMDB_COM='http://www.imdb.com'
 SUBTITLES_COM='http://www.moviesubtitles.org/'
+HTML_PARSER='lxml'
 
 def searchImdb(movieTitle):
     ret=[]
@@ -18,8 +19,8 @@ def searchImdb(movieTitle):
     #note that count could be up to 250
     with Browser() as browser:
         page = browser.open(url)
-        soup = BeautifulSoup(page.read())
-        for td in soup.findAll('td', attrs={'class':'title'}):
+        soup = BeautifulSoup(page.read(), HTML_PARSER)
+        for td in soup.find_all('td', attrs={'class':'title'}):
             ref=td.find('a')
             if ref:
                 href=urlparse.urlparse(ref.get('href')).path #we remove any parameters information. So far, is useless
@@ -34,11 +35,11 @@ def searchImdbBasic(movieTitle):
     url=IMDB_COM+'/find?'+urllib.urlencode({'q': movieTitle, 's':'all'})
     with Browser() as browser:
         page = browser.open(url)
-        soup = BeautifulSoup(page.read())
+        soup = BeautifulSoup(page.read(), HTML_PARSER)
         divMain = soup.find('div', attrs={'id':'main'})
         if divMain:
             title_search = re.compile('/title/tt\d+')    
-            for td in divMain.findAll('td'):
+            for td in divMain.find_all('td'):
                 ref=td.find('a')
                 if ref:
                     href=ref.get('href')
@@ -64,7 +65,7 @@ def _getImdbInfo(uid, browser):
     title, year, duration, genres, actors, trailer, imgSrc, bigImgSrc = [None]*8
     link, title = uid.split(' ', 1)
     page = browser.open(IMDB_COM+link)
-    soup = BeautifulSoup(page.read())
+    soup = BeautifulSoup(page.read(), HTML_PARSER)
     divMain = soup.find('div', attrs={'id':'pagecontent'})
     if divMain:
         #title and year
@@ -87,10 +88,10 @@ def _getImdbInfo(uid, browser):
             match = duration_search.match(_unescape(infoBar.text))
             duration = match and match.group(1)
         #actors, genres
-        genres='/'.join([_unescape(each.text) for each in divMain.findAll('span',itemprop='genre')])
+        genres='/'.join([_unescape(each.text) for each in divMain.find_all('span',itemprop='genre')])
         starsInfo = divMain.find('div', attrs={'itemprop':'actors'})
         if starsInfo:
-            actors='/'.join([_unescape(each.text) for each in starsInfo.findAll('span',itemprop='name')])
+            actors='/'.join([_unescape(each.text) for each in starsInfo.find_all('span',itemprop='name')])
         trailer = divMain.find('a', itemprop='trailer')
         trailer = trailer and trailer.get('href')
         #image now
@@ -102,7 +103,7 @@ def _getImdbInfo(uid, browser):
                 bigImgSrc = imgTag.parent.get('href')
                 if bigImgSrc:
                     try:
-                        imgTag = BeautifulSoup(browser.open(bigImgSrc).read()).find('img', attrs={'id' : 'primary-img'})
+                        imgTag = BeautifulSoup(browser.open(bigImgSrc).read(), HTML_PARSER).find('img', attrs={'id' : 'primary-img'})
                         bigImgSrc = imgTag and imgTag.get('src')
                     except:
                         bigImgSrc=None
@@ -145,9 +146,9 @@ def searchSubtitles(movieTitle):
             browser.submit()
         except:
             pass #responds with 500 error, always
-        soup = BeautifulSoup(browser.response().read())
+        soup = BeautifulSoup(browser.response().read(), HTML_PARSER)
         ret=[]
-        for tag in soup.findAll('a', href=True):
+        for tag in soup.find_all('a', href=True):
             href=tag['href']
             if pattern.match(href):
                 ret.append((_unescape(tag.text), href))
@@ -158,15 +159,19 @@ def getSubtitles(subTitleRef, language):
     ret, url =[], SUBTITLES_COM
     with Browser() as browser:
         page = browser.open(urlparse.urljoin(url, subTitleRef))
-        soup = BeautifulSoup(page.read())
+        soup = BeautifulSoup(page.read(), HTML_PARSER)
         subrefs=[]
-        for each in soup.findAll('a', attrs={'title':'Download %s subtitles' % language.lower()}):
+        for each in soup.find_all('a', attrs={'title':'Download %s subtitles' % language.lower()}):
+            # tr=each.parent
+            # while tr and tr.name != "table": 
+            #     tr=tr.parent
+            # parts=tr and tr.find('td', attrs={'title':'parts'})
             parts=each.parent.find('td', attrs={'title':'parts'})
             if parts and parts.text=='1':
                 subrefs.append(each['href'])
         for each in subrefs:
             page = browser.open(urlparse.urljoin(url, each))
-            soup = BeautifulSoup(page.read())
+            soup = BeautifulSoup(page.read(), HTML_PARSER)
             img = soup.find('img', attrs={'title':'Download'})
             if img:
                 ref=img.parent.parent.parent

@@ -11,7 +11,7 @@
 // }
 
 function setupMoviesControl() {
-	movieEdition.setup();
+	//movieEdition.setup();
 	// $('.add_subtitles').click(function(){
 	// 	if (!subtitleDialog) subtitleDialog = new SubtitleDialog();
 	// 	subtitleDialog.show();

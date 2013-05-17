@@ -5,13 +5,13 @@
 			<div id='movie_title'></div>
 		</div>
 		<div class="modal-body">
-			<input type='hidden' name='movie.id'>
-			<input type='hidden' name='lang.target'>
+			<input type='hidden' name='movie.id' />
+			<input type='hidden' name='lang.target' />
 			<div id='dialog_title'></div>
 			<div class='offset1'>
 				{%for lang in languages%}
 						<label class='checkbox'>
-							<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked>{{lang}}
+							<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked>{{lang}}</input>
 						</label>
 				{%endfor%}
 			</div>

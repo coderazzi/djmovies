@@ -132,8 +132,6 @@ def edit_movie(request):
         locationHandler = LocationHandler(data['dirpath'])
         oldMovie        = None
 
-        #print imdbinfo.__dict__.items()
-
         if movieId:
             #we create the new movie information
             oldMovie  = Movie.objects.get(id=movieId)
