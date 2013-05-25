@@ -33,11 +33,10 @@ class Movie(models.Model):
     actors = models.TextField(blank=True)
     in_audios = models.TextField(blank=True)
     in_subs = models.TextField(blank=True)
-    out_subs = models.TextField(blank=True)
 
     @property
     def subs(self):
-        return self._languages(self.in_subs, self.out_subs)
+        return self._languages(self.in_subs, [s.language for s in self.subtitle_set.all()])
 
     @property
     def embedded_subs(self):
@@ -47,16 +46,10 @@ class Movie(models.Model):
     def audios(self):
         return self._languages(self.in_audios)
 
-    def _languages(self, a, b=None):
-        if b:
-            use = (a and (a+'/'+b)) or b
-        elif a:
-            use = a
-        else:
-            use= []
-        ret=[]
+    def _languages(self, a, base=None):
+        ret, base, use = [], base or [], a or ''
         for each in ['English', 'Spanish', 'German', 'French']:
-            if each in use:
+            if (each in use) or (each in base):
                 ret.append(each)
         return (ret and (' / '.join(ret))) or ''
 

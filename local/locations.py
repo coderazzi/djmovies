@@ -309,12 +309,15 @@ class LocationHandler:
             dirname = os.path.join(self.folderBase, dirname)
         else:
             oldMoviePath = os.path.join(self.folderBase, moviePath)
-            dirname=basename=os.path.splitext(moviePath)[0]
-            moviePath = os.path.join(dirname, moviePath)
-            dirname = os.path.join(self.folderBase, dirname)
-            if not os.path.exists(dirname):
-                os.mkdir(dirname)
-            self.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
+            if os.path.isdir(oldMoviePath):
+                dirname = oldMoviePath #this is going to fail (is for BMDV)
+            else:
+                dirname=basename=os.path.splitext(moviePath)[0]
+                moviePath = os.path.join(dirname, moviePath)
+                dirname = os.path.join(self.folderBase, dirname)
+                if not os.path.exists(dirname):
+                    os.mkdir(dirname)
+                self.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
         index=1
         for content in subtitles:
             while True:
@@ -325,7 +328,7 @@ class LocationHandler:
                 f.write(content)
         ret = self._iterateAllFilesInSubpath(basename, dirname)
         if len(ret)!=1:
-            #can happen if directory already existed with some content
+            #can happen if directory already existed with some content, normally BlueRay
             raise Exception, 'Invalid setup for directory '+dirname
         return ret[0][0], ret[0][3]
         

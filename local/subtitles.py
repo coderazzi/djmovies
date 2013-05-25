@@ -58,9 +58,9 @@ class SubtitleFileHandler:
 
 	def shift(self, st1, mt1, st2, mt2):
 
-		def getSeconds(match):
+		def getMilliSeconds(match):
 			seconds = int(match.group(1))*60 + int(match.group(2))
-			return seconds*60 + int(match.group(3))
+			return int(1000*(seconds*60 + float(match.group(3))))
 
 		def update_time(base, newBase, scale, h, m, s, ms):
 			milliseconds = int(ms) + 1000*( int(s) + 60 * ( int(m) + 60*int(h)) )
@@ -73,24 +73,22 @@ class SubtitleFileHandler:
 				h = m/60
 			return '%02d:%02d:%02d,%03d' % (h, m%60, s%60, ms%1000)
 
-		timePattern=re.compile('^\s*(\d\d?)\:(\d\d)\:(\d\d)\s*$')
+		timePattern=re.compile('^\s*(\d\d?)\:(\d\d)\:(\d\d(?:\.\d+)?)\s*$')
 		st1match = timePattern.match(st1)
 		if not st1match: raise Exception('Invalid subtitle time: '+st1)
 		mt1match = timePattern.match(mt1)
 		if not st1match: raise Exception('Invalid movie time: '+mt1)
 		
-		base, newBase = getSeconds(st1match), getSeconds(mt1match)
+		base, newBase = getMilliSeconds(st1match), getMilliSeconds(mt1match)
 
 		if st2:
 			st2match = timePattern.match(st2)
 			if not st2match: raise Exception('Invalid second subtitle time: '+st2)
 			mt2match = timePattern.match(mt2)
 			if not mt2match: raise Exception('Invalid second movie time: '+mt2)
-			scale = (getSeconds(mt2match)-newBase)/(float(getSeconds(st2match) - base))
+			scale = (getMilliSeconds(mt2match)-newBase)/(float(getMilliSeconds(st2match) - base))
 		else:
 			scale=1.0
-
-		base, newBase = base*1000, newBase*1000
 
 		for definition in self.content:
 			period = SubtitleFileHandler.timePattern.match(definition[1])
