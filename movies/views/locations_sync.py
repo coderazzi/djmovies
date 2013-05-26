@@ -316,11 +316,11 @@ def edit_subtitle(request):
 def fetch_subtitles(request):
     if not request.is_ajax(): return redirect('#locations')
     data = request.POST
-    movieId, locationId, language = data['movie.id'], data['location.id'], data['language']
+    movieId, locationId, language, justCreate = data['movie.id'], data['location.id'], data['language'], data.get('dir_creation')
     locationHandler = LocationHandler(data['location.path'])
 
     href = data.get('subtitle')
-    if not href:
+    if not href and not justCreate:
         #case A - just return the possible subtitles
         try:
             movie=Movie.objects.get(id=movieId)
@@ -338,9 +338,12 @@ def fetch_subtitles(request):
     try:
         movie=Movie.objects.get(id=movieId)
         moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId)
-        subtitlesContent = getSubtitles(href, language)
-        if not subtitlesContent:
-            return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
+        if justCreate:
+            subtitlesContent=[]
+        else:
+            subtitlesContent = getSubtitles(href, language)
+            if not subtitlesContent:
+                return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
         newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language), subtitlesContent)
     except Exception, ex:
         #raise

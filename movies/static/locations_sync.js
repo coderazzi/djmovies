@@ -6,7 +6,7 @@ function setupLocationsSync($locationsSyncSelector){
 	var $stLanguage, $stMovie, $stNormalize;	
 
 	var $fetchDialog, $fetchTitleText;
-	var $fetchLanguage, $fetchMovie, $fetchSelection;	
+	var $fetchLanguage, $fetchMovie, $fetchSelection, $fetchDirCreate;	
 
 	var $subShowForm, $subShowMovieId, $subShowPath;
 	
@@ -189,6 +189,7 @@ function setupLocationsSync($locationsSyncSelector){
 			$fetchLanguage = $('select[name="language"]', $fetchDialog).val('English');
 			$fetchSelection = $('select[name="subtitle"]', $fetchDialog);
 			$fetchMovie = $('input[name="movie.id"]', $fetchDialog);
+			$fetchDirCreate = $('input[name="dir_creation"]', $fetchDialog);
 			fetchDialogSettings = setupAjaxModal($fetchDialog, {
 				message : 'Subtitles fetch',
 				success : function(response){
@@ -198,6 +199,9 @@ function setupLocationsSync($locationsSyncSelector){
 						$fetchSelection.html(response);
 					} else {
 						updateMovieInfo($updatingTr, response);
+						if ($fetchDirCreate.prop('checked')){
+							$fetchDialog.modal('hide');
+						}
 					}
 					fetchDialogSettings.hideProgress();
 				}
@@ -209,6 +213,7 @@ function setupLocationsSync($locationsSyncSelector){
 		$updatingTr=getMainRow($(this));
 		$fetchTitleText.text($('.title', $updatingTr).text());
 		$fetchSelection.html('');
+		$fetchDirCreate.prop('checked', false);
 		$fetchMovie.val($updatingTr.attr('data-movie-id'));
 		$fetchDialog.modal('show');
 		return false;

@@ -12,7 +12,7 @@ class SubtitleFileHandler:
 		self.errors=[]
 		self.content=[]
 
-		linePattern = re.compile('^\d+$')
+		linePattern = re.compile('^\W*\d+\s*$')
 
 		state, lnumber, counter, period, content = 1, 0, None, None, []
 		with open(fullpath) as f:
