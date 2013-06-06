@@ -200,6 +200,7 @@ class LocationHandler:
             elif 'BDMV' in subdirs:
                 ret.append((filename, False, LocationHandler.BLUE_RAY_FOLDER))
                 subdirs.pop('BDMV')
+                if 'CERTIFICATE' in subdirs: subdirs.pop('CERTIFICATE')
                 other_files+=ok_files+video_files.keys()
                 ok_files=video_files=[]
             for each in subdirs.values():

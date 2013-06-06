@@ -49,9 +49,6 @@ class MovieSyncInfo:
         return 1+len(self.getSubtitles())
 
     def setSubtitlesInPath(self, filenames):
-        if self.title and self.title[0]=='4':
-            print [e.filename for e in self.exsubs]
-            print filenames
         self.in_fs=True
         for each in filenames:
             for st in self.exsubs:
@@ -324,7 +321,6 @@ def fetch_subtitles(request):
         #case A - just return the possible subtitles
         try:
             movie=Movie.objects.get(id=movieId)
-            print searchSubtitles(movie.title)
             matches = sorted(searchSubtitles(movie.title), key=(lambda x: unicode.lower(x[0])))
             if not matches:
                 return HttpResponse(json.dumps({'error': 'No such title found'}), content_type="application/json")    
