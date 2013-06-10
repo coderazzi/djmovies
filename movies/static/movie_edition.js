@@ -1,9 +1,9 @@
 var movieEdition = function(movieProvider){
 
-	var $dialog, $dialogTitle, $movieTitle, $movieId, $langOp, $languages;
+	var $dialog, $dialogTitle, $movieTitle, $movieId, $langOp, $languages, $audioVariants;
 	var dialogSettings, self=this;
 
-	var setupDialog = function(){
+	var setupDialog = function(enableAudioVariants){
 		if (!$dialog){
 			$dialog = $('#movie_edition_lang_dialog');
 			$dialogTitle = $('#dialog_title', $dialog);
@@ -11,17 +11,20 @@ var movieEdition = function(movieProvider){
 			$languages = $('input[type="checkbox"]', $dialog);
 			$langOp = $('input[name="lang.target"]', $dialog);
 			$movieId = $('input[name="movie.id"]', $dialog);
+			$audioVariants = $('.audio_variants', $dialog);
 			dialogSettings = setupAjaxModal($dialog);
 		}
+		if (enableAudioVariants) $audioVariants.show();
+		else $audioVariants.hide();
 	}
 
-	var editAudios = function($button, target, targetClass){
+	var editAudios = function($button, target, targetClass, enableAudioVariants){
 		var movieInfo = movieProvider($button);
 		var $ref = $button.parent();
 		while ($ref.length && !$ref.hasClass('lang_dialog_wrapper')) $ref=$ref.parent();
 		$ref=$ref.find(targetClass);
 		if ($ref.length && movieInfo){
-			setupDialog();
+			setupDialog(enableAudioVariants);
 			var value = $ref.text();
 			var len = $languages.length;
 			while (len-- > 0){
@@ -45,6 +48,6 @@ var movieEdition = function(movieProvider){
 	$('.ic_tooltip_img').tooltip({html: true, placement:'right', title:function(){
 		return '<img src="'+$(this).attr('src')+'">';
 	}});
-	$('.audio-choice').click(function(){editAudios($(this), 'Audios', '.in-audios');})
-	$('.subtitle-choice').click(function(){editAudios($(this), 'Subtitles', '.in-subtitles');})
+	$('.audio-choice').click(function(){editAudios($(this), 'Audios', '.in-audios', true);})
+	$('.subtitle-choice').click(function(){editAudios($(this), 'Subtitles', '.in-subtitles', false);})
 };

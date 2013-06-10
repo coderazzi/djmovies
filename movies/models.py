@@ -48,7 +48,7 @@ class Movie(models.Model):
 
     def _languages(self, a, base=None):
         ret, base, use = [], base or [], a or ''
-        for each in ['English', 'Spanish', 'German', 'French', 'Portuguese']:
+        for each in ['English', 'Spanish', 'German', 'French', 'Portuguese', 'Latino']:
             if (each in use) or (each in base):
                 ret.append(each)
         return (ret and (' / '.join(ret))) or ''

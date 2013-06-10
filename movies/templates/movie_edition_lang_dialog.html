@@ -14,6 +14,13 @@
 							<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked>{{lang}}</input>
 						</label>
 				{%endfor%}
+				<div class='audio_variants'>
+					{%for lang in audio_variants%}
+							<label class='checkbox'>
+								<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked>{{lang}}</input>
+							</label>
+					{%endfor%}
+				</div>
 			</div>
 		</div>
 		<div class="modal-footer">

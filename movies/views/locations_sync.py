@@ -16,6 +16,7 @@ from local.dstruct import Struct
 DEBUGGING=False
 
 LANGUAGES=['English', 'French', 'German', 'Portuguese', 'Spanish']
+AUDIO_VARIANTS=['Latino']
 LANGUAGE_ABBRVS=['en', 'fr', 'de', 'pt', 'es'] #http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 
 
@@ -108,7 +109,8 @@ def index(request):
             'path'     : locationPath,
             'movies'   : info, 
             'problems' : problems,
-            'languages': LANGUAGES
+            'languages': LANGUAGES,
+            'audio_variants' : AUDIO_VARIANTS
         },
         RequestContext(request))
 
