@@ -381,3 +381,29 @@ def get_movie_info(request):
             'languages': LANGUAGES
         },
         RequestContext(request))
+
+
+def clean_subtitles(request):
+
+    #remove all subtitle files not found on database
+    data =  json.loads(request.body)
+    movieId, locationId = data['movieId'], data['locationId']
+    locationHandler = LocationHandler(data['path'])
+
+    movie=Movie.objects.get(id=movieId)
+    moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId).path
+    subtitles=[]
+    for each in locationHandler.syncSubtitleInfos(moviePath, [SubtitleInfo(each.filename, each.language) for each in Subtitle.objects.filter(location_id=locationId, movie_id=movieId)]):
+        if not each.language:
+            #not in database, remove it!
+            if locationHandler.removeSubtitle(moviePath, each.filename):
+                continue
+        subtitles.append(each)
+
+    return render_to_response('locations_sync_movie.html', 
+        {      
+            'movie'    : MovieSyncInfo(moviePath, movie, subtitles, in_fs=True),
+            'languages': LANGUAGES
+        },
+        RequestContext(request))
+

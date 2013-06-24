@@ -13,7 +13,7 @@ function setupLocationsSync($locationsSyncSelector){
 	var $updatingTr;
 
 	var locationId, locationPath, fetchingMatches, fetchDialogSettings;
-	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie, urlRefreshInfo, urlTrashSubtitle;
+	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie, urlRefreshInfo, urlCleanSubtitles, urlTrashSubtitle;
 
 	function setupEventHandlers(){
 		$('.edit-movie').click(editMovieCallback);
@@ -22,6 +22,7 @@ function setupLocationsSync($locationsSyncSelector){
 		$('.remove-subtitle').off('click').click(removeSubtitleCallback);
 		$('.fetch-subtitle').off('click').click(fetchSubtitlesCallback);
 		$('.refresh-subtitles').off('click').click(refreshSubtitlesCallback);
+		$('.clean-subtitles').off('click').click(cleanSubtitlesCallback);
 		$('.trash-subtitle').off('click').click(trashSubtitleCallback);
 		$('.shift-subtitle').off('click').click(showSubtitleCallback);
 	}
@@ -249,6 +250,25 @@ function setupLocationsSync($locationsSyncSelector){
 		return false;
 	}
 
+	function cleanSubtitlesCallback(){
+		var $main=getMainRow($(this)), title = $('.title', $main)
+		DialogConfirm.show('Are you sure to remove the unused subtitles from the movie '+title.text()+'?',
+			{
+				url: urlCleanSubtitles,
+				data: {
+					locationId: locationId,
+					movieId: $main.attr('data-movie-id'),
+					path: locationPath, 
+				},
+				message: 'Cleaning subtitles',
+				success: function(response){
+					updateMovieInfo($main, response);
+					DialogConfirm.hide();
+				}
+			});
+		return false;
+	}
+
 	function getMainRow($subSelector){
 		while ($subSelector.length){
 			if ($subSelector.attr('data-movie-id')) return $subSelector;
@@ -289,6 +309,7 @@ function setupLocationsSync($locationsSyncSelector){
 	urlEditMovie = $locationsSyncSelector.attr('data-edit-movie-url');
 	urlRemoveMovie = $locationsSyncSelector.attr('data-remove-movie-url');
 	urlRefreshInfo = $locationsSyncSelector.attr('data-info-movie-url');
+	urlCleanSubtitles = $locationsSyncSelector.attr('data-clean-subtitles-url');
 
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
