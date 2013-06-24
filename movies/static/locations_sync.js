@@ -6,7 +6,7 @@ function setupLocationsSync($locationsSyncSelector){
 	var $stLanguage, $stMovie, $stNormalize;	
 
 	var $fetchDialog, $fetchTitleText;
-	var $fetchLanguage, $fetchMovie, $fetchSelection, $fetchDirCreate;	
+	var $fetchLanguage, $fetchMovie, $fetchSelection, $fetchDirCreate, $fetchTitle;	
 
 	var $subShowForm, $subShowMovieId, $subShowPath;
 	
@@ -36,6 +36,7 @@ function setupLocationsSync($locationsSyncSelector){
 		if (html){
 			$tr.replaceWith(html);
 			setupEventHandlers();
+			movieEdition(getMovieId); //to be checked!
 		} else {
 			$tr.remove();
 		}
@@ -179,7 +180,7 @@ function setupLocationsSync($locationsSyncSelector){
 		return false;
 	}
 
-	function fetchSubtitlesCallback(){
+	function fetchSubtitlesCallback(event, title){
 		if (!$fetchDialog){
 			$fetchDialog = $('#locations_subtitle_fetch_dialog').on('shown', function(){
 				$fetchSelection.focus();
@@ -190,10 +191,19 @@ function setupLocationsSync($locationsSyncSelector){
 			$fetchSelection = $('select[name="subtitle"]', $fetchDialog);
 			$fetchMovie = $('input[name="movie.id"]', $fetchDialog);
 			$fetchDirCreate = $('input[name="dir_creation"]', $fetchDialog);
+			$fetchTitle = $('input[name="title"]', $fetchDialog);
 			fetchDialogSettings = setupAjaxModal($fetchDialog, {
 				message : 'Subtitles fetch',
 				success : function(response){
 					if (fetchingMatches){
+						if (!response){
+							$fetchDialog.modal('hide');
+							var title=prompt("The current title is not matched, please enter it differently",title);
+							if (title){
+								fetchSubtitlesCallback(null, title);
+							}
+							return;
+						}
 						fetchingMatches=false;
 						fetchDialogSettings.settings.message='Fetching subtitle'
 						$fetchSelection.html(response);
@@ -211,10 +221,13 @@ function setupLocationsSync($locationsSyncSelector){
 		fetchingMatches=true;
 		fetchDialogSettings.settings.message='Retrieving correct title';
 		$updatingTr=getMainRow($(this));
-		$fetchTitleText.text($('.title', $updatingTr).text());
-		$fetchSelection.html('');
-		$fetchDirCreate.prop('checked', false);
-		$fetchMovie.val($updatingTr.attr('data-movie-id'));
+		if (event){
+			$fetchTitleText.text($('.title', $updatingTr).text());
+			$fetchSelection.html('');
+			$fetchDirCreate.prop('checked', false);
+			$fetchMovie.val($updatingTr.attr('data-movie-id'));
+		}
+		$fetchTitle.val(title || null)
 		$fetchDialog.modal('show');
 		return false;
 	}

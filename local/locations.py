@@ -320,11 +320,11 @@ class LocationHandler:
                     os.mkdir(dirname)
                 self.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
         index=1
-        for content in subtitles:
+        for name, content in subtitles.items():
             while True:
-                subtitleName = os.path.join(dirname, '%d.%s.srt' % (index, lang_abbr))
-                if not os.path.exists(subtitleName): break
+                subtitleName = os.path.join(dirname, '%s-%d-%s' % (lang_abbr, index, os.path.basename(name)))
                 index+=1
+                if not os.path.exists(subtitleName): break
             with open(subtitleName, 'w') as f:
                 f.write(content)
         ret = self._iterateAllFilesInSubpath(basename, dirname)

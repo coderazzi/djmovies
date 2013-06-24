@@ -1,4 +1,4 @@
-import htmlentitydefs, os, re, urllib, urllib2, urlparse, zipfile
+import htmlentitydefs, os, re, urllib, urllib2, urlparse, zipfile, rarfile
 
 from bs4 import BeautifulSoup
 
@@ -10,6 +10,7 @@ title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
 IMDB_COM='http://www.imdb.com'
 SUBTITLES_COM='http://www.moviesubtitles.org/'
+SUBSCENE_COM='http://www.subscene.com/'
 HTML_PARSER='lxml'
 
 def searchImdb(movieTitle):
@@ -156,7 +157,7 @@ def searchSubtitles(movieTitle):
 
 
 def getSubtitles(subTitleRef, language):
-    ret, url =[], SUBTITLES_COM
+    ret, url ={}, SUBTITLES_COM
     with Browser() as browser:
         page = browser.open(urlparse.urljoin(url, subTitleRef))
         soup = BeautifulSoup(page.read(), HTML_PARSER)
@@ -180,14 +181,84 @@ def getSubtitles(subTitleRef, language):
                     f = browser.retrieve(urlparse.urljoin(url, ref))
                     with zipfile.ZipFile(f[0]) as z:
                         names = z.namelist()
-                        if len(names)==1:
-                            content=z.read(names[0])
+                        for i in range(len(names)):
+                            name=names[i]
+                            if name.lower().endswith('.srt'):
+                                content=z.read(name)
+                                try:
+                                    content=content.decode('iso-8859-1').encode('utf8')
+                                except:
+                                    pass
+                                ret[name]=content
+    return ret
+
+
+def searchSubtitlesOnSubscene(movieTitle):
+    pattern = re.compile('.*/movie-(?:[^\.]+).htm.*')
+    with Browser() as browser:
+        browser.open(SUBSCENE_COM)
+        browser.select_form(nr=0)
+        browser.form['q'] = movieTitle
+        try:
+            browser.submit()
+        except:
+            pass #responds with 500 error, always
+        soup = BeautifulSoup(browser.response().read(), HTML_PARSER)
+        ret, included=[], set()
+        for prio, group in [(0, 'exact'), (1, 'popular'), (1, 'close')]:
+            header=soup.find('h2', attrs={'class': group})
+            if header:
+                for ul in header.fetchNextSiblings()[:1]:
+                    for tag in ul.find_all('a', href=True):
+                         href=tag['href']
+                         if href not in included:
+                            ret.append([prio, _unescape(tag.text), href])
+                            included.add(href)
+        ret.sort()
+        return [(b, c) for a, b, c in ret]
+
+
+def getSubtitlesOnSubscene(subTitleRef, language):
+    ret, url ={}, SUBSCENE_COM
+    with Browser() as browser:
+        page = browser.open(urlparse.urljoin(url, subTitleRef))
+        soup = BeautifulSoup(page.read(), HTML_PARSER)
+        subrefs=[]
+        for each in soup.find_all('td', attrs={'class':'a1'}):
+            span=each.find('span')
+            if span and _unescape(span.text)==language:
+                ref=each.find('a')
+                ref=ref and ref.get('href')                
+                if ref: subrefs.append(ref)
+        for each in subrefs:
+            page = browser.open(urlparse.urljoin(url, each))
+            soup = BeautifulSoup(page.read(), HTML_PARSER)
+            ref=soup.find('a', attrs={'id': 'downloadButton'})
+            ref=ref and ref.get('href')
+            if ref:
+                f = browser.retrieve(urlparse.urljoin(url, ref))
+                type=f[1].getsubtype()
+                if type=='x-zip-compressed':
+                    handler=zipfile.ZipFile
+                elif type=='x-rar-compressed':
+                    handler=rarfile.RarFile
+                else:
+                    print 'getSubtitlesOnSubscene: Received file of type '+type+", discarded"
+                    continue
+                with handler(f[0]) as z:
+                    names = z.namelist()
+                    for i in range(len(names)):
+                        name=names[i]
+                        if name.lower().endswith('.srt'):
+                            print 'getSubtitlesOnSubscene: reading on '+type+' entry '+name
+                            content=z.read(name)
                             try:
                                 content=content.decode('iso-8859-1').encode('utf8')
                             except:
                                 pass
-                            ret.append(content)
+                            ret[name]=content                
     return ret
 
 
-#print getSubtitles('American Gangster', '2007', 'Spanish')
+
+#print getSubtitlesOnSubscene(searchSubtitlesOnSubscene('The Rock')[0][1], 'English')

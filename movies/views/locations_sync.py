@@ -8,7 +8,8 @@ from django.template import RequestContext
 
 from movies.models import Location, MoviePath, Movie, Image, Subtitle
 
-from local.imdb import getSubtitles, searchSubtitles
+#from local.imdb import getSubtitles, searchSubtitles
+from local.imdb import getSubtitlesOnSubscene as getSubtitles, searchSubtitlesOnSubscene as searchSubtitles
 from local.locations import LocationHandler, SubtitleInfo
 from local.dstruct import Struct
 
@@ -315,17 +316,20 @@ def edit_subtitle(request):
 def fetch_subtitles(request):
     if not request.is_ajax(): return redirect('#locations')
     data = request.POST
-    movieId, locationId, language, justCreate = data['movie.id'], data['location.id'], data['language'], data.get('dir_creation')
+    movieId, locationId, language = data['movie.id'], data['location.id'], data['language']
+    title, justCreate = data.get('title'), data.get('dir_creation')
+    #useSubscene = data.get('subscene_com')
     locationHandler = LocationHandler(data['location.path'])
 
     href = data.get('subtitle')
     if not href and not justCreate:
         #case A - just return the possible subtitles
         try:
-            movie=Movie.objects.get(id=movieId)
-            matches = sorted(searchSubtitles(movie.title), key=(lambda x: unicode.lower(x[0])))
-            if not matches:
-                return HttpResponse(json.dumps({'error': 'No such title found'}), content_type="application/json")    
+            if not title: 
+                title = Movie.objects.get(id=movieId).title
+            matches = sorted(searchSubtitles(title), key=(lambda x: unicode.lower(x[0])))
+            # if not matches:
+            #     return HttpResponse(json.dumps({'error': 'No such title found'}), content_type="application/json")    
         except Exception, ex:
             return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
         return render_to_response('locations_sync_subtitle_matches.html', 
@@ -337,14 +341,14 @@ def fetch_subtitles(request):
         movie=Movie.objects.get(id=movieId)
         moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId)
         if justCreate:
-            subtitlesContent=[]
+            subtitlesContent={}
         else:
             subtitlesContent = getSubtitles(href, language)
             if not subtitlesContent:
                 return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
         newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language), subtitlesContent)
     except Exception, ex:
-        #raise
+        raise
         return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
 
     if newPath!=moviePath.path:
