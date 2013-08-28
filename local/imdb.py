@@ -217,9 +217,9 @@ def searchSubtitlesOnSubscene(movieTitle):
         ret.sort()
         return [(b, c) for a, b, c in ret]
 
-
+import time
 def getSubtitlesOnSubscene(subTitleRef, language):
-    ret, url ={}, SUBSCENE_COM
+    ret, url = {}, SUBSCENE_COM
     with Browser() as browser:
         page = browser.open(urlparse.urljoin(url, subTitleRef))
         soup = BeautifulSoup(page.read(), HTML_PARSER)
@@ -231,7 +231,11 @@ def getSubtitlesOnSubscene(subTitleRef, language):
                 ref=ref and ref.get('href')                
                 if ref: subrefs.append(ref)
         for each in subrefs:
-            page = browser.open(urlparse.urljoin(url, each))
+            try:
+                page = browser.open(urlparse.urljoin(url, each))
+            except Exception, ex:
+                print 'Error retrieving ref '+each, ex
+                continue
             soup = BeautifulSoup(page.read(), HTML_PARSER)
             ref=soup.find('a', attrs={'id': 'downloadButton'})
             ref=ref and ref.get('href')
