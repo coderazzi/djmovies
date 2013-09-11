@@ -240,7 +240,11 @@ def getSubtitlesOnSubscene(subTitleRef, language):
             ref=soup.find('a', attrs={'id': 'downloadButton'})
             ref=ref and ref.get('href')
             if ref:
-                f = browser.retrieve(urlparse.urljoin(url, ref))
+                try:
+                    f = browser.retrieve(urlparse.urljoin(url, ref))
+                except Exception, ex:
+                    print 'Error retrieving ref '+ref, ex
+                    continue
                 type=f[1].getsubtype()
                 if type=='x-zip-compressed':
                     handler=zipfile.ZipFile
