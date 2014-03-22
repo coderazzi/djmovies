@@ -1,0 +1,41 @@
+{% extends "generic.html" %}
+{% block body %}
+
+<table id='imdb_search' class='table table-striped no_table-bordered table-hover'>
+	<caption>Best Imdb search year {{year}} (missing)</caption>
+	<thead>
+		<tr>
+			<th></th><th>Number</th><th>Image</th><th>Title</th>
+			<th>Rating</th><th>Outline</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for href, title, image, rating, number, outline, credit, genres, encodedTitle in search%}
+	    <tr>
+	    	<td/>
+	    	<td>{{number}}</td>
+			<td>
+				<a href='http://www.imdb.com{{href}}' target="_imdb">
+					<img src='{{image|default:"/static/noposter.jpg"}}' class='ic_tooltip_img'>
+				</a>
+			</td>
+			<td>
+				<a href='https://www.binsearch.info/index.php?{{encodedTitle}}&m=&max=25&adv_g=&adv_age=999&adv_sort=date&adv_nfo=on&minsize=8000&maxsize=24000&font=&postdate='
+					target='_binsearch'>
+					<img src='/static/binsearch.png'>
+				</a>
+				<b>{{title}}</b>
+				<br>{{credit}}
+				<br>{{genres}}
+			</td>
+			<td>{{rating}}</td>
+			<td class='ic_outline'>{{outline}}</td>
+		</tr>
+	    {% endfor %}
+	</tbody>
+</table>
+
+
+{% endblock %}
+
+<!--https://www.binsearch.info/index.php?q=Spring+Breakers&m=&max=25&adv_g=&adv_age=999&adv_sort=date&adv_nfo=on&minsize=8000&maxsize=24000&font=&postdate=-->

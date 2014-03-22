@@ -31,7 +31,7 @@ caption {
   background-image: -o-linear-gradient(top, #d65b5b, #a32828);
   background-image: linear-gradient(#d65b5b, #a32828);
   border-color: #a32828 #a32828 #8f2424;
-  color: #333333 !important;
+  color: #333 !important;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.33);
   -webkit-font-smoothing: antialiased; }
 
@@ -47,7 +47,7 @@ caption {
   background-image: -o-linear-gradient(top, #84d65b, #51a328);
   background-image: linear-gradient(#84d65b, #51a328);
   border-color: #51a328 #51a328 #478f24;
-  color: #333333 !important;
+  color: #333 !important;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.33);
   -webkit-font-smoothing: antialiased; }
 
@@ -63,7 +63,7 @@ caption {
   background-image: -o-linear-gradient(top, #f4f43d, #c1c10a);
   background-image: linear-gradient(#f4f43d, #c1c10a);
   border-color: #c1c10a #c1c10a #aaaa09;
-  color: #333333 !important;
+  color: #333 !important;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.33);
   -webkit-font-smoothing: antialiased; }
 
@@ -289,9 +289,17 @@ caption {
   width: 100%;
   padding: 12px 0px;
   margin-bottom: 24px;
-  border: 2px solid #aa0000; }
+  border: 2px solid #a00; }
 
 #subtitles-file-content form {
   padding: 12px 60px;
   float: right;
-  border: 1px solid #cccccc; }
+  border: 1px solid #ccc; }
+
+#imdb_search {
+  width: 85%;
+  margin: 20px auto;
+  word-wrap: break-word; }
+
+#imdb_search .ic_outline {
+  max-width: 400px; }

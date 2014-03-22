@@ -5,6 +5,9 @@ from bs4 import BeautifulSoup
 from browser import Browser
 from dstruct import Struct
 
+#NOTE: To prettify anything, do:
+#  with open('/tmp/kk.html', 'w') as f:
+#     print >> f, soup.prettify().encode('utf-8', 'ignore')
 
 title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
@@ -12,6 +15,50 @@ IMDB_COM='http://www.imdb.com'
 SUBTITLES_COM='http://www.moviesubtitles.org/'
 SUBSCENE_COM='http://www.subscene.com/'
 HTML_PARSER='lxml'
+
+
+def searchYear(year, limit):
+    start = 0
+    url='http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (year, year)
+    numberRe = re.compile('(\d+)')
+    yearInTitle=re.compile('\s+\(%s\)\s*$'%year)
+    noSpaces=re.compile('\s+', re.S)
+    with Browser() as browser:
+        ret=[]
+        while start+1<limit:
+            page = browser.open(url % (start+1))
+            #page, limit = open('/Users/coderazzi/kk.html'), min(limit, 40)
+            soup = BeautifulSoup(page.read(), HTML_PARSER)
+            table = soup.find('table', attrs={'class' : 'results'})
+            for tr in table.find_all('tr'):                
+                number = tr.find('td', attrs={'class' : 'number'})
+                match = number and numberRe.search(number.text)
+                if match:
+                    start = int(match.group(1))
+                    if start>limit:
+                        break
+                    imageTd = tr.find('td', attrs={'class' : 'image'})
+                    imageTd = imageTd and imageTd.find('a')
+                    if imageTd:
+                        href=urlparse.urlparse(imageTd.get('href')).path
+                        title = imageTd.get('title')
+                        idx = yearInTitle.search(title)
+                        if idx:
+                            title=_unescape(title[:idx.start(0)])
+                        image=imageTd.find('img')
+                        image = image and image.get('src')
+                        try:
+                            rating = tr.find('span', attrs={'class' : 'rating-rating'}).find('span', attrs={'class' : 'value'}).text.strip()
+                        except:
+                            rating = '???'
+                        outline=tr.find('span', attrs={'class':'outline'})
+                        outline = outline and outline.text.strip()
+                        credit=tr.find('span', attrs={'class':'credit'})
+                        credit = credit and noSpaces.sub(' ', _unescape(credit.text),)
+                        genre=tr.find('span', attrs={'class':'genre'})
+                        genre = genre and noSpaces.sub(' ', _unescape(genre.text),)
+                        ret.append((href, title, image, rating, start, outline, credit, genre, urllib.urlencode({'q':title.encode('utf-8', 'ignore')})))
+        return ret
 
 def searchImdb(movieTitle):
     ret=[]
