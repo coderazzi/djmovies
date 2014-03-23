@@ -9,6 +9,7 @@ def imdb(request, year, limit=150):
     all= set([m[0] for m in Movie.objects.values_list('imdb_link')])
     context = Context({
         'year' : year,
+        'limit': limit,
         'search': filter(lambda s : s[0] not in all, searchYear(year, int(limit))),
     })
     return render_to_response('imdb_year_search.html', context)

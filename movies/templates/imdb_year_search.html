@@ -1,8 +1,9 @@
 {% extends "generic.html" %}
+{% block title %}{{year}}/imdb{% endblock %}
 {% block body %}
 
 <table id='imdb_search' class='table table-striped no_table-bordered table-hover'>
-	<caption>Best Imdb search year {{year}} (missing)</caption>
+	<caption>Best Imdb search year {{year}} (missing) [limit: {{limit}}]</caption>
 	<thead>
 		<tr>
 			<th></th><th>Number</th><th>Image</th><th>Title</th>
@@ -37,5 +38,3 @@
 
 
 {% endblock %}
-
-<!--https://www.binsearch.info/index.php?q=Spring+Breakers&m=&max=25&adv_g=&adv_age=999&adv_sort=date&adv_nfo=on&minsize=8000&maxsize=24000&font=&postdate=-->
