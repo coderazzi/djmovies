@@ -42,7 +42,11 @@
 	       data-work-subtitle-url='{%url "#subtitle_show" %}' 
 	       data-remove-subtitle-url='{%url "#lsync_subtitle_remove" %}' 
 	       data-trash-subtitle-url='{%url "#lsync_subtitle_trash" %}'>	       
-		<caption>Movies for {{location}} under {{path}}</caption>
+		<caption>
+			<a id='ref-add' class="btn btn-mini btn-color-green" href="#"><i class="icon-plus"></i></a>
+			<a id='ref-remove' class="btn btn-mini btn-color-red" href="#"><i class="icon-minus"></i></a>
+			Movies for {{location}} under {{path}}
+		</caption>
 		<thead>
 			<tr><th>Op</th><th>Cover</th><th>Path &amp; Title</th><th>Audios</th><th colpan='3'>Subtitles</th></tr>
 		</thead>

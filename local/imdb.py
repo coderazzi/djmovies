@@ -203,7 +203,7 @@ def searchSubtitles(movieTitle):
         return ret
 
 
-def getSubtitles(subTitleRef, language):
+def getSubtitles(subTitleRef, language, firstSubtitle, lastSubtitle):
     ret, url ={}, SUBTITLES_COM
     with Browser() as browser:
         page = browser.open(urlparse.urljoin(url, subTitleRef))
@@ -217,6 +217,7 @@ def getSubtitles(subTitleRef, language):
             parts=each.parent.find('td', attrs={'title':'parts'})
             if parts and parts.text=='1':
                 subrefs.append(each['href'])
+        subtitleIdx=1
         for each in subrefs:
             page = browser.open(urlparse.urljoin(url, each))
             soup = BeautifulSoup(page.read(), HTML_PARSER)
@@ -225,18 +226,22 @@ def getSubtitles(subTitleRef, language):
                 ref=img.parent.parent.parent
                 ref=ref and ref.get('href')
                 if ref:
-                    f = browser.retrieve(urlparse.urljoin(url, ref))
-                    with zipfile.ZipFile(f[0]) as z:
-                        names = z.namelist()
-                        for i in range(len(names)):
-                            name=names[i]
-                            if name.lower().endswith('.srt'):
-                                content=z.read(name)
-                                try:
-                                    content=content.decode('iso-8859-1').encode('utf8')
-                                except:
-                                    pass
-                                ret[name]=content
+                    subtitleIdx+=1
+                    if subtitleIdx>firstSubtitle:
+                        f = browser.retrieve(urlparse.urljoin(url, ref))
+                        with zipfile.ZipFile(f[0]) as z:
+                            names = z.namelist()
+                            for i in range(len(names)):
+                                name=names[i]
+                                if name.lower().endswith('.srt'):
+                                    content=z.read(name)
+                                    try:
+                                        content=content.decode('iso-8859-1').encode('utf8')
+                                    except:
+                                        pass
+                                    ret[name]=content
+                        if subtitleIdx==lastSubtitle:
+                            break
     return ret
 
 
@@ -265,7 +270,7 @@ def searchSubtitlesOnSubscene(movieTitle):
         return [(b, c) for a, b, c in ret]
 
 import time
-def getSubtitlesOnSubscene(subTitleRef, language):
+def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
     ret, url = {}, SUBSCENE_COM
     with Browser() as browser:
         page = browser.open(urlparse.urljoin(url, subTitleRef))
@@ -277,7 +282,8 @@ def getSubtitlesOnSubscene(subTitleRef, language):
                 ref=each.find('a')
                 ref=ref and ref.get('href')                
                 if ref: subrefs.append(ref)
-        for each in subrefs:
+        #firstSubtitle, lastSubtitles are 1 based
+        for each in subrefs[firstSubtitle-1:lastSubtitle]:
             try:
                 page = browser.open(urlparse.urljoin(url, each))
             except Exception, ex:
@@ -302,16 +308,25 @@ def getSubtitlesOnSubscene(subTitleRef, language):
                     continue
                 with handler(f[0]) as z:
                     names = z.namelist()
+                    single = None
                     for i in range(len(names)):
                         name=names[i]
                         if name.lower().endswith('.srt'):
-                            print 'getSubtitlesOnSubscene: reading on '+type+' entry '+name
-                            content=z.read(name)
+                            if single:
+                                print 'getSubtitlesOnSubscene: Received multiple scrs, discarded'
+                                break
+                            single = name
+                    else:
+                        if single:
+                            print 'getSubtitlesOnSubscene: reading on '+type+' entry '+single
+                            content=z.read(single)
                             try:
                                 content=content.decode('iso-8859-1').encode('utf8')
                             except:
                                 pass
-                            ret[name]=content                
+                            ret[single]=content                
+                        else:
+                            print 'getSubtitlesOnSubscene: Received no  scrs, discarded'
     return ret
 
 

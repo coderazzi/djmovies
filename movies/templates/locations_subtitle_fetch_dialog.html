@@ -20,6 +20,12 @@
 						<option value='{{lang}}' selected>{{lang}}</option>
 					{%endfor%}
 				</select>
+				<span class='span2'>Selection</span>
+				<select name='subtitles_selection' class='span4'>
+					{%for k, v in subtitles_selection.items%}
+						<option value='{{k}}'>{{v}}</option>
+					{%endfor%}
+				</select>
 			</label>
 			<label class='checkbox'>
 				<input type="checkbox" name="dir_creation" >Just create the directory structure</input>

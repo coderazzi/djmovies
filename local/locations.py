@@ -32,6 +32,8 @@ class LocationHandler:
     EXT_VIDEO_EXTENSIONS=VIDEO_EXTENSIONS+IMAGE_EXTENSIONS+['ifo', 'bup']
     SUBTITLE_EXTENSIONS=['srt', 'sub', 'idx']
 
+    DJM_IGNORE_FILE='.djmignore'
+
     def __init__(self, folderBase):
         self.folderBase=folderBase
 
@@ -99,14 +101,15 @@ class LocationHandler:
         files=None
         try: 
             if os.path.isdir(self.folderBase): 
-                files=os.listdir(self.folderBase)
+                files=self._get_allfiles_in_path_careof_djmignore(self.folderBase)
+                #files=os.listdir(self.folderBase)
         except OSError: pass
         if files==None: return [(self.folderBase, True, LocationHandler.UNVISITED_FOLDER)]
 
         ret=[]
-        for filename in files:
-            if filename[0]=='.': continue
-            full=os.path.join(self.folderBase, filename)
+        for filename, full in files:
+            # if filename[0]=='.': continue
+            # full=os.path.join(self.folderBase, filename)
             try:
                 if os.path.isdir(full):
                     ret.extend(self._iterateAllFilesInSubpath(filename, full))
@@ -162,15 +165,30 @@ class LocationHandler:
         return dbInfo
 
 
+    def _get_allfiles_in_path_careof_djmignore(self, parentpath):
+        exclude, allfiles=[], os.listdir(parentpath)
+        if self.DJM_IGNORE_FILE in allfiles:
+            try:
+                with open(os.path.join(parentpath, self.DJM_IGNORE_FILE)) as f:
+                    exclude= [each.strip() for each in f.readlines()]
+            except:
+                pass
+            if not exclude or '.' in exclude:
+                return []
+            exclude.append(self.DJM_IGNORE_FILE)
+        return [(name, os.path.join(parentpath, name)) for name in allfiles if name[0]!='.' and name not in exclude]
+
+
     def _iterateAllFilesInSubpath(self, filename, fullpath):
         '''
         Like iterateAllFilesInPath, but restrained to a specific folder (under top directory)
         Has no full exception handling: can fail if fullpath is not listable
         '''        
         ret, subdirs, video_files, ok_files, other_files=[], {}, {}, [], []
-        for each in os.listdir(fullpath):
-            if each[0]=='.': continue
-            absname = os.path.join(fullpath, each)
+        #for each in os.listdir(fullpath):
+        for each, absname in self._get_allfiles_in_path_careof_djmignore(fullpath):
+            # if each[0]=='.': continue
+            # absname = os.path.join(fullpath, each)
             fullname=self.getRelativeName(absname)
             try:
                 if os.path.isdir(absname):
@@ -301,7 +319,7 @@ class LocationHandler:
         self.rename(newName, oldName)
 
 
-    def storeSubtitles(self, moviePath, lang_abbr, subtitles):
+    def storeSubtitles(self, moviePath, lang_abbr, subtitles, firstSubtitle):
         '''
         returns the new path for the movie, and the found subtitles
         '''
@@ -319,7 +337,7 @@ class LocationHandler:
                 if not os.path.exists(dirname):
                     os.mkdir(dirname)
                 self.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
-        index=1
+        index=firstSubtitle
         for name, content in subtitles.items():
             while True:
                 subtitleName = os.path.join(dirname, '%s-%d-%s' % (lang_abbr, index, os.path.basename(name)))

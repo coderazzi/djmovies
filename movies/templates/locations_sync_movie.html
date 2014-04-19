@@ -4,10 +4,10 @@
             {%if movie.in_fs %}
             <a class="btn btn-mini btn-color-yellow edit-movie" href="#"><i class="icon-pencil"></i>
             {% else %}
-            <a class="btn btn-mini btn-color-red remove-movie" href="#"><i class="icon-minus"></i>
+            <a class="btn btn-mini btn-color-red remove-movie" href="#" name='movie_{{movie.id}}'><i class="icon-minus"></i>
             {% endif %}
         {% else %}
-            <a class="btn btn-mini btn-color-green edit-movie" href="#"><i class="icon-plus"></i>
+            <a class="btn btn-mini btn-color-green edit-movie create-movie" href="#" name='movie_{{movie.id}}'><i class="icon-plus"></i>
         {% endif %}
     </td>
     <td class='ic_link' rowspan='{{movie.getRowspan}}'>

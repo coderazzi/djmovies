@@ -12,8 +12,26 @@ function setupLocationsSync($locationsSyncSelector){
 	
 	var $updatingTr;
 
+	var $ref_add, $ref_remove;
+
 	var locationId, locationPath, fetchingMatches, fetchDialogSettings;
 	var urlRemoveSubtitle, urlEditMovie, urlRemoveMovie, urlRefreshInfo, urlCleanSubtitles, urlTrashSubtitle;
+
+	function checkPlusMinusMovies(){
+		var plusMovies=$('.create-movie'), minusMovies=$('.remove-movie');
+		if (plusMovies.length>0){
+			var name = $(plusMovies[0]).attr('name');
+			$ref_add.show().attr('href', '#'+name);			
+		} else {
+			$ref_add.hide();
+		}
+		if (minusMovies.length>0){
+			var name = $(minusMovies[0]).attr('name');
+			$ref_remove.show().attr('href', '#'+name);			
+		} else {
+			$ref_remove.hide();
+		}
+	}
 
 	function setupEventHandlers(){
 		$('.edit-movie').click(editMovieCallback);
@@ -41,6 +59,7 @@ function setupLocationsSync($locationsSyncSelector){
 		} else {
 			$tr.remove();
 		}
+		checkPlusMinusMovies();
 	}
 
 	function editMovieCallback(){
@@ -311,9 +330,13 @@ function setupLocationsSync($locationsSyncSelector){
 	urlRefreshInfo = $locationsSyncSelector.attr('data-info-movie-url');
 	urlCleanSubtitles = $locationsSyncSelector.attr('data-clean-subtitles-url');
 
+	$ref_add = $('#ref-add', $locationsSyncSelector);
+	$ref_remove = $('#ref-remove', $locationsSyncSelector);
+
 	if ($('td', $problemDialog).length){
 		$problemDialog.modal('show');
 	}
 	setupEventHandlers();
 	movieEdition(getMovieId);
+	checkPlusMinusMovies();
 }

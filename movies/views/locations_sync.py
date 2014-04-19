@@ -111,7 +111,8 @@ def index(request):
             'movies'   : info, 
             'problems' : problems,
             'languages': LANGUAGES,
-            'audio_variants' : AUDIO_VARIANTS
+            'audio_variants' : AUDIO_VARIANTS,
+            'subtitles_selection' : dict([(k, '%d - %d' % (max(1,k*10), k*10+9)) for k in range(0, 10)])
         },
         RequestContext(request))
 
@@ -338,15 +339,18 @@ def fetch_subtitles(request):
 
     #normal case - fetch the requested subtitle
     try:
+        firstSubtitle = int(data.get('subtitles_selection'))*10
+        lastSubtitle=firstSubtitle+9
+        firstSubtitle=max(1, firstSubtitle)
         movie=Movie.objects.get(id=movieId)
         moviePath = MoviePath.objects.get(movie_id=movieId, location_id=locationId)
         if justCreate:
             subtitlesContent={}
         else:
-            subtitlesContent = getSubtitles(href, language)
+            subtitlesContent = getSubtitles(href, language, firstSubtitle, firstSubtitle+9)
             if not subtitlesContent:
                 return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
-        newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language), subtitlesContent)
+        newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language), subtitlesContent, firstSubtitle)
     except Exception, ex:
         raise
         return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
