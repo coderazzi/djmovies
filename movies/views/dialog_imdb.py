@@ -1,4 +1,4 @@
-import json
+import json, traceback
 
 from django.http import HttpResponse
 
@@ -11,6 +11,7 @@ def _json_response(f):
     try:
         result = f()
     except Exception as ex:
+        print traceback.format_exc()
         #raise
         result = {'error': 'Server error: '+str(ex)}
     #print json.dumps(result)
@@ -27,7 +28,7 @@ def get_mediainfo(request):
 
 
 def search_title(request):
-    def inner():        
+    def inner():    
         references, firstInfo = searchImdb(request.POST['movie.title'].encode('ascii', 'ignore'))
         return {'links' : references, 
                 'first_movie_info': firstInfo and firstInfo.__dict__}

@@ -340,7 +340,11 @@ class LocationHandler:
         index=firstSubtitle
         for name, content in subtitles.items():
             while True:
-                subtitleName = os.path.join(dirname, '%s-%d-%s' % (lang_abbr, index, os.path.basename(name)))
+                try:
+                    use= '%s' % os.path.basename(name) #just avoiding some problems with unicode
+                except:
+                    use='--'
+                subtitleName = os.path.join(dirname, '%s-%d-%s' % (lang_abbr, index, use))
                 index+=1
                 if not os.path.exists(subtitleName): break
             with open(subtitleName, 'w') as f:

@@ -61,11 +61,22 @@ def searchYear(year, limit):
         return ret
 
 def searchImdb(movieTitle):
-    ret=[]
-    #http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
-    url=IMDB_COM+'/search/title?'+urllib.urlencode({'count': '50', 'title_type':'feature,tv_movie', 'title': movieTitle, 'view':'simple'})
-    #note that count could be up to 250
     with Browser() as browser:
+        ret=[]
+        #small trick, for cases when we cannot find the movie by name: we can enter the URL directly (at imdb)
+        if movieTitle.startswith(IMDB_COM):
+            #href=movieTitle[len(IMDB_COM):]
+            href=urlparse.urlparse(movieTitle).path
+            info = _getImdbInfo(getUid(href,''), browser)
+            if info:
+                uid=getUid(href, info.title)
+                info.uid=uid
+                ret.append((uid, info.title, info.year))
+                return (ret, info)
+
+        #http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
+        url=IMDB_COM+'/search/title?'+urllib.urlencode({'count': '50', 'title_type':'feature,tv_movie', 'title': movieTitle, 'view':'simple'})
+        #note that count could be up to 250
         page = browser.open(url)
         soup = BeautifulSoup(page.read(), HTML_PARSER)
         for td in soup.find_all('td', attrs={'class':'title'}):

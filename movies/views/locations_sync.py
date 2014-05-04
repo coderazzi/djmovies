@@ -1,4 +1,4 @@
-import json
+import json, traceback
 
 from django.db import IntegrityError
 from django.contrib import messages
@@ -126,6 +126,7 @@ def edit_movie(request):
 
     try:
         data            = json.loads(request.body)
+        print data
         imdbinfo        = Struct.fromjs(**data['imdbinfo'])
         locationId      = data['location']
         filepath        = data['filepath']
@@ -198,6 +199,7 @@ def edit_movie(request):
         subtitles = locationHandler.syncSubtitleInfos(path, subtitles)
 
     except Exception as ex:
+        print traceback.format_exc()
         return HttpResponse(json.dumps({'error': 'Server error: '+str(ex)}), 
                             content_type="application/json")
 
