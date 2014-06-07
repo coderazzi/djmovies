@@ -24,7 +24,9 @@ urlpatterns = patterns('',
     url(r'^subtitle_update$', 'movies.views.subtitles_bench.update', name='#subtitle_update'),
 
     url(r'^imdb/(?P<year>\d{4})$', 'movies.views.search.imdb', name='#search'),
+    url(r'^imdb/(?P<year>\d{4})-(?P<year2>\d{4})$', 'movies.views.search.imdb', name='#search'),
     url(r'^imdb/(?P<year>\d{4})/(?P<limit>\d{1,3})$', 'movies.views.search.imdb', name='#search'),
+    url(r'^imdb/(?P<year>\d{4})-(?P<year2>\d{4})/(?P<limit>\d{1,3})$', 'movies.views.search.imdb', name='#search'),
     url(r'^ax_moved_langs$', 'movies.views.movie_edition.langs', name='#moved_langs'),
 
     url(r'^ax_lsync_edit$', 'movies.views.locations_sync.edit_movie', name='#locations_sync_edit'),

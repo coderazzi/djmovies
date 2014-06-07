@@ -17,9 +17,9 @@ SUBSCENE_COM='http://www.subscene.com/'
 HTML_PARSER='lxml'
 
 
-def searchYear(year, limit):
+def searchYear(year, finalYear, limit):
     start = 0
-    url='http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (year, year)
+    url='http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (year, finalYear)
     numberRe = re.compile('(\d+)')
     yearInTitle=re.compile('\s+\(%s\)\s*$'%year)
     noSpaces=re.compile('\s+', re.S)

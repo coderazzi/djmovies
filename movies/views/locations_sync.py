@@ -354,7 +354,7 @@ def fetch_subtitles(request):
                 return HttpResponse(json.dumps({'error': 'No '+language+' subtitles found'}), content_type="application/json")    
         newPath, subtitles = locationHandler.storeSubtitles(moviePath.path, getLanguageAbbr(language), subtitlesContent, firstSubtitle)
     except Exception, ex:
-        raise
+        # raise
         return HttpResponse(json.dumps({'error': str(ex)}), content_type="application/json")
 
     if newPath!=moviePath.path:

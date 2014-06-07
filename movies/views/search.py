@@ -5,11 +5,17 @@ from movies.models import *
 
 from local.imdb import searchYear
 
-def imdb(request, year, limit=150):    
+def imdb(request, year, year2=None, limit=150):    
+    if year2 is None:
+        year2 = year
+    else:
+        if int(year2) < int(year):
+            year, year2 = year2, year
+    yearTitle = year if year==year2 else '%s-%s' % (year, year2)
     all= set([m[0] for m in Movie.objects.values_list('imdb_link')])
     context = Context({
-        'year' : year,
+        'year' : yearTitle,
         'limit': limit,
-        'search': filter(lambda s : s[0] not in all, searchYear(year, int(limit))),
+        'search': filter(lambda s : s[0] not in all, searchYear(year, year2, int(limit))),
     })
     return render_to_response('imdb_year_search.html', context)
