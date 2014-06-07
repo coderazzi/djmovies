@@ -20,8 +20,8 @@ HTML_PARSER='lxml'
 def searchYear(year, finalYear, limit):
     start = 0
     url='http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (year, finalYear)
-    numberRe = re.compile('(\d+)')
-    yearInTitle=re.compile('\s+\(%s\)\s*$'%year)
+    numberRe = re.compile('(\d+)')    
+    yearInTitle=re.compile('^\s*(.*?)\s+\(\d\d\d\d\)\s*$')
     noSpaces=re.compile('\s+', re.S)
     with Browser() as browser:
         ret=[]
@@ -42,9 +42,10 @@ def searchYear(year, finalYear, limit):
                     if imageTd:
                         href=urlparse.urlparse(imageTd.get('href')).path
                         title = imageTd.get('title')
-                        idx = yearInTitle.search(title)
+                        idx = yearInTitle.match(title)
                         if idx:
-                            title=_unescape(title[:idx.start(0)])
+                            title=idx.group(1) #year could be group(2)
+                        title=_unescape(title)
                         image=imageTd.find('img')
                         image = image and image.get('src')
                         try:
