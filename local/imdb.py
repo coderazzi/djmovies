@@ -19,9 +19,10 @@ HTML_PARSER='lxml'
 
 def searchYear(year, finalYear, limit):
     start = 0
+    showYear = year!=finalYear
     url='http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (year, finalYear)
     numberRe = re.compile('(\d+)')    
-    yearInTitle=re.compile('^\s*(.*?)\s+\(\d\d\d\d\)\s*$')
+    yearInTitle=re.compile('^\s*(.*?)\s+\((\d\d\d\d)\)\s*$')
     noSpaces=re.compile('\s+', re.S)
     with Browser() as browser:
         ret=[]
@@ -41,11 +42,15 @@ def searchYear(year, finalYear, limit):
                     imageTd = imageTd and imageTd.find('a')
                     if imageTd:
                         href=urlparse.urlparse(imageTd.get('href')).path
-                        title = imageTd.get('title')
+                        title = search = imageTd.get('title')
                         idx = yearInTitle.match(title)
                         if idx:
-                            title=idx.group(1) #year could be group(2)
+                            matchTitle, matchYear = idx.group(1), idx.group(2)
+                            search = '%s %s' % (matchTitle, matchYear)
+                            if not showYear:
+                                title = matchTitle
                         title=_unescape(title)
+                        search = urllib.urlencode({'q':search.encode('utf-8', 'ignore')})
                         image=imageTd.find('img')
                         image = image and image.get('src')
                         try:
@@ -58,7 +63,7 @@ def searchYear(year, finalYear, limit):
                         credit = credit and noSpaces.sub(' ', _unescape(credit.text),)
                         genre=tr.find('span', attrs={'class':'genre'})
                         genre = genre and noSpaces.sub(' ', _unescape(genre.text),)
-                        ret.append((href, title, image, rating, start, outline, credit, genre, urllib.urlencode({'q':title.encode('utf-8', 'ignore')})))
+                        ret.append((href, title, image, rating, start, outline, credit, genre, search))
         return ret
 
 def searchImdb(movieTitle):
