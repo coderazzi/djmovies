@@ -109,8 +109,12 @@ class MediaInfo(object):
         fileno_err, fname_err = mkstemp(suffix=".err", prefix="media-")
         fp_out = os.fdopen(fileno_out, 'r+b')
         fp_err = os.fdopen(fileno_err, 'r+b')
-        p = subprocess.Popen(command, stdout=fp_out, stderr=fp_err, env=environment)
-        p.wait()
+        try:
+            p = subprocess.Popen(command, stdout=fp_out, stderr=fp_err, env=environment)
+            p.wait()
+        except:
+            print >> sys.stderr, '\n\n\n\nCHECK THAT mediaindo IS INSTALLED!!!\n\n\n\n'
+            raise
         fp_out.seek(0)
 
         xml_dom = MediaInfo.parse_xml_data_into_dom(fp_out.read())
