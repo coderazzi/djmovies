@@ -1,8 +1,8 @@
-#on addition: brew install mediainfo
-Django==1.7.1
+#on addition: brew install mediainfo unrar
+Django==1.7.7
 Wand==0.3.8
 beautifulsoup4==4.3.2
-lxml==3.4.0
+lxml==3.4.2
 mechanize==0.2.5
-rarfile==2.6
+rarfile==2.7
 wsgiref==0.1.2
