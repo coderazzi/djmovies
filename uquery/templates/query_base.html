@@ -1,0 +1,164 @@
+{% load uquery_tags %}
+
+<div id='results' >       
+
+    <div class='jumbotron'>
+        <div class='container'>
+            <div class='row'>
+                <div class='col-sm-2'>
+                    <a href='/uquery'><img src='/static/uquery.png' id='home-img'></a>
+                </div>
+                <div class='col-sm-10'>
+                    <div class='row'>
+                        <h2>{{query.title}}</h2>
+                    </div>            
+                    <div class='row'>
+                        <div class='col-sm-4 col-sm-offset-1'>
+                            <form id='refresh-form' class='form' action="/uquery/query/{{query.id}}/refresh" method="post">    
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label for="minsize">Minimum size for new searches</label>
+                                        <input type="number" class="form-control" id="minsize" name='minsize' value="{{query.min_size}}">
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" checked name='optimized'> Perform optimized refresh
+                                        </label>
+                                    </div>
+                                    <input class="b btn btn-primary btn-control" type="submit" value="Refresh now"/>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class='col-sm-4 col-sm-offset-1'>
+                            <div class='row'>
+                                <div class='col-sm-12'>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" data-id='{{query.id}}' id="completed-status" 
+                                                {% if query.completed %}
+                                                    "checked"
+                                                {% endif %}
+                                            > Query has been completed
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class='col-sm-12'>
+                                    <div class='divider'></div>
+                                </div>
+                                <div class='col-sm-12'>
+                                    Total results: <span id='n-results'>{{results | length}}</span>
+                                </div>
+                                <div class='col-sm-9'>
+                                    <div class='divider'></div>
+                                </div>
+                                <div class='col-sm-12'>
+                                    Last refreshed: 
+                                    <span class='timeago' title='{% format_time query.last_check %}'></span>
+                                </div>
+                                <div class='col-sm-9'>
+                                    <select id='size-filter'>
+                                        <option value=''>Show all sizes</option>
+                                    </select>                           
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- </div> -->
+
+    <div class='container'>
+
+    {% for each in results %}
+    {% with each.size|size_unit as size_unit %}
+        <div class='row-status colsm-6' data-status='{{each.status}}' data-oid='{{each.oid}}' 
+            {% if each.nfo %}
+                data-filter='{{size_unit}}"-nfo"'
+            {% else %}
+                data-filter='{{size_unit}}'
+            {% endif %}
+            >
+            <div class='row'>
+                <div class='col-sm-12 result-name'>
+                    {{each.desc}}
+                    <span class='tdsize tdsize-{{size_unit}}'>
+                        {{size_unit}}
+                        {% if each.nfo %}
+                            <span class='nfo-flag'>nfo</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-sm-3 col-sm-offset-1'>
+                    <form action="https://www.binsearch.info/fcgi/nzb.fcgi?q={% urllib_quote query.title %}" method="post" name="r">    
+                        <input name="action" type="hidden" value="nzb"/>
+                        <input name="b" type="hidden" value="1"/>
+                        <input name="{{each.oid}}" type='hidden' value='1'/>
+                        <input class="b btn btn-control btn-download" type="submit" value="Download"/>
+                    </form>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="result-status"> Bad download
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="wrong-query"> Wrong result
+                        </label>
+                    </div>
+                    {% if each.nfo %}
+                        <div class='checkbox nfo-checkbox'>
+                            <label>
+                                <input type="checkbox"> Show NFO information
+                            </label>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class='col-sm-3 col-sm-offset-2'>
+                    <div class='row row-info'>
+                        <div class='col-sm-4 ulabel'>Size:</div>
+                        <div class='col-sm-8'>{{each.size}} Mb</div>
+                    </div>
+
+                    <div class='row row-info'>
+                        <div class='col-sm-4 ulabel'>Parts:</div>
+                        <div class='col-sm-8'>
+                            {{each.parts}}/{{each.total_parts}}
+                            {% if each.parts != each.total_parts %}
+                                <span class="glyphicon glyphicon-warning-sign missing-parts" aria-hidden="true"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class='row row-info'>
+                        <div class='col-sm-4 ulabel'>Age:</div>
+                        <div class='col-sm-8'>{{each.since}}</div>
+                    </div>
+
+                    <div class='row row-info'>
+                        <div class='col-sm-4 ulabel'>Found:</div>
+                        <div class='col-sm-8'>
+                            {% format_day each.creation_time %}
+                            {% if each.creation_time|is_recent %}
+                                <span class="glyphicon glyphicon-flag recent" aria-hidden="true"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class='col-sm-2 col-sm-offset-1'>
+                    <pre>{{each.files}}</pre>            
+                </div>
+            </div>
+            {% if each.nfo %}
+            <div class='row row-nfo'>
+                <div class='col-sm-11 col-sm-offset-1'><pre>{{each.nfo}}</pre></div>
+            </div>
+            {% endif %}
+        </div>
+    {% endwith %}
+    {% endfor %}
+    </div>
+</div>
