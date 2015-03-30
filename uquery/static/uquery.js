@@ -297,13 +297,6 @@ function query_list_module($body){
 
 	$('#requery-btn').click(function(){$requeryModal.modal()});
 
-
-	$('.query-title').click(function(){
-		var $tr=$(this).closest('tr');
-		var queryId=$tr.attr('data-query-id');
-		window.location.href = QUERY_URL+queryId;
-	});
-
 	$('.btn-delete').click(function(){
 		var $tr=$(this).closest('tr');
 		swal({   

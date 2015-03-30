@@ -77,32 +77,36 @@
         </div>
     </div>
 
-    <div class='container'>
-        <div class='row'>
-            <div class='col-sm-2'>
-                <a href='/'><img src='/static/uquery.png' id='uquery-icon'></a>
-            </div>
-            <div class='col-sm-4'>
-                <div class='col-sm-12 uquery-typo'>uquery</div>
-                <div class='row'>
-                    <div class='col-sm-6 col-sm-offset-3'>by coderazzi</div>
+    <div class='jumbotron'>
+        <div class='container'>
+            <div class='row'>
+                <div class='col-sm-2'>
+                    <a href='/'><img src='/static/uquery.png' id='uquery-icon'></a>
                 </div>
-            </div>
-            <div class='col-sm-2 col-sm-offset-4'>
-                <div class='row prepend-top'>
-                    <input class="btn btn-primary col-sm-10 prepend-top" type="button" value="Requery all" id='requery-btn'/>
+                <div class='col-sm-4'>
+                    <div class='col-sm-12 uquery-typo'>uquery</div>
+                    <div class='row'>
+                        <div class='col-sm-6 col-sm-offset-3'>by coderazzi</div>
+                    </div>
                 </div>
-                <div class='row'>
-                    <input class="btn btn-primary col-sm-10 prepend-top" type="button" value="Add new query" id='add-query-btn'/>
+                <div class='col-sm-2 col-sm-offset-4'>
+                    <div class='row prepend-top'>
+                        <input class="btn btn-primary col-sm-10 prepend-top" type="button" value="Requery all" id='requery-btn'/>
+                    </div>
+                    <div class='row'>
+                        <input class="btn btn-primary col-sm-10 prepend-top" type="button" value="Add new query" id='add-query-btn'/>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class='container'>
         <div class='row'>
             {% if queries %}
             <table class='table table-striped' id='query-list'>
                 {% for query in queries %}
                 <tr data-query-id='{{query.id}}'>
-                    <td class='result-name-in-list query-title col-sm-5'>{{query.title}}</td>
+                    <td class='query-title col-sm-5'><a href='/uquery/query/{{query.id}}'>{{query.title}}</a></td>
                     <td class='col-sm-1'>{{query.r_valid}} [{{query.r_all}}]</td>
                     <td class='col-sm-1'>
                         {% if query.completed %}

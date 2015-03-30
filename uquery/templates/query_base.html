@@ -6,11 +6,11 @@
         <div class='container'>
             <div class='row'>
                 <div class='col-sm-2'>
-                    <a href='/uquery'><img src='/static/uquery.png' id='home-img'></a>
+                    <a href='/uquery'><img src='/static/uquery.png' id='uquery-icon'></a>
                 </div>
                 <div class='col-sm-10'>
                     <div class='row'>
-                        <h2>{{query.title}}</h2>
+                        <h2 class='h2title'>{{query.title}}</h2>
                     </div>            
                     <div class='row'>
                         <div class='col-sm-4 col-sm-offset-1'>
@@ -81,7 +81,11 @@
             {% endif %}
             >
             <div class='row'>
-                <div class='col-sm-12 result-name'>
+                <div class='col-sm-12 result-name
+                    {% if each.creation_time|is_recent %}
+                        result-name-recent
+                    {% endif %}
+                '>
                     {{each.desc}}
                     <span class='tdsize tdsize-{{size_unit}}'>
                         {{size_unit}}
