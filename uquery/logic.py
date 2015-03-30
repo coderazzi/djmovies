@@ -73,12 +73,14 @@ def query_completed(id, completed):
 		query=queries[0]
 		query.completed=completed
 		query.save()
+		return True
 
 
 def query_delete(id):		
 	queries=UQuery.objects.filter(id=id)
 	if queries:
 		queries.delete()
+		return True
 
 
 def update_result_status(oid, query_id, status):
@@ -87,6 +89,7 @@ def update_result_status(oid, query_id, status):
 		result=now[0]
 		result.status=status
 		result.save()
+		return True
 
 
 def _get_results(query_id, exclude_status=5000):

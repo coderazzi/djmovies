@@ -40,19 +40,6 @@ def create_query(request):
 
 
 @require_http_methods(['POST'])
-def query_completed(request, query_id):
-    completed = request.POST.get('completed')=='true'
-    logic.query_completed(query_id, completed)
-    return JsonResponse(None, safe=False)
-
-
-@require_http_methods(['POST'])
-def query_delete(request, query_id):
-    logic.query_delete(query_id)
-    return JsonResponse(None, safe=False)
-
-
-@require_http_methods(['POST'])
 def refresh(request, query_id):
     minsize= request.POST.get('minsize')
     optimized= request.POST.get('optimized') is not None
@@ -60,8 +47,18 @@ def refresh(request, query_id):
 
 
 @require_http_methods(['POST'])
+def query_completed(request, query_id):
+    completed = request.POST.get('completed')=='true'
+    return JsonResponse(dict(ok=bool(logic.query_completed(query_id, completed))))
+
+
+@require_http_methods(['DELETE'])
+def query_delete(request, query_id):
+    return JsonResponse(dict(ok=bool(logic.query_delete(query_id))))
+
+
+@require_http_methods(['POST'])
 def update_result(request, query_id, oid):
     status   = request.POST.get('status')
-    logic.update_result_status(oid, query_id, status)
-    return JsonResponse(None, safe=False)
+    return JsonResponse(dict(ok=bool(logic.update_result_status(oid, query_id, status))))
             

@@ -93,10 +93,13 @@ function query_html_module($body){
 		//handle event - user setting query as 'complete' -> invoke server
 		$('#completed-status').change(function(){
 			var $this=$(this), completed=this.checked;
-			$.post(QUERY_URL+$this.attr('data-id')+'/set-completed', {completed: completed}).fail(function(){
+			var error_function=function(){
 				$this.prop('checked', !completed);
-				alert_server_error();
-			});		
+				alert_server_error();				
+			}
+			$.post(QUERY_URL+$this.attr('data-id')+'/set-completed', {completed: completed}).done(function(data){
+				if (!data || !data.ok) error_function();
+			}).fail(error_function);		
 		});
 
 		//handle event - user showing/hiding the NFO info
@@ -197,9 +200,16 @@ function query_html_module($body){
 		//the main info on the result is given on the parent row, with class row-status
 		var $row=$(element).closest('.row-status');
 		var oid=$row.attr('data-oid');
+		var error_function=function(){
+			status_updated($row, parseInt($row.attr('data-status')));
+			alert_server_error();			
+		}
 		$.post(MAIN_URL+'/result/'+query_id+'/'+oid+'/set-status', {status: status})
-			.done(function(){
-				if (status===STATUS.WRONG_RESULT){ 
+			.done(function(data){
+				if (!data || !data.ok){
+					error_function();
+				}
+				else if (status===STATUS.WRONG_RESULT){ 
 					//for this status, we remove directly the row
 					//this means that no row has ever this status
 					$row.hide('slow', function(){ $row.remove(); });
@@ -212,10 +222,7 @@ function query_html_module($body){
 					status_updated($row, status);
 				}
 			})
-			.fail(function(){
-				status_updated($row, parseInt($row.attr('data-status')));
-				alert_server_error();
-		});
+			.fail(error_function);
 	};
 
 
@@ -311,8 +318,12 @@ function query_list_module($body){
 				if (confirmed){
 					var queryId=$tr.attr('data-query-id');
 					$.ajax(QUERY_URL+queryId+'/delete', {type:'DELETE'})
-					.done(function(){
-						$tr.hide('slow', function(){ $tr.remove(); });
+					.done(function(data){
+						if (data && data.ok) {
+							$tr.hide('slow', function(){ $tr.remove(); });
+						} else {
+							alert_server_error()
+						}
 					})
 					.fail(function(){
 						alert_server_error();
