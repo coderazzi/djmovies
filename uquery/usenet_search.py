@@ -4,10 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import date, timedelta
 
 from local.browser import Browser
-
-class Struct:
-    def __init__(self, **entries): 
-        self.__dict__.update(entries)
+from local.dstruct import Struct
 
 
 #NOTE: To prettify anything, do:
