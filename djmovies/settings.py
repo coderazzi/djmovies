@@ -1,3 +1,4 @@
+import os 
 # Django settings for djmovies project.
 
 #from django.conf import global_settings
@@ -74,6 +75,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), os.pardir, 'static'),
 )
 
 # List of finder classes that know how to find static files in
