@@ -3,8 +3,8 @@ import re, urllib
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
 
-from local.browser import Browser
-from local.dstruct import Struct
+from common.browser import Browser
+from common.dstruct import Struct
 
 
 #NOTE: To prettify anything, do:

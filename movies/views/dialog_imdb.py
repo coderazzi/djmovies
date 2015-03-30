@@ -2,8 +2,8 @@ import json, traceback
 
 from django.http import HttpResponse
 
-from local.media import mediainfo
-from local.imdb import getImdbInfo, searchImdb
+from movies.logic.media import mediainfo
+from movies.logic.imdb import getImdbInfo, searchImdb
 
 
 

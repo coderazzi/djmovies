@@ -8,10 +8,8 @@ from django.template import RequestContext
 
 from movies.models import MoviePath#, Movie, Image, Subtitle
 
-# from local.imdb import getSubtitles, searchSubtitles
-from local.locations import LocationHandler
-from local.subtitles import SubtitleFileHandler
-# from local.dstruct import Struct
+from movies.logic.locations import LocationHandler
+from movies.logic.subtitles import SubtitleFileHandler
 
 def show(request):    
     if request.method == 'GET': return redirect('#locations')

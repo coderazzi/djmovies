@@ -14,7 +14,7 @@ from wand.image import Image as WandImage
 
 from django.db import models
 
-from local.browser import Browser
+from common.browser import Browser
 
 class ImagesManager(models.Manager):
     CONF_LAST_IMAGE_PATH='last image path'

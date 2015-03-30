@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response
 
 from movies.models import *
 
-from local.imdb import searchYear
+from movies.logic.imdb import searchYear
 
 def imdb(request, year, year2=None, limit=150):    
     if year2 is None:
