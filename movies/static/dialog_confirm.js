@@ -7,7 +7,7 @@ var DialogConfirm = new function(){
 			$dialog=$('#dialog_confirm');			
 			$dialogBody=$('.modal-body', $dialog);
 			confirmSettings = setupAjaxModal($dialog);
-			$dialog.on('shown', function(){confirmSettings.submit.focus();});
+			$dialog.on('shown.bs.modal', function(){confirmSettings.submit.focus();});
 		}
 		confirmSettings.settings = postSettings;
 		$dialogBody.text(message);

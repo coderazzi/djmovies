@@ -3,8 +3,8 @@ body {
   margin: 0px; }
 
 body.inverse-body {
-  background: #111111;
-  color: white; }
+  background: #111;
+  color: #fff; }
 
 caption {
   font-size: 24px;
@@ -79,8 +79,8 @@ caption {
   padding: 10px 20px;
   background: black;
   background: rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid #333344;
-  box-shadow: 0 0px 2px 2px #666699; }
+  border-bottom: 1px solid #334;
+  box-shadow: 0 0px 2px 2px #669; }
 
 .menu-item {
   display: inline-block;
@@ -88,12 +88,12 @@ caption {
   padding: 10px;
   background: black;
   border-radius: 6px;
-  color: #333344;
-  box-shadow: 0 0px 2px 2px #333344; }
+  color: #334;
+  box-shadow: 0 0px 2px 2px #334; }
 
 .menu-item-enabled {
-  color: #666699;
-  box-shadow: 0 0px 2px 2px #666699;
+  color: #669;
+  box-shadow: 0 0px 2px 2px #669;
   cursor: pointer; }
 
 .div_movie {
@@ -157,7 +157,7 @@ caption {
 .movie_info_item a:active,
 .movie_info_item a:hover,
 .movie_info_item a:link {
-  color: white; }
+  color: #fff; }
 
 #locations {
   width: 50%;
@@ -167,10 +167,7 @@ caption {
   vertical-align: middle; }
 
 #input_path input[type='text'] {
-  width: 460px; }
-
-#input_path form {
-  margin-bottom: 0px; }
+  width: 100%; }
 
 #locations_sync {
   width: 75%;
@@ -217,26 +214,25 @@ caption {
 #subtitle_show {
   display: none; }
 
+.subtitle-toolbar {
+  min-width: 92px; }
+
 #dialog_imdb .path {
   font-family: "Courier New", Courier, monospace;
   font-size: 11px;
   font-weight: bold; }
 
 #dialog_imdb .row {
-  padding-bottom: 12px;
-  padding-left: 20px; }
+  padding-bottom: 12px; }
 
-#dialog_imdb a.btn {
-  width: 80px;
-  float: right; }
-
+/*#dialog_imdb a.btn{
+	width: 80px;
+	float: right;
+}*/
 #dialog_imdb img.step6 {
-  float: left;
-  width: 107px;
   max-height: 158px; }
 
 #dialog_imdb .imdb_info {
-  padding: 12px 0px 12px 150px;
   font-family: "Courier New", Courier, monospace;
   font-size: 12px;
   font-weight: bold; }
@@ -303,3 +299,5 @@ caption {
 
 #imdb_search .ic_outline {
   max-width: 400px; }
+
+/*# sourceMappingURL=movies.css.map */

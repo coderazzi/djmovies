@@ -1,5 +1,4 @@
 function setupLocationsSync($locationsSyncSelector){
-
 	var $problemDialog = $('#locations_sync_problems_dialog');
 
 	var $stDialog, $stTitleText, $stPathText, $stPathInput;
@@ -118,6 +117,7 @@ function setupLocationsSync($locationsSyncSelector){
 		$subShowMovieId.val(info.movieId);
 		$subShowPath.val(info.subpath);
 		$subShowForm.submit();
+		return false;
 	}
 
 	function trashSubtitleCallback(){
@@ -170,7 +170,7 @@ function setupLocationsSync($locationsSyncSelector){
 
 	function editSubtitleCallback(){
 		if (!$stDialog){
-			$stDialog = $('#locations_subtitle_dialog').on('shown', function(){$stLanguage.focus();});
+			$stDialog = $('#locations_subtitle_dialog').on('shown.bs.modal', function(){$stLanguage.focus();});
 			$stPathText = $('.path', $stDialog);
 			$stLanguage = $('select', $stDialog).val('English');
 			$stNormalize = $('.checkbox', $stDialog);
@@ -202,7 +202,7 @@ function setupLocationsSync($locationsSyncSelector){
 
 	function fetchSubtitlesCallback(event, title){
 		if (!$fetchDialog){
-			$fetchDialog = $('#locations_subtitle_fetch_dialog').on('shown', function(){
+			$fetchDialog = $('#locations_subtitle_fetch_dialog').on('shown.bs.modal', function(){
 				$fetchSelection.focus();
 				fetchDialogSettings.submit.click();
 			});
@@ -225,7 +225,7 @@ function setupLocationsSync($locationsSyncSelector){
 							return;
 						}
 						fetchingMatches=false;
-						fetchDialogSettings.settings.message='Fetching subtitle'
+						fetchDialogSettings.settings.message='Fetching subtitle';
 						$fetchSelection.html(response);
 					} else {
 						updateMovieInfo($updatingTr, response);

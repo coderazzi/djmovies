@@ -16,20 +16,21 @@
 	  <input type='submit'>
 	</form>
 
-	<div id='locations_sync_problems_dialog' class="modal hide fade container" tabindex='-1'>
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-			<h5>Unhandled files in location</h5>
-		</div>
-		<div class="modal-body">
-			<table class='table no_table-bordered no_table-hover'>
-				<tbody>
-					{%include "locations_sync_problems.html"%}
-				</tbody>
-			</table>		
-		</div>
+	<div id="locations_sync_problems_dialog" class="modal fade container" tabindex="-1">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	                <h5>Unhandled files in location</h5>
+	            </div>
+	            <div class="modal-body">
+	                <table class="table no_table-bordered no_table-hover">
+	                    <tbody>{%include "locations_sync_problems.html"%}</tbody>
+	                </table>
+	            </div>
+	        </div>
+	    </div>
 	</div>
-
 	
 	<table id='locations_sync' 
 	       class='table table-striped table-bordered table-hover' 
@@ -43,12 +44,16 @@
 	       data-remove-subtitle-url='{%url "#lsync_subtitle_remove" %}' 
 	       data-trash-subtitle-url='{%url "#lsync_subtitle_trash" %}'>	       
 		<caption>
-			<a id='ref-add' class="btn btn-mini btn-color-green" href="#"><i class="icon-plus"></i></a>
-			<a id='ref-remove' class="btn btn-mini btn-color-red" href="#"><i class="icon-minus"></i></a>
+			<a type="button" id='ref-add' class="btn btn-color-green" href='#'>
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+			</a>
+			<a type="button" id='ref-remove' class="btn btn-color-red" href='#'>
+				<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+			</a>
 			Movies for {{location}} under {{path}}
 		</caption>
 		<thead>
-			<tr><th>Op</th><th>Cover</th><th>Path &amp; Title</th><th>Audios</th><th colpan='3'>Subtitles</th></tr>
+			<tr><th>Op</th><th>Cover</th><th>Path &amp; Title</th><th>Audios</th><th colspan='3'>Subtitles</th></tr>
 		</thead>
 		<tbody>
 		    {% for movie in movies %}

@@ -83,7 +83,7 @@ function setupAjaxModal($modal, settings){
 	function showProgress(){
 		submit.hide();
 		if ($error.length) $error.hide();
-		if (! $progress.length) $progress=$('<div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div>').appendTo($parent);
+		if (! $progress.length) $progress=$('<div class="progress"><div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="sr-only"></span></div></div>').appendTo($parent);
 		$progress.show();
 	}
 
@@ -98,7 +98,7 @@ function setupAjaxModal($modal, settings){
 		if (! $error.length) $error=$('<div class="error_dialog"></div>').appendTo($parent);
 		$error.text(error || 'Error accessing server').show();
 	}
-	$modal.on('hidden', reset);
+	$modal.on('hidden.bs.modal', reset);
 
 	submit.click(function(){
 		showProgress();

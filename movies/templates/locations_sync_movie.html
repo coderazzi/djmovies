@@ -2,12 +2,18 @@
     <td rowspan='{{movie.getRowspan}}'>
         {%if movie.id %}
             {%if movie.in_fs %}
-            <a class="btn btn-mini btn-color-yellow edit-movie" href="#"><i class="icon-pencil"></i>
+            <a type="button" class="btn btn-xs btn-color-yellow edit-movie" href='#'>
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            </a>
             {% else %}
-            <a class="btn btn-mini btn-color-red remove-movie" href="#" name='movie_{{movie.id}}'><i class="icon-minus"></i>
+            <a type="button" class="btn btn-xs btn-color-red remove-movie" href='#'>
+                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+            </a>
             {% endif %}
         {% else %}
-            <a class="btn btn-mini btn-color-green edit-movie create-movie" href="#" name='movie_{{movie.id}}'><i class="icon-plus"></i>
+            <a type="button" class="btn btn-xs btn-color-green edit-movie create-movie" href='#' name='movie_{{movie.id}}'>
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </a>
         {% endif %}
     </td>
     <td class='ic_link' rowspan='{{movie.getRowspan}}'>
@@ -24,8 +30,8 @@
     <td rowspan='{{movie.getRowspan}}'>
         {% if movie.in_fs and movie.id %}
         <div class='lang_dialog_wrapper'>
-            <a class="btn btn-mini audio-choice" href="#">
-                <i class="icon-list"></i>
+            <a type="button" class="btn btn-xs btn-default audio-choice" href='#'>
+                <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
             </a>
             <span class='in-audios'>{{movie.audios}}</span>
         </div>
@@ -35,17 +41,17 @@
         {%if movie.in_fs and movie.id%}
         <div class='lang_dialog_wrapper'>
             <div class="btn-group">
-                <a class="btn btn-mini fetch-subtitle" href="#">
-                    <i class="icon-plus"></i>
+                <a type="button" class="btn btn-xs btn-default fetch-subtitle" href="#">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
-                <a class="btn btn-mini refresh-subtitles" href="#">
-                    <i class="icon-refresh"></i>
+                <a type="button" class="btn btn-xs btn-default refresh-subtitles" href="#">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                 </a>
-                <a class="btn btn-mini subtitle-choice" href="#">
-                    <i class="icon-list"></i>
+                <a type="button" class="btn btn-xs btn-default subtitle-choice" href="#">
+                    <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
                 </a>
-                <a class="btn btn-mini clean-subtitles" href="#">
-                    <i class="icon-trash"></i>
+                <a type="button" class="btn btn-xs btn-default clean-subtitles" href="#">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 </a>
             </div>
             <span class='in-subtitles'>{{movie.embedded_subs}}</span>

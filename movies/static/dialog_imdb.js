@@ -65,7 +65,7 @@ var DialogImdb = new function(){
 			mediainfo=null;
 			callback = titleLoadedCallback;
 		}
-		$dialog.off('shown').on('shown', callback).modal('show');
+		$dialog.off('shown.bs.modal').on('shown.bs.modal', callback).modal('show');
 	}
 
 	function invalidResponse(){handleError('Server error: invalid response');}

@@ -1,5 +1,4 @@
 var movieEdition = function(movieProvider){
-
 	var $dialog, $dialogTitle, $movieTitle, $movieId, $langOp, $languages, $audioVariants;
 	var dialogSettings, self=this;
 
@@ -43,11 +42,10 @@ var movieEdition = function(movieProvider){
 			$dialog.modal('show');
 		}
 	}
-
 	$('.ic_tooltip').tooltip();
 	$('.ic_tooltip_img').tooltip({html: true, placement:'right', title:function(){
 		return '<img src="'+$(this).attr('src')+'">';
 	}});
-	$('.audio-choice').off('click').click(function(){editAudios($(this), 'Audios', '.in-audios', true);})
-	$('.subtitle-choice').off('click').click(function(){editAudios($(this), 'Subtitles', '.in-subtitles', false);})
+	$('.audio-choice').off('click').click(function(){editAudios($(this), 'Audios', '.in-audios', true); return false;})
+	$('.subtitle-choice').off('click').click(function(){editAudios($(this), 'Subtitles', '.in-subtitles', false);return false;})
 };

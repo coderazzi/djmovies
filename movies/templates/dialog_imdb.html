@@ -1,36 +1,40 @@
-<div id='dialog_imdb' class="modal hide fade container" tabindex='-1'>
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	</div>
-	<div class="modal-body">
-		<form action='{%url "#imdb_get_mediainfo" %}' method='POST' class='form-horizontal'>{% csrf_token %}
-			<input type='hidden' name='location.id' value='{{location.id}}'>
-			<input type='hidden' name='location.path' value='{{path}}'>
-			<input type='hidden' name='file.path'>
-			<div class='path'></div>
-			<div class='step2 row'>
-				<input name='movie.title' type='text' class='span5'>
-				<a href='{%url "#imdb_search_title" %}' 
-					id='imdb_search_title' 
-					class="btn btn-primary">Search</a>
-			</div>
-
-			<div class='step4 row'>
-				<select name='movie.imdb' class='span5'
-				        data-href='{%url "#imdb_access_url" %}'>
-				</select>
-				<a href='#' id='location-sync-check-title' class="btn btn-primary">Accept</a>
-			</div>
-
-			<hr class='step6'>
-
-			<a href='#' target='_blank'><img alt='movie poster' class='step6'></a>
-			<div class='step6 imdb_area'><div class='imdb_info'></div></div>
-
-		</form>
-		<div class='error_dialog'></div>
-		<div class="progress progress-striped active">
-			<div class="bar" style="width: 100%;"></div>
-		</div>
-	</div>
+<div id="dialog_imdb" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form action="{%url '#imdb_get_mediainfo' %}" method="POST" class="form-horizontal">{% csrf_token %}
+                    <div class='container-fluid form-horizontal'>
+                        <input type="hidden" name="location.id" value="{{location.id}}"/>
+                        <input type="hidden" name="location.path" value="{{path}}" />
+                        <input type="hidden" name="file.path" />
+                        <div class="form-group">
+                            <div class="path"></div>
+                        </div>
+                        <div class="form-group">
+                            <div class='input-group col-sm-12'>
+                                <input name="movie.title" type="text" class="form-control" />	
+                                <a role='button' href="{%url '#imdb_search_title' %}" id="imdb_search_title" class="btn btn-primary input-group-addon">Search</a>
+                            </div>
+                        </div>
+                        <div class="step4 form-group">
+                            <select name="movie.imdb" class="form-control" data-href="{%url '#imdb_access_url' %}"></select>	
+                        </div>
+                        <hr class="step6" />	
+                        <div class='step6 row'>
+                            <a href="#" target="_blank" class='col-sm-3'><img alt="movie poster" class="step6 img-responsive" /></a>
+                            <div class="step6 imdb_area col-sm-7">
+                                <div class="imdb_info"></div>
+                            </div>
+                            <a role='button' href="#" id="location-sync-check-title" class="btn btn-primary col-sm-2">Accept</a>
+                        </div>
+                    </div>
+                </form>
+                <div class="error_dialog"></div>
+                <div class='progress'><div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="sr-only"></span></div></div>
+            </div>
+        </div>
+    </div>
 </div>

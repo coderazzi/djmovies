@@ -8,11 +8,7 @@
 }
 
 #input_path input[type='text']{
- 	width: 460px;
-} 
-
-#input_path form{
- 	margin-bottom: 0px;
+ 	width: 100%;
 } 
 
 
@@ -73,4 +69,8 @@
 
 #subtitle_show{
   display: none;
+}
+
+.subtitle-toolbar {
+  min-width:92px;
 }
