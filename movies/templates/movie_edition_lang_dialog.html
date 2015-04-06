@@ -16,15 +16,15 @@
 						<div class='row'>
 							<div class='col-sm-10 col-sm-offset-2'>
 								{%for lang in languages%}
-										<label class='checkbox'>
-											<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked/>{{lang}}
-										</label>
+									<label class='checkbox'>
+										<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked/>{{lang}}
+									</label>
 								{%endfor%}
 								<div class='audio_variants'>
 									{%for lang in audio_variants%}
-											<label class='checkbox'>
-												<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked/>{{lang}}
-											</label>
+										<label class='checkbox'>
+											<input type="checkbox" name="select.{{lang}}" value="{{lang}}" checked/>{{lang}}
+										</label>
 									{%endfor%}
 								</div>
 							</div>

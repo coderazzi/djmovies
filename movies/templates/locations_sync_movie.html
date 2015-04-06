@@ -19,7 +19,7 @@
     <td class='ic_link' rowspan='{{movie.getRowspan}}'>
         {% if movie.imdb_link and movie.image %}
         <a href='http://www.imdb.com{{movie.imdb_link}}' target='imdb'>
-            <img src='{{movie.image}}' class='ic_tooltip_img'>
+            <img src='/{{movie.image}}' class='ic_tooltip_img'>
         </a>
         {%endif%}
     </td>

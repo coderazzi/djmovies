@@ -68,12 +68,14 @@ def getLanguage(languageAbbr):
     return LANGUAGES[LANGUAGE_ABBRVS.index(languageAbbr)]
 
 
-def index(request):    
-    if request.method == 'GET': return redirect('#locations')
-    locationId, locationPath = request.POST['location.id'], request.POST['location.path']
+def index(request, locationId):    
+    #if request.method == 'GET': return redirect('#locations')
 
-    movies, subtitles = {}, {}
+    #locationId, locationPath = request.POST['location.id'], request.POST['location.path']
+
+    movies, subtitles, locationId = {}, {}, int(locationId)
     location = Location.objects.get(id=locationId)
+    locationPath = location.path
     for each in Subtitle.objects.filter(location_id=locationId):
         subtitles.setdefault(each.movie_id, []).append(SubtitleInfo(each.filename, each.language))
 

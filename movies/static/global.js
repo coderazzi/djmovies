@@ -40,10 +40,11 @@ $(function() {
         if ($selector.length) setupFunction($selector);
     }
 
-    setupIf('#locations', setupLocations);
+    setupIf('#locations-list', setupLocations);
     setupIf('#locations_sync', setupLocationsSync);
     setupIf('#movies_control', setupMoviesControl);
     setupIf('#subtitles-handling-form', setupSubtitlesHandling);
+    setupIf('#index_html', setupIndex);
 
 	iconWhiteCheck();
 })

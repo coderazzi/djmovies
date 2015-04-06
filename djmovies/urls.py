@@ -5,13 +5,15 @@ from django.conf.urls import patterns, include, url
 #admin.autodiscover()
 
 urlpatterns = patterns('',
+
     url(r'^$', 'movies.common_views.index', name='#index'),
-    url(r'all$', 'movies.common_views.index', name='#index'),
+    url(r'all$', 'movies.common_views.index', name='#all_movies'),
 
     url(r'^movies$', 'movies.views.movies_control.index', name='#movies'),
 
     url(r'^locations$', 'movies.views.locations.index', name='#locations'),
-    url(r'^locations_sync$', 'movies.views.locations_sync.index', name='#locations_sync'),
+    url(r'^location/(?P<locationId>\d+)$', 'movies.views.locations_sync.index', name='#locations_sync'),
+    url(r'^locations_update$', 'movies.views.locations.update', name='#locations_update'),
     url(r'^subtitle_show$', 'movies.views.subtitles_bench.show', name='#subtitle_show'),
     url(r'^subtitle_update$', 'movies.views.subtitles_bench.update', name='#subtitle_update'),
 

@@ -1,7 +1,6 @@
 function setupLocations(){
-var $dialog = $('#input_path');
-	var $dialog = $('#input_path').on('shown.bs.modal', function(){
-		$("input", $dialog).focus(); //just focus the input component		
+	var $dialog = $('#edit-location').on('shown.bs.modal', function(){
+		$name.focus(); //just focus the input component		
 	}).on('show.bs.modal', function(){
 		addProgressToModal($dialog);
 	}).on('hidden.bs.modal', function(){
@@ -9,13 +8,33 @@ var $dialog = $('#input_path');
 		window.stop(); //ie seems to require window.document.execCommand('Stop');
 	});	
 
-	$('.add_path').click(function(){
-		var currentLocation = $(this).attr('data-location');
-		if (currentLocation){
-			$('#input_path_id', $dialog).val(currentLocation);
-			$('#input_path').modal();
+	var $title=$('#dialog-title', $dialog);
+	var $id=$('input[name="location.id"]', $dialog);
+	var $name=$('input[name="location.name"]', $dialog);
+	var $desc=$('input[name="location.description"]', $dialog);
+	var $path=$('input[name="location.path"]', $dialog);
+
+	function edit_location(){
+		var $this=$(this);
+		var currentLocation = $this.attr('data-location');
+		if (currentLocation) {
+			$title.html('Edit location');
+			var tds = $this.closest('tr').children();
+			$id.val(currentLocation);
+			$name.val($(tds[1]).text());
+			$desc.val($(tds[2]).text());
+			$path.val($(tds[3]).text());
+		} else {
+			$title.html('Add new location');
+			$id.val('');
+			$name.val('');
+			$desc.val('');
+			$path.val('');
 		}
-		return false;
-	});
-	
+		$dialog.modal('show');
+		return false;		
+	}
+
+	$('.edit-location').click(edit_location);
+	$('#add-location-btn').click(edit_location);
 }

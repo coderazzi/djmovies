@@ -1,3 +1,6 @@
+@font-face {
+  font-family: 'Poiret One';
+  src: url("/static/PoiretOne-Regular.ttf"); }
 body {
   padding: 0px;
   margin: 0px; }
@@ -10,6 +13,10 @@ caption {
   font-size: 24px;
   margin: 12px; }
 
+a.a-no-decor {
+  text-decoration: none;
+  color: black; }
+
 .error_dialog {
   display: none;
   background: #c00;
@@ -18,6 +25,35 @@ caption {
   width: 100%;
   padding: 6px 0;
   margin-top: 4px; }
+
+.prepend-top {
+  margin-top: 1.2em; }
+
+.header-typo {
+  font-family: 'Poiret One', cursive;
+  font-weight: bold;
+  font-size: 4.2em;
+  margin-top: 2px; }
+
+.subheader-typo {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 0.8em;
+  margin-top: 2px; }
+
+#index_html {
+  background: black; }
+  #index_html .row {
+    margin-top: 96px; }
+  #index_html a.main-icon-ref {
+    text-decoration: none;
+    border-radius: 24px; }
+    #index_html a.main-icon-ref img {
+      width: 100%;
+      height: 100%; }
+  #index_html a.main-icon-ref:hover {
+    background: #22b; }
+  #index_html #locations_selection select {
+    font-family: "Lucida Console", Monaco, monospace; }
 
 .btn-color-red {
   background-color: #a32929 !important;
@@ -163,11 +199,11 @@ caption {
   width: 50%;
   margin: 20px 25% 0 25%; }
 
+#locations-icon {
+  width: 100%; }
+
 #locations td {
   vertical-align: middle; }
-
-#input_path input[type='text'] {
-  width: 100%; }
 
 #locations_sync {
   width: 75%;

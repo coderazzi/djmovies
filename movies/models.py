@@ -61,6 +61,7 @@ class Location(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.TextField(blank=True)
     description = models.TextField(blank=True)
+    path = models.TextField(blank=True)
     movies = models.ManyToManyField(Movie, through='MoviePath')
     class Meta:
         db_table = 'locations'

@@ -25,6 +25,3 @@ def is_recent(seconds):
 def size_unit(size):
     '''Returns True if is recent (1 day old max)'''
     return min(4, int(size/4000))
-
-
-#<form action="https://www.binsearch.info/fcgi/nzb.fcgi?q={{urllib.quote(query.title)}}" method="post" name="r">    

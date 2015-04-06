@@ -10,7 +10,7 @@ from movies.models import *
 
 
 
-def index(request):        
+def all_movies(request):        
     movies=Movie.objects.order_by('title')
     for movie in movies:
         images=movie.image_set.filter(size=Image.SIZE_BASIC)[:1]
@@ -22,3 +22,11 @@ def index(request):
     })
     return render_to_response('movies.html', context)
 
+
+def index(request):
+    locations=Location.objects.order_by('name')
+    #locations=[]
+    format='%%-%ds - %%s' % max([len(l.name) for l in locations]) if locations else None
+    return render_to_response('index.html', 
+        {'locations':  locations, 'format' : format},
+        RequestContext(request))
