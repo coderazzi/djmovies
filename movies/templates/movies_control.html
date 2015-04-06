@@ -1,7 +1,7 @@
 {% extends "generic.html" %}
 {% block body %}
 
-<table id='movies_control' class='table table-striped no_table-bordered table-hover'>
+<table id='movies_control' class='table table-striped table-hover'>
 	<caption>Movies control</caption>
 	<thead>
 		<tr>
@@ -14,7 +14,7 @@
 		{%for key, image, count, value in info%}
 	    <tr>
 			<td class='ic_link' rowspan='{{count}}'>
-				<a href='http://www.imdb.com{{key.2}}'>
+				<a href='http://www.imdb.com{{key.2}}' target='imdb'>
 					<img src='{{image|default:"/static/noposter.jpg"}}' class='ic_tooltip_img'>
 				</a>
 			</td>
