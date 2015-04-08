@@ -9,6 +9,7 @@ from django.contrib import messages
 def index(request):        
     return render_to_response('locations.html', 
         {'locations':  Location.objects.order_by('name')},
+        #{'locations':  []},
         RequestContext(request))
 
 
@@ -28,9 +29,9 @@ def update(request):
         else:
             location=Location()
         if byname and (not id or byname[0].id!=id):
-            error='The name of the location must be unique'
+            error='The name of the location [%s] must be unique' % name
         elif bypath and (not id or bypath[0].id!=id):
-            error='The path of the location must be unique'
+            error='The path of the location [%s] must be unique: repeated for location [%s]' % (path, bypath[0].name)
         else:
             error=None
     if error:
