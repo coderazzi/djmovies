@@ -40,6 +40,10 @@ $(function() {
         if ($selector.length) setupFunction($selector);
     }
 
+    $('.ic_tooltip_img').tooltip({html: true, placement:'right', title:function(){
+        return '<img src="'+$(this).attr('src')+'">';
+    }});
+
     setupIf('#locations-list', setupLocations);
     setupIf('#locations_sync', setupLocationsSync);
     setupIf('#movies_control', setupMoviesControl);

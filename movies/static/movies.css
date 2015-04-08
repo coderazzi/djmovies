@@ -295,9 +295,6 @@ a.a-no-decor {
   max-width: 90px;
   overflow-x: hidden; }
 
-#movies_control .ic_tooltip {
-  cursor: pointer; }
-
 #subtitles-file-content {
   width: 90%;
   margin: 20px auto; }
