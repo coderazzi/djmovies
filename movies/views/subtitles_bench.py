@@ -8,7 +8,7 @@ from django.template import RequestContext
 
 from movies.models import MoviePath#, Movie, Image, Subtitle
 
-from movies.logic.locations import LocationHandler
+from movies.logic.locations_handler import LocationHandler
 from movies.logic.subtitles import SubtitleFileHandler
 
 def show(request):    

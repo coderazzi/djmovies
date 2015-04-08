@@ -9,7 +9,7 @@ from django.template import RequestContext
 from movies.models import Location, MoviePath, Movie, Image, Subtitle
 
 from movies.logic.imdb import getSubtitlesOnSubscene as getSubtitles, searchSubtitlesOnSubscene as searchSubtitles
-from movies.logic.locations import LocationHandler, SubtitleInfo
+from movies.logic.locations_handler import LocationHandler, SubtitleInfo
 from common.dstruct import Struct
 
 

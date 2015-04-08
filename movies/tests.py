@@ -9,7 +9,7 @@ from django.test import TestCase
 
 import os, tempfile
 
-from logic.locations import LocationHandler
+from logic.locations_handler import LocationHandler
 
 class LocationTest(TestCase):
 
