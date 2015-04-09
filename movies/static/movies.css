@@ -295,6 +295,10 @@ a.a-no-decor {
   max-width: 90px;
   overflow-x: hidden; }
 
+#control-icon {
+  width: 100%;
+  margin-bottom: 13px; }
+
 #subtitles-file-content {
   width: 90%;
   margin: 20px auto; }

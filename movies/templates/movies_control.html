@@ -1,8 +1,28 @@
 {% extends "generic.html" %}
 {% block body %}
 
+<div class='jumbotron'>
+    <div class='container'>
+        <div class='row'>
+            <div class='col-sm-2'>
+                <a href='/'><img src='/static/control.png' id='control-icon'></a>
+            </div>
+            <div class='col-sm-4'>
+                <div class='col-sm-12 header-typo'>movies Control</div>
+                <div class='row'>
+                    <div class='col-sm-6 col-sm-offset-3 subheader-typo'>DJMovies by coderazzi</div>
+                </div>
+            </div>
+            <div class='col-sm-2 col-sm-offset-4'>
+                <div class='row'>
+                    <input class="btn btn-primary col-sm-10 prepend-top" type="button" value="Add new location" id='add-location-btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <table id='movies_control' class='table table-striped table-hover'>
-	<caption>Movies control</caption>
 	<thead>
 		<tr>
 			<th></th><th>Title</th><th>Year</th>

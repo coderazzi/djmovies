@@ -23,6 +23,7 @@ def index(request):
             if not image: image = images.get(m.id)
             cnt += max(1, len(l))
         info.append((k, image, cnt, [(m, l, max(1, len(l))) for m, l in mapped]))
+        if len(info)>4: break
 
     context = Context({
         'info': info,
