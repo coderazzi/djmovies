@@ -64,32 +64,24 @@
 		</tr>
 	</thead>
 	<tbody>
-		{%for key, image, count, value in info%}
+		{% for movie, image, locations in info %}
+		{% for location in locations %}
 	    <tr>
-			<td class='ic_link' rowspan='{{count}}'>
-				<a href='http://www.imdb.com{{key.2}}' target='imdb'>
+			<td class='ic_link' >
+				<a href='http://www.imdb.com{{movie.imdb_link}}' target='imdb'>
 					<img src='{{image|default:"/static/noposter.jpg"}}' class='ic_tooltip_img'>
 				</a>
 			</td>
-			<td class='ic_title' rowspan='{{count}}'>{{key.0}}</td>
-			<td class='ic_year' rowspan='{{count}}'>{{key.1}}</td>
-			{% for movie, locations, lcount in value %}
-				{% if not forloop.first %}
-					</tr><tr>
-				{%endif%}
-				<td class='ic_size' rowspan='{{lcount}}'>{{movie.size}} Gb</td>
-				<td class='ic_format' rowspan='{{lcount}}'>{{movie.format}}:{{movie.width}}x{{movie.height}}</td>
-				<td class='ic_audios' rowspan='{{lcount}}'>{{movie.audios}}</td>
-				<td class='ic_subs' rowspan='{{lcount}}'>{{movie.subs}}</td>
-				{%for location in locations%}
-					{% if not forloop.first %}
-						</tr><tr>
-					{%endif%}
-					<td class='ic_location'>{{location.0.name}}</td>
-				{%endfor%}			
-			{%endfor%}			
+			<td class='ic_title'>{{movie.title}}</td>
+			<td class='ic_year'>{{movie.year}}</td>
+			<td class='ic_size'>{{movie.size}} Gb</td>
+			<td class='ic_format'>{{movie.format}}:{{movie.width}}x{{movie.height}}</td>
+			<td class='ic_audios'>{{movie.audios}}</td>
+			<td class='ic_subs'>{{movie.subs}}</td>
+			<td class='ic_location'>{{location.0.name}}</td>
 		</tr>
-	    {% endfor %}
+		{%endfor%}			
+		{%endfor%}			
 	</tbody>
 </table>
 
