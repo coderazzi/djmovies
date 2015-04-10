@@ -9,7 +9,7 @@ def index(request):
     for image in Image.objects.filter(size=Image.SIZE_BASIC):
         images[image.movie_id]=image.servepath()
 
-    for movie in Movie.objects.order_by('title'):
+    for movie in Movie.objects.order_by('title')[:12]:
         imdb_link=movie.imdb_link
         key = (movie.title, movie.year, imdb_link)
         locations=[(each.location, each.path) for each in movie.moviepath_set.all()]

@@ -296,8 +296,12 @@ a.a-no-decor {
   overflow-x: hidden; }
 
 #control-icon {
-  width: 100%;
-  margin-bottom: 13px; }
+  width: 100%; }
+
+.boxed-form {
+  border: 1px solid #2e6e73;
+  border-radius: 12px;
+  padding: 12px; }
 
 #subtitles-file-content {
   width: 90%;

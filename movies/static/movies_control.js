@@ -1,20 +1,15 @@
-// var SubtitleDialog = function(){
-
-// 	// this.onshown = function(){
-// 	// 	this.$select
-// 	// }
-
-// 	this.show=function(){this.$dialog.modal('show');};
-// 	var self=this;
-// 	this.$dialog = $('#subtitle_dialog');
-// 	this.$file = this.$dialog.find(':file')
-// }
-
 function setupMoviesControl() {
-	//movieEdition.setup();
-	// $('.add_subtitles').click(function(){
-	// 	if (!subtitleDialog) subtitleDialog = new SubtitleDialog();
-	// 	subtitleDialog.show();
-	// 	return false;
-	// });
+	function create_filter(){
+
+	}
+	var like_filters={
+		1 : $('#title-filter').change(create_filter), //second td in rows
+	}
+	var exact_filters={
+		2: $('#year-filter').change(create_filter),
+		$('#format-filter').change(create_filter),
+		$('#audios-filter').change(create_filter),
+		$('#subs-filter').change(create_filter),
+		$('#location-filter').change(create_filter),
+	};
 }
