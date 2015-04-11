@@ -2,29 +2,33 @@
   width: 75%;
   margin: 20px auto;	
   word-wrap: break-word;
-}
 
+  img.ic_tooltip_img {
+    width: 30px;
+  }
 
-#movies_control img.ic_tooltip_img {
-	width: 30px;
-}
+  .ic_title{
+    max-width: 150px;
+    font-weight: bold;
+  }
 
-#movies_control .ic_title{
-	max-width: 150px;
-  font-weight: bold;
-}
+  td {
+    vertical-align: top;
+  }
 
-#movies_control td {
-  vertical-align: top;
-}
+  .ic_audios, .ic_subs{
+    max-width: 90px;
+    overflow-x: hidden;
+  }
 
-#movies_control .ic_audios{
-  max-width: 90px;
-}
+  .ic_genres, .ic_actors{
+    max-width: 120px;
+    overflow-x: hidden;
+  }
 
-#movies_control .ic_subs{
-  max-width: 90px;
-  overflow-x: hidden;
+  .ic_size, .ic_format, .ic_dimensions{
+    display: none;
+  }
 }
 
 #control-icon {

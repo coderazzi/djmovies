@@ -277,23 +277,21 @@ a.a-no-decor {
   width: 75%;
   margin: 20px auto;
   word-wrap: break-word; }
-
-#movies_control img.ic_tooltip_img {
-  width: 30px; }
-
-#movies_control .ic_title {
-  max-width: 150px;
-  font-weight: bold; }
-
-#movies_control td {
-  vertical-align: top; }
-
-#movies_control .ic_audios {
-  max-width: 90px; }
-
-#movies_control .ic_subs {
-  max-width: 90px;
-  overflow-x: hidden; }
+  #movies_control img.ic_tooltip_img {
+    width: 30px; }
+  #movies_control .ic_title {
+    max-width: 150px;
+    font-weight: bold; }
+  #movies_control td {
+    vertical-align: top; }
+  #movies_control .ic_audios, #movies_control .ic_subs {
+    max-width: 90px;
+    overflow-x: hidden; }
+  #movies_control .ic_genres, #movies_control .ic_actors {
+    max-width: 120px;
+    overflow-x: hidden; }
+  #movies_control .ic_size, #movies_control .ic_format, #movies_control .ic_dimensions {
+    display: none; }
 
 #control-icon {
   width: 100%; }
