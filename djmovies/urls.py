@@ -7,7 +7,6 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
 
     url(r'^$', 'movies.common_views.index', name='#index'),
-    url(r'^all$', 'movies.common_views.all_movies', name='#all_movies'),
 
     url(r'^movies$', 'movies.views.movies_control.index', name='#movies'),
 
