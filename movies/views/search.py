@@ -17,12 +17,16 @@ def imdb(request, year, year2=None, limit=150):
     Configuration.setValue(Configuration.IMDB_SEARCH_YEAR, year)
     Configuration.setValue(Configuration.IMDB_SEARCH_YEAR2, year2)
     Configuration.setValue(Configuration.IMDB_SEARCH_RESULTS, limit)
-    
-    all= set([m[0] for m in Movie.objects.values_list('imdb_link')])
+
+    imdb_results = searchYear(year, year2, int(limit))    
+    movies_in_database= set([m[0] for m in Movie.objects.values_list('imdb_link')])
+
+    results_to_show = filter(lambda s : s[0] not in movies_in_database, imdb_results)
+
     context = Context({
         'year' : yearTitle,
         'limit': limit,
-        'search': filter(lambda s : s[0] not in all, searchYear(year, year2, int(limit))),
+        'search': results_to_show,
         'imdb_year1': Configuration.getValue(Configuration.IMDB_SEARCH_YEAR) or '',
         'imdb_year2': Configuration.getValue(Configuration.IMDB_SEARCH_YEAR2) or '',
         'imdb_results': Configuration.getValue(Configuration.IMDB_SEARCH_RESULTS) or 150,
