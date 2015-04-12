@@ -1,4 +1,46 @@
 function setupMoviesControl() {
+	handle_movies_control_filtering();
+	handle_movies_control_info();
+}
+
+function handle_movies_control_info(){
+	var $dialog, $title, $img, $year, $genre, $actors, $duration, 
+		$duration_imdb, $links, $format, $audio, $subs;
+	function show_modal(){
+		if (! $dialog) {
+			$dialog=$('#dialog_movie_info');
+			$title=$('h4', $dialog);
+			$img=$('img', $dialog);
+			$year=$('#dmi_year', $dialog);
+			$genre=$('#dmi_genre', $dialog);
+			$actors=$('#dmi_actors', $dialog);
+			$duration=$('#dmi_duration', $dialog);
+			$duration_imdb=$('#dmi_duration_imdb', $dialog);
+			$links=$('#dmi_links', $dialog);
+			$format=$('#dmi_format', $dialog);
+			$audio=$('#dmi_audio', $dialog);
+			$subs=$('#dmi_subs', $dialog);
+		}
+		var tds=$(this).closest('tr').children();
+		var duration=$(tds[9]).text().split('/');
+		$title.text($(tds[1]).text());
+		$dialog.modal('show');
+		$img.attr('src', $('img', $(tds[0])).attr('src'));
+		$year.text($(tds[2]).text());
+		$genre.html($(tds[3]).html());
+		$actors.html($(tds[7]).html());
+		$duration.text(duration[0]);
+		$duration_imdb.text(duration[1]);	
+		$links.html($(tds[10]).html());		
+		$format.text($(tds[8]).text());
+		$audio.text($(tds[4]).text());
+		$subs.text($(tds[5]).text());
+	}
+	$('.ic_cover').click(show_modal);
+	$('.ic_title').click(show_modal);
+}
+
+function handle_movies_control_filtering(){
 
 	function create_cell_filter(exact, td, val){
 		var ltd=td, lval=val;
@@ -76,5 +118,5 @@ function setupMoviesControl() {
 	fill_combobox($audios, '.ic_audios', lang_splitter);
 	fill_combobox($subs, '.ic_subs', lang_splitter);
 	fill_combobox($location, '.ic_location');
-
 }
+

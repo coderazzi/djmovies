@@ -3,13 +3,15 @@
   margin: 20px auto;	
   word-wrap: break-word;
 
-  img.ic_tooltip_img {
+  .ic_cover img{ 
     width: 30px;
+    cursor: pointer;
   }
 
   .ic_title{
     max-width: 150px;
     font-weight: bold;
+    cursor: pointer;
   }
 
   td {
@@ -26,9 +28,18 @@
     overflow-x: hidden;
   }
 
-  .ic_size, .ic_format, .ic_dimensions{
+  .ic_format, .ic_duration, .ic_links{
     display: none;
   }
+}
+
+.dmi_label {
+  font-style: italic;
+  font-size: 92%;
+}
+
+.dmi_info{
+  font-weight: bold;
 }
 
 #control-icon {

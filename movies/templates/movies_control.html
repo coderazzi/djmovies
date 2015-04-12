@@ -1,6 +1,8 @@
 {% extends "generic.html" %}
 {% block body %}
 
+{%include "dialog_movie_info.html"%}
+
 <div class='jumbotron'>
     <div class='container'>
         <div class='row'>
@@ -74,19 +76,17 @@
 			<th class='ic_subs'>Subs</th>
 			<th>Location</th>
 			<th class='ic_actors'>Actors</th>
-			<th class='ic_size'>Size</th>
-			<th class='ic_format'>Format</th>
-			<th class='ic_dimensions'></th>
+			<th class='ic_format'></th>
+			<th class='ic_duration'></th>
+			<th class='ic_links'></th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for movie, image, locations, genres, actors in info %}
 		{% for location in locations %}
 	    <tr>
-			<td class='ic_link' >
-				<a href='http://www.imdb.com{{movie.imdb_link}}' target='imdb'>
-					<img src='{{image|default:"/static/noposter.jpg"}}' class='ic_tooltip_img'>
-				</a>
+			<td class='ic_cover' >
+				<img src='{{image|default:"/static/noposter.jpg"}}'>
 			</td>
 			<td class='ic_title'>{{movie.title}}</td>
 			<td class='ic_year'>{{movie.year}}</td>
@@ -103,9 +103,13 @@
 					{{actor}}<br>
 				{%endfor%}
 			</td>
-			<td class='ic_size'>{{movie.size}} Gb</td>
-			<td class='ic_format'>{{movie.format}}</td>
-			<td class='ic_dimensions'>{{movie.width}}x{{movie.height}}</td>
+			<td class='ic_format'>{{movie.format}} / {{movie.width}}x{{movie.height}} [{{movie.size}} Gb]</td>
+			<td class='ic_duration'>{{movie.duration}}/{{movie.imdb_duration}}</td>
+			<td class='ic_links'>
+				<a href='http://www.imdb.com{{movie.imdb_link}}' target='imdb'>imdb</a> 
+				/ 
+				<a href='http://www.imdb.com{{movie.trailer_link}}' target='imdb'>trailer</a>
+			</td>
 		</tr>
 		{%endfor%}			
 		{%endfor%}			
