@@ -178,6 +178,7 @@ class UQuery(models.Model):
 
     id = models.AutoField(primary_key=True)
     title = models.TextField(unique=True)
+    standarized_title = models.TextField(unique=True)
     min_size = models.IntegerField(null=True, blank=True)
     last_check = models.IntegerField(null=True, blank=True)
     newest_result = models.IntegerField(null=True, blank=True)

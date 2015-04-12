@@ -1,4 +1,4 @@
-import time
+import re, time
 
 from movies.models import UQuery, UResults
 
@@ -12,6 +12,8 @@ MIN_AGE_IN_SECONDS_TO_REQUERY=86400*2
 
 DEFAULT_MIN_SIZE=3800
 DEFAULT_MAX_SIZE=24000
+
+WORDS_SPLIT=re.compile('\s+')
 
 def get_queries():
 	return UQuery.objects.all().extra(
@@ -33,17 +35,20 @@ def get_requery_info():
 	ret = UQuery.objects.filter(completed=False, last_check__lt=last_check).order_by('last_check').only('id','title')[:1]
 	return ret[0] if ret else None
 
+def standarize_title(query_name):
+	return ' '.join(sorted(set(WORDS_SPLIT.split(query_name.lower()))))
 
 def create_query(query_name):
 	#if query already exists, we refresh it
 	#if not, we create it.In both cases, we just return the query id
-	query = UQuery.objects.filter(title=query_name)
+	stitle = standarize_title(query_name)
+	query = UQuery.objects.filter(standarized_title=stitle)
 	if query:
 		query=query[0]
 		results=_get_results(query.id)
 		optimized=True
 	else:
-		query=UQuery(title=query_name, min_size=DEFAULT_MIN_SIZE)
+		query=UQuery(title=query_name, standarized_title=stitle, min_size=DEFAULT_MIN_SIZE)
 		query.save()
 		optimized, results=False, []
 	return query.id, _update_results(query, results=results, only_get_newer_results=optimized)		
@@ -97,7 +102,7 @@ def _get_results(query_id, exclude_status=5000):
 
 
 def _update_results(query, results=[], only_get_newer_results=True):
-	newest_oid, new_results=search_title(query.title, query.min_size, DEFAULT_MAX_SIZE,
+	newest_oid, new_results=search_title(query.standarized_title, query.min_size, DEFAULT_MAX_SIZE,
 		exclude_oid_list=[d.oid for d in results], stop_on_oid=query.newest_result if only_get_newer_results else None)
 	now=int(time.time())
 	for d in reversed(new_results):
