@@ -36,5 +36,16 @@ urlpatterns = patterns('',
     url(r'^ax_imdb_search_title$', 'movies.views.dialog_imdb.search_title', name='#imdb_search_title'),
     url(r'^ax_imdb_access_url$', 'movies.views.dialog_imdb.access_url', name='#imdb_access_url'),
 
-    url(r'^uquery/', include('uquery.urls')),
+    url(r'^uquery/$', 'movies.views.uquery.index', name='#uquery'),
+
+    url(r'^uquery/query$', 'movies.views.uquery.create_query', name='#create_query'),    
+    url(r'^uquery/query/(?P<query_id>\d+)$', 'movies.views.uquery.query', name='#query'),
+    url(r'^uquery/query/(?P<query_id>\d+)/base$', 'movies.views.uquery.query_base', name='#query_base'),
+    url(r'^uquery/query/(?P<query_id>\d+)/refresh$', 'movies.views.uquery.refresh', name='#refresh'),
+    url(r'^uquery/query/(?P<query_id>\d+)/set-completed$', 'movies.views.uquery.query_completed', name='#query_completed'),
+    url(r'^uquery/query/(?P<query_id>\d+)/delete$', 'movies.views.uquery.query_delete', name='#query_delete'),
+
+    url(r'^uquery/requery_info$', 'movies.views.uquery.requery_info', name='#requery_info'),
+
+    url(r'^uquery/result/(?P<query_id>\d+)/(?P<oid>\d+)/set-status$', 'movies.views.uquery.update_result', name='#result_update'),
 )

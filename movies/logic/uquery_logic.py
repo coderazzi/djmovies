@@ -1,6 +1,6 @@
 import time
 
-from uquery.models import UQuery, UResults
+from movies.models import UQuery, UResults
 
 from usenet_search import search_title
 

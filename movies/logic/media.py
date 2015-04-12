@@ -7,7 +7,7 @@ from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 from tempfile import mkstemp
 
-from common.dstruct import Struct
+from movies.logic.dstruct import Struct
 from locations import LocationHandler
 
 _py3 = sys.version_info >= (3,)

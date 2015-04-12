@@ -2,8 +2,8 @@ import htmlentitydefs, os, re, urllib, urllib2, urlparse, zipfile, rarfile
 
 from bs4 import BeautifulSoup
 
-from common.browser import Browser
-from common.dstruct import Struct
+from movies.logic.browser import Browser
+from movies.logic.dstruct import Struct
 
 #NOTE: To prettify anything, do:
 #  with open('/tmp/kk.html', 'w') as f:
