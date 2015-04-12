@@ -16,8 +16,6 @@ def index(request):
             movie.actors.split('/') if movie.actors else []
             ))
 
-    print info
-
     context = Context({
         'info': info,
     })
