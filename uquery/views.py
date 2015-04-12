@@ -24,7 +24,7 @@ def query_base(request, query_id):
     return render_to_response('query_base.html',  {'query':  use[0], 'results': use[1]}, RequestContext(request))
 
 
-@require_http_methods(['POST'])
+@require_http_methods(['GET'])
 def requery_info(request):
     ret = logic.get_requery_info()
     if ret:

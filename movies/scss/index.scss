@@ -18,9 +18,8 @@ caption{
 	margin: 12px;	
 }
 
-a.a-no-decor {
-  text-decoration: none;
-  color: black;
+.progress{
+	display: none;
 }
 
 .error_dialog{
@@ -56,7 +55,7 @@ a.a-no-decor {
 
 
 #index_html{
-	background: black;
+	background: #777;//black;
 
 	.row {
 		margin-top: 96px;
@@ -73,10 +72,6 @@ a.a-no-decor {
 
 	a.main-icon-ref:hover {
 		background: #22b;
-	}
-
-	#locations_selection select {
-		font-family: "Lucida Console", Monaco, monospace;
 	}
 
 }

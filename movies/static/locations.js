@@ -37,4 +37,8 @@ function setupLocations(){
 
 	$('.edit-location').click(edit_location);
 	$('#add-location-btn').click(edit_location);
+	$('.click-tr-ref').click(function(){
+		Spinner.show();
+		window.location=$(this).closest('tr').attr('data-href');
+	})
 }

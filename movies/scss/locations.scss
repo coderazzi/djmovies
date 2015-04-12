@@ -1,16 +1,23 @@
 #locations{
   width: 50%;
   margin: 20px 25% 0 25%;
+
+  td {
+    vertical-align: middle;
+  }
 }
+
+.click-tr-ref {
+  cursor: pointer;
+}
+
+
 
 #locations-icon {
   width: 100%;
   //margin-bottom: 4px;
 }
 
-#locations td {
-  vertical-align: middle;
-}
 
 #locations_sync {
   width: 75%;

@@ -4,27 +4,6 @@ var MAIN_URL='/uquery'
 var BASE_QUERY_URL=MAIN_URL+'/query'
 var QUERY_URL=BASE_QUERY_URL+'/'
 
-//Spinner is a singleton to shown a waiting sign
-var Spinner = {
-	$spinner: null,
-	count: 0, 
-	show : function(){
-		if (!this.$spinner){
-			this.$spinner=$('#spinner-screen');
-		}
-		if (this.count===0){
-			this.count=1;
-			this.$spinner.show();
-		}
-	},
-	hide : function(){
-		if (this.count>0){
-			this.count-=1;
-			if (!this.count) this.$spinner.hide();
-		}
-	}
-};
-
 // Common method to show a connection error
 function alert_server_error(){
 	setTimeout(function(){
