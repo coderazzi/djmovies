@@ -9,7 +9,7 @@ def index(request):
     for image in Image.objects.filter(size=Image.SIZE_BASIC):
         images[image.movie_id]=image.servepath()
 
-    for movie in Movie.objects.order_by('title', 'year')[:12]:        
+    for movie in Movie.objects.order_by('title', 'year'):#[:21]:        
         locations=[(each.location, each.path) for each in movie.moviepath_set.all()]
         info.append((movie, images.get(movie.id), locations, 
             movie.genres.split('/') if movie.genres else [],

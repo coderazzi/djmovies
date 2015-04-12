@@ -5,8 +5,41 @@ function setupMoviesControl() {
 
 function handle_movies_control_info(){
 	var $dialog, $title, $img, $year, $genre, $actors, $duration, 
-		$duration_imdb, $links, $format, $audio, $subs;
-	function show_modal(){
+		$duration_imdb, $links, $format, $audio, $subs, $current_tr;
+
+	function setup_modal_navigation(){
+		$dialog.keydown(function(e) {
+			switch(e.which) {
+				case 37: //left
+				case 38: // up
+					var $prev = $current_tr.prev();
+					if (!$prev.length) {
+						var siblings = $current_tr.siblings();
+						if (!siblings.length) return;
+						$prev = $(siblings[siblings.length-1]);
+					}
+					update_modal($prev);
+					break;
+				case 39: // right
+				case 40: // down
+					var $next = $current_tr.next();
+					if (!$next.length) {
+						var siblings = $current_tr.siblings();
+						if (!siblings.length) return;
+						$next = $(siblings[0]);
+					}
+					update_modal($next);
+					break;
+				break;
+
+				default: return; // exit this handler for other keys
+			}
+			e.preventDefault(); // prevent the default action (scroll / move caret
+		});
+	}
+
+	function update_modal($tr){
+		$current_tr=$tr;
 		if (! $dialog) {
 			$dialog=$('#dialog_movie_info');
 			$title=$('h4', $dialog);
@@ -21,10 +54,9 @@ function handle_movies_control_info(){
 			$audio=$('#dmi_audio', $dialog);
 			$subs=$('#dmi_subs', $dialog);
 		}
-		var tds=$(this).closest('tr').children();
+		var tds=$current_tr.children();
 		var duration=$(tds[9]).text().split('/');
 		$title.text($(tds[1]).text());
-		$dialog.modal('show');
 		$img.attr('src', $('img', $(tds[0])).attr('src'));
 		$year.text($(tds[2]).text());
 		$genre.html($(tds[3]).html());
@@ -34,7 +66,12 @@ function handle_movies_control_info(){
 		$links.html($(tds[10]).html());		
 		$format.text($(tds[8]).text());
 		$audio.text($(tds[4]).text());
-		$subs.text($(tds[5]).text());
+		$subs.text($(tds[5]).text());		
+		return $dialog;
+	}
+
+	function show_modal(){
+		update_modal($(this).closest('tr')).off('shown.bs.modal').on('shown.bs.modal', setup_modal_navigation).modal('show');
 	}
 	$('.ic_cover').click(show_modal);
 	$('.ic_title').click(show_modal);
