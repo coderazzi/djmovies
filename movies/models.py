@@ -168,6 +168,11 @@ class Configuration(models.Model):
         else:
             Configuration.objects.create(key=key, value=value)
 
+    IMDB_SEARCH_YEAR='imdb-search-year'
+    IMDB_SEARCH_YEAR2='imdb-search-year2'
+    IMDB_SEARCH_RESULTS='imdb-search-max-results'
+
+
 
 #ensure now that images are properly deleted
 models.signals.pre_delete.connect(Image.delete_callback, sender=Image, dispatch_uid="image.delete_callback")
