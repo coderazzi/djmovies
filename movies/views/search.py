@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from movies.models import *
 
 from movies.logic.imdb import searchYear
+from movies.logic.uquery_logic import standarize_title
 
 
 def imdb(request, year, year2=None, limit=150):    
@@ -20,8 +21,10 @@ def imdb(request, year, year2=None, limit=150):
 
     imdb_results = searchYear(year, year2, int(limit))    
     movies_in_database= set([m[0] for m in Movie.objects.values_list('imdb_link')])
+    movies_in_uquery= set([m[0] for m in UQuery.objects.values_list('standarized_title')])
 
     results_to_show = filter(lambda s : s[0] not in movies_in_database, imdb_results)
+    results_to_show = filter(lambda s : standarize_title(s[8]) not in movies_in_uquery, results_to_show)
 
     context = Context({
         'year' : yearTitle,

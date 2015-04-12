@@ -32,11 +32,15 @@ def requery_info(request):
     return JsonResponse(None, safe=False)
 
 
-@require_http_methods(['POST'])
 def create_query(request):
-    query_exp  = request.POST.get('query')
-    id, results = logic.create_query(query_exp)
-    return JsonResponse(dict(query_id=id, results=results))
+    if request.method == 'GET':
+        query_exp = request.GET.get('q')
+        id, results = logic.create_query(query_exp)
+        return redirect(reverse('#query', args=[id]))
+    elif request.method == 'POST':
+        query_exp  = request.POST.get('query')
+        id, results = logic.create_query(query_exp)
+        return JsonResponse(dict(query_id=id, results=results))
 
 
 @require_http_methods(['POST'])

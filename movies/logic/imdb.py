@@ -50,7 +50,6 @@ def searchYear(year, finalYear, limit):
                             if not showYear:
                                 title = matchTitle
                         title=_unescape(title)
-                        search_encoded = urllib.urlencode({'q':search.encode('utf-8', 'ignore')})
                         image=imageTd.find('img')
                         image = image and image.get('src')
                         try:
@@ -63,7 +62,7 @@ def searchYear(year, finalYear, limit):
                         credit = credit and noSpaces.sub(' ', _unescape(credit.text),)
                         genre=tr.find('span', attrs={'class':'genre'})
                         genre = genre and noSpaces.sub(' ', _unescape(genre.text),)
-                        ret.append((href, title, image, rating, start, outline, credit, genre, search, search_encoded))
+                        ret.append((href, title, image, rating, start, outline, credit, genre, search))
         return ret
 
 def searchImdb(movieTitle):

@@ -13,7 +13,8 @@ MIN_AGE_IN_SECONDS_TO_REQUERY=86400*2
 DEFAULT_MIN_SIZE=3800
 DEFAULT_MAX_SIZE=24000
 
-WORDS_SPLIT=re.compile('\s+')
+#WORDS_SPLIT=re.compile('\w{3,}')
+WORDS_SPLIT=re.compile('\w+')
 
 def get_queries():
 	return UQuery.objects.all().extra(
@@ -36,7 +37,8 @@ def get_requery_info():
 	return ret[0] if ret else None
 
 def standarize_title(query_name):
-	return ' '.join(sorted(set(WORDS_SPLIT.split(query_name.lower()))))
+	words=WORDS_SPLIT.findall(query_name.lower())
+	return ' '.join(sorted(words))
 
 def create_query(query_name):
 	#if query already exists, we refresh it

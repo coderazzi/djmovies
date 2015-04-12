@@ -2,6 +2,7 @@
 {% block title %}{{year}}/imdb{% endblock %}
 {% block body %}
 
+{% load movies_tags %}
 {% include "dialog_imdb_choice.html" %}
 
 <div class='jumbotron'>
@@ -34,21 +35,20 @@
 		</tr>
 	</thead>
 	<tbody>
-		{%for href, title, image, rating, number, outline, credit, genres, search, encodedTitle in search%}
+		{%for href, title, image, rating, number, outline, credit, genres, search in search%}
 	    <tr>
 	    	<td/>
 	    	<td>{{number}}</td>
 			<td>
 				<a href='http://www.imdb.com{{href}}' target="_imdb">
-					<img src='{{image|default:"/static/noposter.jpg"}}' class='ic_tooltip_img' alt='{{title}}'>
+					<img src='{{image|default:"/static/noposter.jpg"}}' alt='{{title}}'>
 				</a>
 			</td>
 			<td>
-				<a href='https://www.binsearch.info/index.php?{{encodedTitle}}&m=&max=25&adv_g=&adv_age=999&adv_sort=date&adv_nfo=on&minsize=8000&maxsize=24000&font=&postdate='
-					target='_binsearch'>
-					<img src='/static/binsearch.png'>
-				</a>
-				<b>{{title}}</b>
+				<a href='{% uquery_search search %}' target='_uquery' class='a-no-decor'>
+					<img src='/static/uquery-xs.png'>
+					<b>{{title}}</b>
+				</a>				
 				<br>{{credit}}
 				<br>{{genres}}
 			</td>
