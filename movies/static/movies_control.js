@@ -12,9 +12,9 @@ function handle_movies_control_info(){
 			switch(e.which) {
 				case 37: //left
 				case 38: // up
-					var $prev = $current_tr.prev();
+					var $prev = $current_tr.prev(':visible');
 					if (!$prev.length) {
-						var siblings = $current_tr.siblings();
+						var siblings = $current_tr.siblings(':visible');
 						if (!siblings.length) return;
 						$prev = $(siblings[siblings.length-1]);
 					}
@@ -22,9 +22,9 @@ function handle_movies_control_info(){
 					break;
 				case 39: // right
 				case 40: // down
-					var $next = $current_tr.next();
+					var $next = $current_tr.next(':visible');
 					if (!$next.length) {
-						var siblings = $current_tr.siblings();
+						var siblings = $current_tr.siblings(':visible');
 						if (!siblings.length) return;
 						$next = $(siblings[0]);
 					}
