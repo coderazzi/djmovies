@@ -23,5 +23,8 @@ def imdb(request, year, year2=None, limit=150):
         'year' : yearTitle,
         'limit': limit,
         'search': filter(lambda s : s[0] not in all, searchYear(year, year2, int(limit))),
+        'imdb_year1': Configuration.getValue(Configuration.IMDB_SEARCH_YEAR) or '',
+        'imdb_year2': Configuration.getValue(Configuration.IMDB_SEARCH_YEAR2) or '',
+        'imdb_results': Configuration.getValue(Configuration.IMDB_SEARCH_RESULTS) or 150,
     })
     return render_to_response('imdb_year_search.html', context)

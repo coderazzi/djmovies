@@ -49,6 +49,7 @@ $(function() {
     setupIf('#movies_control', setupMoviesControl);
     setupIf('#subtitles-handling-form', setupSubtitlesHandling);
     setupIf('#index_html', setupIndex);
+    setupIf('#imdb_search', setupImdbSearch);
 
 	iconWhiteCheck();
 })

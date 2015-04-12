@@ -2,6 +2,29 @@
 {% block title %}{{year}}/imdb{% endblock %}
 {% block body %}
 
+{% include "dialog_imdb_choice.html" %}
+
+<div class='jumbotron'>
+    <div class='container'>
+        <div class='row'>
+            <div class='col-sm-2'>
+                <a href='/'><img src='/static/imdb.png' id='locations-icon'></a>
+            </div>
+            <div class='col-sm-4'>
+                <div class='col-sm-12 header-typo'>Imdb search</div>
+                <div class='row'>
+                    <div class='col-sm-6 col-sm-offset-3 subheader-typo'>DJMovies by coderazzi</div>
+                </div>
+            </div>
+            <div class='col-sm-2 col-sm-offset-4'>
+                <div class='row'>
+                    <input class="btn btn-primary col-sm-10 prepend-top" type="button" value="New search" id='new-imdb-search-btn'/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <table id='imdb_search' class='table table-striped table-hover'>
 	<caption>Best Imdb search year {{year}} (missing) [limit: {{limit}}]</caption>
 	<thead>

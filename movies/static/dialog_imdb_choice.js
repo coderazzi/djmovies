@@ -1,4 +1,5 @@
 var $dialog_imdb_choice;
+
 function showImdbChoice(){
 
     if (!$dialog_imdb_choice){
@@ -14,8 +15,9 @@ function showImdbChoice(){
         var $year1=$('input[name="year"]', $dialog_imdb_choice);
         var $year2=$('input[name="year2"]', $dialog_imdb_choice);
         var $results=$('input[name="max"]', $dialog_imdb_choice);
-        $('button', $dialog_imdb_choice).click(do_search);
+        $('button[type="submit"]', $dialog_imdb_choice).click(do_search);
     }
+
     function do_search(){
         var focus=null;
         $year2.parent().removeClass('has-error');
