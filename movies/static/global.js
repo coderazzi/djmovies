@@ -1,17 +1,6 @@
-function iconWhiteCheck(){
-	var bg = $('body').css("backgroundColor");
-	if (bg){
-		var add, remove;		
-		if (parseInt(bg.slice(4), 10)>127){
-			add='icon-black';
-			remove='icon-white';
-		} else{
-			remove='icon-black';
-			add='icon-white';
-		}
-		$('.'+remove).removeClass(remove).addClass(add);
-	}
-}
+var MAIN_UQUERY_URL='/uquery'
+var BASE_UQUERY_URL=MAIN_UQUERY_URL+'/query'
+var UQUERY_URL=BASE_UQUERY_URL+'/'
 
 var csrftoken = $.cookie('csrftoken');
 
@@ -34,6 +23,18 @@ Messenger.options = {
 	theme: 'future'
 }
 
+// Common method to show a connection error
+function alert_server_error(){
+    setTimeout(function(){
+        swal({   
+            title: "Error accessing server",   
+            type: "error",   
+            confirmButtonClass: "btn-danger",
+        });
+    },500);
+}
+
+
 $(function() {
     function setupIf(selector, setupFunction){
         var $selector=$(selector);
@@ -50,6 +51,6 @@ $(function() {
     setupIf('#subtitles-handling-form', setupSubtitlesHandling);
     setupIf('#index_html', setupIndex);
     setupIf('#imdb_search', setupImdbSearch);
-
-	iconWhiteCheck();
+    setupIf('#uquery-list', setupUquery);
+    setupIf('#uquery-results', setupUqueryResults);
 })

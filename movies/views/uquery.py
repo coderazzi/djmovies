@@ -7,21 +7,21 @@ from django.views.decorators.http import require_http_methods
 import movies.logic.uquery_logic as logic
 
 def index(request):   
-    return render_to_response('uquery_list.html',  {'queries':  logic.get_queries()}, RequestContext(request))
+    return render_to_response('uquery.html',  {'queries':  logic.get_queries()}, RequestContext(request))
 
 
 def query(request, query_id):
     use = logic.get_query(query_id)
     if use is None:
         return redirect(reverse('#uquery'))
-    return render_to_response('uquery_query.html',  {'query':  use[0], 'results': use[1]}, RequestContext(request))
+    return render_to_response('uquery_results_page.html',  {'query':  use[0], 'results': use[1]}, RequestContext(request))
 
 
 def query_base(request, query_id):
     use = logic.get_query(query_id)
     if use is None:
         return redirect(reverse('#uquery'))
-    return render_to_response('uquery_query_base.html',  {'query':  use[0], 'results': use[1]}, RequestContext(request))
+    return render_to_response('uquery_results_content.html',  {'query':  use[0], 'results': use[1]}, RequestContext(request))
 
 
 @require_http_methods(['GET'])

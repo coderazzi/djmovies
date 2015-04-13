@@ -1,0 +1,41 @@
+{% extends "generic.html" %}
+{% block title %}UQuery{% endblock %}
+{% block body_id %}id='uquery-list' data-query-id='{{query.id}}'{% endblock %}
+{% block body %}
+{% load uquery_tags %}
+
+    {% include "dialog_uquery_add.html" %}
+    {% include "dialog_uquery_requery_all.html" %}
+    {% include "header_uquery.html" %}
+
+    <div class='container'>
+        <div class='row'>
+            {% if queries %}
+            <table class='table table-striped' id='query-list'>
+                {% for query in queries %}
+                <tr data-query-id='{{query.id}}'>
+                    <td class='query-title col-sm-5'><a href='/uquery/query/{{query.id}}'>{{query.title}}</a></td>
+                    <td class='col-sm-1'>{{query.r_valid}} [{{query.r_all}}]</td>
+                    <td class='col-sm-1'>
+                        {% if query.completed %}
+                            completed
+                        {% endif %}
+                    </td>
+                    <td class='col-sm-3'>refreshed <span class='timeago' title='{% format_time query.last_check %}'></span></td>
+                    <td class='col-sm-1'>
+                        <button class="btn btn-sm btn-delete btn-default" type="submit"> <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <h1 class='col-sm-4 col-sm-offset-4'>There are no queries</h1>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+
