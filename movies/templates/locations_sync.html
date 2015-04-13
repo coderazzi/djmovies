@@ -6,7 +6,7 @@
 	{%include "dialog_imdb.html"%}
 	{%include "locations_subtitle_dialog.html"%}
 	{%include "locations_subtitle_fetch_dialog.html"%}
-	{%include "movie_edition_lang_dialog.html"%}
+	{%include "dialog_movie_edition_lang.html"%}
 
 	<form id='subtitle_show' target='_blank' method='post' action="{%url '#subtitle_show'%}">{% csrf_token %}
 	  <input type='hidden' name='location.id' value='{{location.id}}'>

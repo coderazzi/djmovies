@@ -12,8 +12,8 @@
 
 #uquery-icon {
 	width: 100%;
-	margin-bottom: 44px;
 }
+
 .uquery-typo{
 	font-family: 'Poiret One', cursive;
 	font-weight: bold;
@@ -48,10 +48,6 @@ h2.h2title {
 
 
 /*** query.html **/
-
-.jumbotron{
-	padding-bottom: 12px;
-}
 
 #refresh-form fieldset { 
     width:inherit; /* Or auto */

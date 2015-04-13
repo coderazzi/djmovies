@@ -2,68 +2,7 @@
 {% block body %}
 
 {%include "dialog_movie_info.html"%}
-
-<div class='jumbotron'>
-    <div class='container'>
-        <div class='row'>
-            <div class='col-sm-2'>
-                <a href='/'><img src='/static/control.png' id='control-icon'></a>
-            </div>
-            <div class='col-sm-4'>
-                <div class='col-sm-12 header-typo'>movies Control</div>
-                <div class='row'>
-                    <div class='col-sm-6 col-sm-offset-3 subheader-typo'>DJMovies by coderazzi</div>
-                </div>
-            </div>
-            <div class='col-sm-6 col-sm-offset-31'>
-	            <div class='boxed-form'>
-    	            <div class='form-horizontal'>
-						<div class="form-group">
-							<label for="title-filter" class="col-sm-2 control-label">Title</label>
-							<div class="col-sm-4">
-								<input type="text" class="form-control" id="title-filter">
-							</div>
-							<label for="year-filter" class="col-sm-2 control-label">Year</label>
-							<div class="col-sm-4">
-								<select id="year-filter" class="form-control"></select>	
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="actor1-filter" class="col-sm-2 control-label">Actor</label>
-							<div class="col-sm-4">
-								<input type="text" class="form-control" id="actor1-filter">
-							</div>
-							<label for="actor2-filter" class="col-sm-2 control-label">Actor +</label>
-							<div class="col-sm-4">
-								<input type="text" class="form-control" id="actor2-filter">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="genres-filter" class="col-sm-2 control-label">Genre</label>
-							<div class="col-sm-4">
-								<select id="genres-filter" class="form-control"></select>	
-							</div>
-							<label for="audio-filter" class="col-sm-2 control-label">Audio</label>
-							<div class="col-sm-4">
-								<select id="audios-filter" class="form-control"></select>	
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="location-filter" class="col-sm-2 control-label">Location</label>
-							<div class="col-sm-4">
-								<select id="location-filter" class="form-control"></select>	
-							</div>
-							<label for="subs-filter" class="col-sm-2 control-label">Subs</label>
-							<div class="col-sm-4">
-								<select id="subs-filter" class="form-control"></select>	
-							</div>
-						</div>
-					</div>
-				</div>
-            </div>
-        </div>
-    </div>
-</div>
+{%include "header_movies_control.html" %}
 
 <table id='movies_control' class='table table-striped table-hover'>
 	<thead>

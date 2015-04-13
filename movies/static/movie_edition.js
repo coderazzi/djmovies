@@ -4,7 +4,7 @@ var movieEdition = function(movieProvider){
 
 	var setupDialog = function(enableAudioVariants){
 		if (!$dialog){
-			$dialog = $('#movie_edition_lang_dialog');
+			$dialog = $('#dialog_movie_edition_lang');
 			$dialogTitle = $('#dialog_title', $dialog);
 			$movieTitle = $('#movie_title', $dialog);
 			$languages = $('input[type="checkbox"]', $dialog);
