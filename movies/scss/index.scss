@@ -1,8 +1,6 @@
 $bg_color_inverse:#111;
 $fg_color_inverse:#fff; 
 
-@font-face { font-family: 'Poiret One'; src: url('/static/PoiretOne-Regular.ttf'); } 
-
 body{
     padding: 0px;
     margin: 0px;
@@ -35,21 +33,6 @@ caption{
 
 .prepend-top{
   margin-top: 1.2em;
-}
-
-.header-typo{
-  font-family: 'Poiret One', cursive;
-  font-weight: bold;
-  font-size: 4.2em;
-  margin-top: 2px;
-}
-
-
-.subheader-typo{
-  font-family: "Lucida Console", Monaco, monospace;
-  //font-weight: bold;
-  font-size: 0.8em;
-  margin-top: 2px;
 }
 
 a.a-no-decor{
@@ -88,4 +71,6 @@ a.a-no-decor{
 @import "movies_control";
 @import "subtitles";
 @import "imdb_search";
+@import "headers";
+@import "uquery";
 
