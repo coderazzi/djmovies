@@ -1,11 +1,3 @@
-body {
-  padding: 0px;
-  margin: 0px; }
-
-body.inverse-body {
-  background: #111;
-  color: #fff; }
-
 caption {
   font-size: 24px;
   margin: 12px; }
@@ -29,18 +21,20 @@ a.a-no-decor {
   text-decoration: none;
   color: black; }
 
-#index_html {
-  background: #777; }
-  #index_html .row {
-    margin-top: 96px; }
-  #index_html a.main-icon-ref {
-    text-decoration: none;
-    border-radius: 24px; }
-    #index_html a.main-icon-ref img {
-      width: 100%;
-      height: 100%; }
-  #index_html a.main-icon-ref:hover {
-    background: #22b; }
+body#index_html {
+  background: #eee;
+  padding-top: 4em; }
+  body#index_html #djmovies-title {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1.6em;
+    margin: 0.6em;
+    text-align: right; }
+  body#index_html .even-row {
+    background: rgba(201, 201, 201, 0.15);
+    padding: 6px 0px; }
+  body#index_html .odd-row {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 6px 0px; }
 
 .btn-color-red {
   background-color: #a32929 !important;
@@ -102,8 +96,8 @@ a.a-no-decor {
   padding: 10px 20px;
   background: black;
   background: rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid #334;
-  box-shadow: 0 0px 2px 2px #669; }
+  border-bottom: 1px solid #333344;
+  box-shadow: 0 0px 2px 2px #666699; }
 
 .menu-item {
   display: inline-block;
@@ -111,14 +105,74 @@ a.a-no-decor {
   padding: 10px;
   background: black;
   border-radius: 6px;
-  color: #334;
-  box-shadow: 0 0px 2px 2px #334; }
+  color: #333344;
+  box-shadow: 0 0px 2px 2px #333344; }
 
 .menu-item-enabled {
-  color: #669;
-  box-shadow: 0 0px 2px 2px #669;
+  color: #666699;
+  box-shadow: 0 0px 2px 2px #666699;
   cursor: pointer; }
 
+/*********  >> spinner [part from https://github.com/tobiasahlin/SpinKit -see spinners/2-double-bounce ]************/
+#spinner-screen {
+  background: rgba(0, 0, 0, 0.25);
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 9999;
+  display: none; }
+
+#spinner-container {
+  position: absolute;
+  top: 50%;
+  left: 50%; }
+
+.sk-spinner {
+  width: 240px;
+  height: 240px;
+  position: relative;
+  top: -120px;
+  left: -120px; }
+
+.sk-spinner-double-bounce .sk-double-bounce1, .sk-spinner-double-bounce .sk-double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #2c3e50;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-animation: sk-doubleBounce 2s infinite ease-in-out;
+  animation: sk-doubleBounce 2s infinite ease-in-out; }
+
+.sk-spinner-double-bounce .sk-double-bounce2 {
+  -webkit-animation-delay: -1s;
+  animation-delay: -1s; }
+
+@-webkit-keyframes sk-doubleBounce {
+  0%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+
+  50% {
+    -webkit-transform: scale(1);
+    transform: scale(1); } }
+
+@keyframes sk-doubleBounce {
+  0%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+
+  50% {
+    -webkit-transform: scale(1);
+    transform: scale(1); } }
+
+/*********  << spinner ************/
 .div_movie {
   float: left; }
 
@@ -180,7 +234,7 @@ a.a-no-decor {
 .movie_info_item a:active,
 .movie_info_item a:hover,
 .movie_info_item a:link {
-  color: #fff; }
+  color: white; }
 
 #locations {
   width: 50%;
@@ -334,6 +388,7 @@ a.a-no-decor {
 @font-face {
   font-family: 'Poiret One';
   src: url("/static/PoiretOne-Regular.ttf"); }
+
 .header-typo {
   font-family: 'Poiret One', cursive;
   font-weight: bold;
@@ -472,13 +527,15 @@ select#size-filter {
 @keyframes spin {
   from {
     transform: scale(1) rotate(0deg); }
+
   to {
     transform: scale(1) rotate(360deg); } }
+
 @-webkit-keyframes spin2 {
   from {
     -webkit-transform: rotate(0deg); }
+
   to {
     -webkit-transform: rotate(360deg); } }
-/*********  << spinner on glypicon ************/
 
-/*# sourceMappingURL=movies.css.map */
+/*********  << spinner on glypicon ************/

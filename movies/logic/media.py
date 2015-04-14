@@ -8,7 +8,7 @@ from xml.parsers.expat import ExpatError
 from tempfile import mkstemp
 
 from movies.logic.dstruct import Struct
-from locations import LocationHandler
+from locations_handler import LocationHandler
 
 _py3 = sys.version_info >= (3,)
 
