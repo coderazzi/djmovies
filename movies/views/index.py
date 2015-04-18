@@ -1,10 +1,8 @@
-import json
+import random
 
-from django.core.context_processors import csrf
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib import messages
-from django.template import Context, RequestContext, loader
-from django.shortcuts import render_to_response, redirect
+from django.http import JsonResponse
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 
 from movies.models import *
 
@@ -21,3 +19,9 @@ def index(request):
          'imdb_results': Configuration.getValue(Configuration.IMDB_SEARCH_RESULTS) or 150,
          },
         RequestContext(request))
+
+
+def covers(request):
+    covers=[(i.servepath(), i.width, i.height) for i in Image.objects.filter(size='B')]
+    random.shuffle(covers)
+    return JsonResponse(dict(covers=covers))    
