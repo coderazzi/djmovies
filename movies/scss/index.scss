@@ -31,7 +31,7 @@ a.a-no-decor{
 }
 
 body#index_html{
-	background: #eee;
+	background: white;
 	padding-top: 4em;
 
 	#djmovies-title{
@@ -71,8 +71,9 @@ body#index_html{
 .overcollage {
 	background: #eee;
 	padding-bottom: 4em;
-	border: 4px solid #777;
-	border-radius: 36px;
+	border: 64px solid white;
+
+	border-radius: 32px;
 }
 
 @import "buttons";
