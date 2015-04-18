@@ -55,52 +55,28 @@ function Collage($selector, provider, fill_speed, min_width, min_height){
 				if (size){
 					var position = add(size[0], size[1]);
 					if (position) {
-						provider.put(position[0], position[1]);
+						provider.put(filling, position[0], position[1]);
 						setTimeout(step, fill_speed);
 					} 
 				} 
 			} 
 		}
-		filling = filling_check = new Date().getTime();
+		filling = filling_check = 'pc'+new Date().getTime();
 		step();
 	}
 	this.restart = function(){
 		autofill();
 	}
 	this.resize = function(){
-		function convert(area1, x1, y1, area2, x2, y2){
-			var n=0, ylimit=Math.min(y1, y2);
-			for (var y=0; y<ylimit; y++){
-				for (var x=0; x<x1; x++){
-					if (x<x2) area2[y*x2+x] = area1[n];
-					++n;
-				}
-			}
+		var new_nx = Math.ceil($selector.width()/min_width);
+		var new_ny = Math.ceil($selector.height()/min_height);
+		if (nx===undefined || new_ny > ny || new_nx > nx){
+			nx = new_nx;
+			ny = new_ny;
+			n = new_nx * new_ny;
+			areas = new Array(n);
+			autofill();
 		}
-		var old_nx=nx, old_ny=ny;
-		nx=Math.ceil($selector.width()/min_width);
-		ny=Math.ceil($selector.height()/min_height);
-		n=nx*ny;
-		if (old_nx===undefined){
-			full_areas_x = nx;
-			areas = full_areas = new Array(n);
-		} else if (old_nx!==nx || old_ny!==ny){
-			var full_areas_y = full_areas.length/full_areas_x;
-			if (nx > full_areas_x || ny > full_areas_y){
-				var x = Math.max(nx, full_areas_x), y = Math.max(ny, full_areas_y);
-				var new_full_areas = new Array(x*y);
-				convert(full_areas, full_areas_x, full_areas_y, new_full_areas, x, y);
-				full_areas = new_full_areas;
-				full_areas_x = x;
-			}
-			if (nx===full_areas_x && ny===full_areas_y){
-				areas = full_areas;
-			} else {
-				areas = new Array(n);
-				convert(full_areas, full_areas_x, full_areas_y, areas, nx, ny);
-			}			
-		}
-		autofill();
 	}
 
 	this.resize();
@@ -112,20 +88,21 @@ function setupIndex($body){
 	var $collage=$('<div id="collage"></div>').appendTo($body);
     $.get('/ax_covers').done(function(data){
     	if (data.covers){
-    		var covers=data.covers, minw=17, minh=12, len=covers.length, current=0;
+    		var covers=data.covers, minw=17, minh=12, len=covers.length, current=0, oldClass;
     		function Provider(){
-    			var done=0;
     			this.get = function(){
-    				//if (done==2) return null;
 					for (var i=0; i<len; i++){
 						var cover=covers[current], w=cover[1], h=cover[2];
 						if (w>=minw && h>=minh) return [w, h];
 						if (++current===len) current=0;
 					}    			
     			}
-    			this.put=function(x, y){
-    				done+=1;
-    				$('<img src="'+covers[current][0]+'">').appendTo($collage).offset({ top: y, left: x });
+    			this.put=function(putClass, x, y){
+    				if (oldClass!==putClass){
+    					$('.'+oldClass).hide('slow', function(){this.remove();});
+    					oldClass=putClass;
+    				}
+    				$('<img src="'+covers[current][0]+'">').appendTo($collage).offset({ top: y, left: x }).addClass(putClass);
 					if (++current===len) current=0;
     			}
     		}
