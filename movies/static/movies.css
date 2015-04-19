@@ -19,7 +19,7 @@ caption {
 
 a.a-no-decor {
   text-decoration: none;
-  color: black; }
+  color: white; }
 
 body#index_html {
   background: white;
@@ -30,12 +30,19 @@ body#index_html {
     font-weight: 900;
     margin: 0.6em;
     text-align: right; }
+  body#index_html .full-row {
+    width: 100%;
+    margin-top: 2em;
+    background: rgba(0, 0, 0, 0.85); }
+    body#index_html .full-row .container {
+      color: white;
+      border-radius: 2.5em;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2em 1em; }
   body#index_html .even-row {
-    background: rgba(201, 201, 201, 0.15);
-    padding: 6px 0px; }
+    background: rgba(0, 0, 0, 0.2); }
   body#index_html .odd-row {
-    background: rgba(255, 255, 255, 0.3);
-    padding: 6px 0px; }
+    background: rgba(0, 0, 0, 0.8); }
 
 #collage {
   position: absolute;
@@ -50,20 +57,6 @@ body#index_html {
   #collage img {
     z-index: -2;
     position: absolute; }
-
-.overcollage {
-  background: #eee;
-  padding-bottom: 4em;
-  border: 64px solid white;
-  border-radius: 32px; }
-
-.full-row {
-  width: 100%;
-  margin-top: 3em;
-  background: rgba(255, 255, 255, 0.85); }
-  .full-row .container {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 1em 1em; }
 
 .btn-color-red {
   background-color: #a32929 !important;
