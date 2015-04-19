@@ -27,6 +27,7 @@ body#index_html {
   body#index_html #djmovies-title {
     font-family: "Courier New", Courier, monospace;
     font-size: 1.6em;
+    font-weight: 900;
     margin: 0.6em;
     text-align: right; }
   body#index_html .even-row {
@@ -55,6 +56,14 @@ body#index_html {
   padding-bottom: 4em;
   border: 64px solid white;
   border-radius: 32px; }
+
+.full-row {
+  width: 100%;
+  margin-top: 3em;
+  background: rgba(255, 255, 255, 0.85); }
+  .full-row .container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1em 1em; }
 
 .btn-color-red {
   background-color: #a32929 !important;

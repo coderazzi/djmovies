@@ -22,6 +22,7 @@ def index(request):
 
 
 def covers(request):
-    covers=[(i.servepath(), i.width, i.height) for i in Image.objects.filter(size='B')]
+    covers=[(i.servepath(), i.width, i.height) for i in Image.objects.filter(size=Image.SIZE_BASIC)]
+    #covers=[(i.servepath(), i.width, i.height) for i in Image.objects.all()]
     random.shuffle(covers)
     return JsonResponse(dict(covers=covers))    

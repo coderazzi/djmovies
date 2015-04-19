@@ -5,51 +5,63 @@
 
 {% include "dialog_imdb_choice.html" %}
 
-<div class='container overcollage'>
-	<div class='row' id='djmovies-title'>
-		DJMovies by coderazzi
+<div class='full-row'>
+	<div class='container'>
+		<div class='row' id='djmovies-title'>
+			DJMovies by coderazzi
+		</div>
 	</div>
-    <a class='a-no-decor' href='/movies'>
-    	<div class='row odd-row '>
-	        <div class='col-sm-1'>
-	            <img src='/static/control.png' class='header-main-icon'>
-	        </div>
-	        <div class='col-sm-5 header-typo'>
-	            Movies control
-	        </div>
-        </div>
-    </a>
-    <a class='a-no-decor prepend-top' href='/locations'>
-	    <div class='row a-no-decor even-row'>
-	        <div class='col-sm-1 col-sm-offset-5'>
-	            <img src='/static/locations.png' class='header-main-icon'>
-	        </div>
-	        <div class='col-sm-5 header-typo'>
-	            Locations
-	        </div>
-	    </div>
-    </a>
-    <a class='prepend-top a-no-decor' href='/uquery'>
-    	<div class='row odd-row '>
-	        <div class='col-sm-1 col-sm-offset-2'>
-	            <img src='/static/uquery.png' class='header-main-icon'>
-	        </div>
-	        <div class='col-sm-5 header-typo'>
-	            UQuery
-	        </div>
-        </div>
-    </a>
-    <a class='a-no-decor prepend-top' href='#' id='imdb_search'>
-	    <div class='row even-row'>
-	        <div class='col-sm-1 col-sm-offset-6'>
-	            <img src='/static/imdb.png' class='header-main-icon'>
-	        </div>
-	        <div class='col-sm-5 header-typo'>
-	            Imdb search
-	        </div>
-        </div>
-    </a>
 </div>
+
+<div class='full-row'>
+	<div class='container'>
+	    <a class='a-no-decor' href='/movies'>
+	    	<div class='row odd-row '>
+		        <div class='col-xs-2 col-sm-2 col-md-1'>
+		            <img src='/static/control.png' class='header-main-icon'>
+		        </div>
+		        <div class='col-xs-10 col-sm-10 col-md-9 header-typo'>
+		            Movies control
+		        </div>
+	        </div>
+	    </a>
+
+	    <a class='a-no-decor prepend-top' href='/locations'>
+		    <div class='row a-no-decor even-row'>
+		        <div class='col-xs-2 col-sm-2 col-md-1 col-xs-offset-5 col-sm-offset-5 col-md-offset-5'>
+		            <img src='/static/locations.png' class='header-main-icon'>
+		        </div>
+		        <div class='col-xs-5 col-sm-5 col-md-6 header-typo'>
+		            Locations
+		        </div>
+		    </div>
+	    </a>
+
+	    <a class='prepend-top a-no-decor' href='/uquery'>
+	    	<div class='row odd-row '>
+		        <div class='col-xs-2 col-sm-2 col-md-1 col-xs-offset-2 col-sm-offset-2 col-md-offset-2'>
+		            <img src='/static/uquery.png' class='header-main-icon'>
+		        </div>
+		        <div class='col-xs-8 col-sm-8 col-md-9 header-typo'>
+		            UQuery
+		        </div>
+	        </div>
+	    </a>
+
+	    <a class='a-no-decor prepend-top' href='#' id='imdb_search'>
+		    <div class='row even-row'>
+		        <div class='col-xs-2 col-sm-2 col-md-1 col-xs-offset-6 col-sm-offset-6 col-md-offset-6'>
+		            <img src='/static/imdb.png' class='header-main-icon'>
+		        </div>
+		        <div class='col-xs-4 col-sm-4 col-md-5 header-typo'>
+		            Imdb search
+		        </div>
+	        </div>
+	    </a>
+	</div>
+</div>
+
+
 
 {% endblock %}
 

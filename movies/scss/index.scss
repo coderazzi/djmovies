@@ -37,6 +37,7 @@ body#index_html{
 	#djmovies-title{
 	  font-family: "Courier New", Courier, monospace;
 	  font-size: 1.6em;
+	  font-weight: 900;
 	  margin: 0.6em;
 	  text-align: right;
 	}
@@ -74,6 +75,17 @@ body#index_html{
 	border: 64px solid white;
 
 	border-radius: 32px;
+}
+
+.full-row {
+	width: 100%;
+	margin-top: 3em;
+	background: rgba(255,255,255,.85);
+	.container {
+		background: rgba(255,255,255,.9); 
+		padding: 1em 1em;
+		//border-radius: 2em;
+	}
 }
 
 @import "buttons";
