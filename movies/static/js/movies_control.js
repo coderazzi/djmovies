@@ -12,21 +12,19 @@ function handle_movies_control_info(){
 			switch(e.which) {
 				case 37: //left
 				case 38: // up
-					var $prev = $current_tr.prev(':visible');
+					var $prev = $current_tr.prevAll().filter(":visible:first")
 					if (!$prev.length) {
-						var siblings = $current_tr.siblings(':visible');
-						if (!siblings.length) return;
-						$prev = $(siblings[siblings.length-1]);
+						$prev = $current_tr.nextAll().filter(":visible:last")
+						if (!$prev.length) return;
 					}
 					update_modal($prev);
 					break;
 				case 39: // right
 				case 40: // down
-					var $next = $current_tr.next(':visible');
+					var $next = $current_tr.nextAll().filter(":visible:first")
 					if (!$next.length) {
-						var siblings = $current_tr.siblings(':visible');
-						if (!siblings.length) return;
-						$next = $(siblings[0]);
+						$next = $current_tr.prevAll().filter(":visible:last")
+						if (!$next.length) return;
 					}
 					update_modal($next);
 					break;
@@ -53,6 +51,7 @@ function handle_movies_control_info(){
 			$format=$('#dmi_format', $dialog);
 			$audio=$('#dmi_audio', $dialog);
 			$subs=$('#dmi_subs', $dialog);
+			setup_modal_navigation();
 		}
 		var tds=$current_tr.children();
 		var duration=$(tds[9]).text().split('/');
@@ -71,7 +70,7 @@ function handle_movies_control_info(){
 	}
 
 	function show_modal(){
-		update_modal($(this).closest('tr')).off('shown.bs.modal').on('shown.bs.modal', setup_modal_navigation).modal('show');
+		update_modal($(this).closest('tr')).modal('show');
 	}
 	$('.ic_cover').click(show_modal);
 	$('.ic_title').click(show_modal);
