@@ -403,6 +403,9 @@ body#index_html {
 #imdb_search .ic_outline {
   max-width: 400px; }
 
+.imdb-title {
+  color: black; }
+
 @font-face {
   font-family: 'Poiret One';
   src: url("/static/PoiretOne-Regular.ttf"); }
