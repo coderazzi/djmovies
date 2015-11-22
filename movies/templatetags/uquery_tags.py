@@ -14,7 +14,7 @@ def format_day(seconds):
 
 @register.simple_tag
 def urllib_quote(str):
-    return urllib.quote(str)
+    return urllib.quote(str.encode('utf-8'))
 
 @register.filter
 def is_recent(seconds):

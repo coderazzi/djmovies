@@ -24,7 +24,8 @@ function setupUquery($body){
 
 	$('#add-query-btn').click(function(){$addQueryModal.modal()});
 
-	function requery_all(){
+	function requery_all(max_queries){
+		if (!max_queries) max_queries=8;
 		$.get(MAIN_UQUERY_URL+'/requery_info').done(function(data){
 		 	if (data){
 		 		$requery_placeholder.html('<p>Checking now <b>'+data.title+
@@ -32,9 +33,11 @@ function setupUquery($body){
 		 		$.post(UQUERY_URL+data.id+'/refresh').done(function(results){
 		 			if (results.new_results>0){
 		 				window.location.href = UQUERY_URL+data.id;
+		 			} else if (max_queries>1) {
+		 				requery_all(max_queries-1);
 		 			} else {
-		 				requery_all();
-		 			}
+						$requery_placeholder.html('<p>Max default queries sent to server. Wait a bit before requerying all again.</p>')
+					}
 		 		}).error(function(){
 		 			$requery_placeholder.html('<p>Error contacting server.</p>')		
 		 		});

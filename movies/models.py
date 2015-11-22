@@ -200,6 +200,7 @@ class UResults(models.Model):
     parts = models.IntegerField()
     total_parts = models.IntegerField()
     status = models.IntegerField()
+    download = models.TextField()
     creation_time = models.IntegerField()
 
     class Meta:
