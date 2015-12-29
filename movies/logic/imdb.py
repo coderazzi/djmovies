@@ -130,10 +130,13 @@ def _getImdbInfo(uid, browser):
     link, title = uid.split(' ', 1)
     page = browser.open(IMDB_COM+link)
     soup = BeautifulSoup(page.read(), HTML_PARSER)
+    with open('imdb.html', 'w') as f:
+        print >> f, soup.prettify().encode('utf-8', 'ignore')
+
     divMain = soup.find('div', attrs={'id':'pagecontent'})
     if divMain:
         #title and year
-        titleTag=divMain.find('h1', attrs={'class':'header'})
+        titleTag=divMain.find('h1')#, attrs={'class':'header'})
         if titleTag:
             yearRef = titleTag.find('a')
             if yearRef:
@@ -159,18 +162,17 @@ def _getImdbInfo(uid, browser):
         trailer = divMain.find('a', itemprop='trailer')
         trailer = trailer and trailer.get('href')
         #image now
-        tdImg = divMain.find('td', attrs={'id':'img_primary'})
-        if tdImg:
-            imgTag = tdImg.find('img')
-            imgSrc = imgTag and imgTag.get('src')
-            if imgSrc:
-                bigImgSrc = imgTag.parent.get('href')
-                if bigImgSrc:
-                    try:
-                        imgTag = BeautifulSoup(browser.open(bigImgSrc).read(), HTML_PARSER).find('img', attrs={'id' : 'primary-img'})
-                        bigImgSrc = imgTag and imgTag.get('src')
-                    except:
-                        bigImgSrc=None
+        tdImg = divMain.find('img', attrs={'itemprop':'image'})
+        imgSrc = tdImg and tdImg.get('src')
+        print 'img', imgSrc
+        if imgSrc:
+            bigImgSrc = tdImg.parent.get('href')
+            if bigImgSrc:
+                try:
+                    imgTag = BeautifulSoup(browser.open(bigImgSrc).read(), HTML_PARSER).find('img', attrs={'id' : 'primary-img'})
+                    bigImgSrc = imgTag and imgTag.get('src')
+                except:
+                    bigImgSrc=None
         url=urlparse.urlparse(link).path #we remove any parameters information. So far, is useless
         return Struct.nonulls(url=url, title=title, year=year, duration=duration, uid=uid,
             genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
