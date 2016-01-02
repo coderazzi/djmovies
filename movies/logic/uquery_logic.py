@@ -17,11 +17,11 @@ DEFAULT_MAX_SIZE = 24000
 WORDS_SPLIT = re.compile('\w+')
 
 
-def get_queries():
-    return UQuery.objects.all().extra(
-        select={'r_all': 'select count(*) from uresults where query_id=uqueries.id'}).extra(
-        select={'r_valid': 'select count(*) from uresults where query_id=uqueries.id and status in (%s, %s)'},
-        select_params=(STATUS_DOWNLOADED, STATUS_NO_DOWNLOADED))
+def get_queries():#
+    return UQuery.objects.all().order_by('last_check')\
+        .extra(select={'r_all': 'select count(*) from uresults where query_id=uqueries.id'})\
+        .extra(select={'r_valid': 'select count(*) from uresults where query_id=uqueries.id and status in (%s, %s)'},
+                select_params=(STATUS_DOWNLOADED, STATUS_NO_DOWNLOADED))
 
 
 def get_query(query_id):
@@ -34,7 +34,7 @@ def get_query(query_id):
 
 def get_requery_info():
     last_check = int(time.time()) - MIN_AGE_IN_SECONDS_TO_REQUERY
-    ret = UQuery.objects.filter(completed=False, last_check__lt=last_check).order_by('last_check').only('id', 'title')[
+    ret = UQuery.objects.filter(completed=False, last_check__lt=last_check).order_by('last_check desc').only('id', 'title')[
           :1]
     return ret[0] if ret else None
 
@@ -110,14 +110,16 @@ def _get_results(query_id, exclude_status=5000):
 
 
 def _update_results(query, results=[], only_get_newer_results=True):
+    exclude = [d.oid for d in results]
     newest_oid, new_results = search_title(query.standarized_title, query.min_size, DEFAULT_MAX_SIZE,
-                                           exclude_oid_list=[d.oid for d in results],
+                                           exclude_oid_list=exclude,
                                            stop_on_oid=query.newest_result if only_get_newer_results else None)
     now = int(time.time())
     for d in reversed(new_results):
-        UResults(query_id=query.id, oid=d.oid, desc=d.desc, size=d.size, nfo=d.nfo,
-                 files=d.files, since=d.since, parts=d.parts, total_parts=d.total_parts,
-                 status=STATUS_NO_DOWNLOADED, creation_time=now, download=d.download).save()
+        if d.oid not in exclude:
+            UResults(query_id=query.id, oid=d.oid, desc=d.desc, size=d.size, nfo=d.nfo,
+                     files=d.files, since=d.since, parts=d.parts, total_parts=d.total_parts,
+                     status=STATUS_NO_DOWNLOADED, creation_time=now, download=d.download).save()
     query.last_check = now
     if newest_oid is not None:
         query.newest_result = newest_oid
