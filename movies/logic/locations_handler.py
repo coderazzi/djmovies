@@ -1,13 +1,13 @@
 import re
 import os
 
-class SubtitleInfo:
 
+class SubtitleInfo:
     def __init__(self, filename, language=None, in_fs=None):
         self.filename = filename
         self.language = language
-        if in_fs==None:
-            self.in_fs = language==None
+        if in_fs == None:
+            self.in_fs = language == None
         else:
             self.in_fs = in_fs
 
@@ -16,30 +16,29 @@ class SubtitleInfo:
 
 
 class LocationHandler:
+    VIDEO_FILE = 'VIDEO_FILE'
+    VIDEO_FILE_ALONE_IN_DIR = 'VIDEO_FILE_ALONE_IN_DIR'
+    IMAGE_FILE = 'IMAGE_FILE'
+    IMAGE_FILE_ALONE_IN_DIR = 'IMAGE_FILE_ALONE_IN_DIR'
+    DVD_FOLDER = 'DVD_FOLDER'
+    DVD_FOLDER_DIRECT = 'DVD_FOLDER_DIRECT'
+    BLUE_RAY_FOLDER = 'BLUE_RAY_FOLDER'
+    UNVISITED_FOLDER = 'UNVISITED_FOLDER'
+    UNHANDLED_FILE = 'UNHANDLED_FILE'
 
-    VIDEO_FILE='VIDEO_FILE'
-    VIDEO_FILE_ALONE_IN_DIR='VIDEO_FILE_ALONE_IN_DIR'
-    IMAGE_FILE='IMAGE_FILE'
-    IMAGE_FILE_ALONE_IN_DIR='IMAGE_FILE_ALONE_IN_DIR'
-    DVD_FOLDER='DVD_FOLDER'
-    DVD_FOLDER_DIRECT='DVD_FOLDER_DIRECT'
-    BLUE_RAY_FOLDER='BLUE_RAY_FOLDER'
-    UNVISITED_FOLDER='UNVISITED_FOLDER'
-    UNHANDLED_FILE='UNHANDLED_FILE'
+    VIDEO_EXTENSIONS = ['avi', 'mkv', 'mp4', 'divx', 'vob', 'm2ts', 'wmv', 'ts']
+    IMAGE_EXTENSIONS = ['iso', 'img']
+    EXT_VIDEO_EXTENSIONS = VIDEO_EXTENSIONS + IMAGE_EXTENSIONS + ['ifo', 'bup']
+    SUBTITLE_EXTENSIONS = ['srt', 'sub', 'idx']
 
-    VIDEO_EXTENSIONS=['avi', 'mkv', 'mp4', 'divx', 'vob', 'm2ts', 'wmv', 'ts']
-    IMAGE_EXTENSIONS=['iso', 'img']
-    EXT_VIDEO_EXTENSIONS=VIDEO_EXTENSIONS+IMAGE_EXTENSIONS+['ifo', 'bup']
-    SUBTITLE_EXTENSIONS=['srt', 'sub', 'idx']
-
-    DJM_IGNORE_FILE='.djmignore'
+    DJM_IGNORE_FILE = '.djmignore'
 
     def __init__(self, folderBase):
-        self.folderBase=folderBase
+        self.folderBase = folderBase
 
     def rename(self, source, destination):
         if os.path.exists(destination):
-            raise Exception(destination+' already exists, cannot rename '+source)
+            raise Exception(destination + ' already exists, cannot rename ' + source)
         os.rename(source, destination)
 
     def isValid(self):
@@ -52,25 +51,24 @@ class LocationHandler:
         '''
         fullname = os.path.join(self.folderBase, filename)
         if os.path.isdir(fullname):
-            subdirs=[each for each in os.listdir(fullname) if os.path.isdir(os.path.join(fullname, each))]
+            subdirs = [each for each in os.listdir(fullname) if os.path.isdir(os.path.join(fullname, each))]
             if 'VIDEO_TS' in subdirs:
                 return LocationHandler.DVD_FOLDER
             if 'BDMV' in subdirs:
                 return LocationHandler.BLUE_RAY_FOLDER
             return LocationHandler.DVD_FOLDER_DIRECT
-        extension=os.path.splitext(filename)[-1].lower()
+        extension = os.path.splitext(filename)[-1].lower()
         if extension:
-            extension = extension[1:].lower() 
+            extension = extension[1:].lower()
             if extension in LocationHandler.IMAGE_EXTENSIONS:
                 if os.path.dirname(filename):
-                    return LocationHandler.IMAGE_FILE_ALONE_IN_DIR        
+                    return LocationHandler.IMAGE_FILE_ALONE_IN_DIR
                 return LocationHandler.IMAGE_FILE
             if extension in LocationHandler.VIDEO_EXTENSIONS:
                 if os.path.dirname(filename):
-                    return LocationHandler.VIDEO_FILE_ALONE_IN_DIR        
+                    return LocationHandler.VIDEO_FILE_ALONE_IN_DIR
                 return LocationHandler.VIDEO_FILE
         return LocationHandler.UNHANDLED_FILE
-
 
     def iterateAllFilesInPath(self):
         '''
@@ -98,15 +96,16 @@ class LocationHandler:
         4- In case of  VIDEO_FILE_ALONE_IN_DIR or IMAGE_FILE_ALONE_IN_DIR or DVD_FOLDER, a list
             of subtitle files
         '''
-        files=None
-        try: 
-            if os.path.isdir(self.folderBase): 
-                files=self._get_allfiles_in_path_careof_djmignore(self.folderBase)
-                #files=os.listdir(self.folderBase)
-        except OSError: pass
-        if files==None: return [(self.folderBase, True, LocationHandler.UNVISITED_FOLDER)]
+        files = None
+        try:
+            if os.path.isdir(self.folderBase):
+                files = self._get_allfiles_in_path_careof_djmignore(self.folderBase)
+                # files=os.listdir(self.folderBase)
+        except OSError:
+            pass
+        if files == None: return [(self.folderBase, True, LocationHandler.UNVISITED_FOLDER)]
 
-        ret=[]
+        ret = []
         for filename, full in files:
             # if filename[0]=='.': continue
             # full=os.path.join(self.folderBase, filename)
@@ -114,24 +113,24 @@ class LocationHandler:
                 if os.path.isdir(full):
                     ret.extend(self._iterateAllFilesInSubpath(filename, full))
                 else:
-                    #simple case: top path, or file is video_file, or iso/img, or just handled
-                    extension=os.path.splitext(full)[-1].lower()
-                    type=LocationHandler.UNHANDLED_FILE
+                    # simple case: top path, or file is video_file, or iso/img, or just handled
+                    extension = os.path.splitext(full)[-1].lower()
+                    type = LocationHandler.UNHANDLED_FILE
                     if extension:
-                        extension=extension[1:].lower()
+                        extension = extension[1:].lower()
                         if extension in LocationHandler.IMAGE_EXTENSIONS:
-                            type=LocationHandler.IMAGE_FILE
+                            type = LocationHandler.IMAGE_FILE
                         elif extension in LocationHandler.VIDEO_EXTENSIONS:
-                            type=LocationHandler.VIDEO_FILE
+                            type = LocationHandler.VIDEO_FILE
                     ret.append((filename, False, type))
             except OSError:
-                ret.append((filename, True, LocationHandler.UNHANDLED_FILE)) #even for dirs, it is okay
+                ret.append((filename, True, LocationHandler.UNHANDLED_FILE))  # even for dirs, it is okay
         return ret
 
     def getSubtitlePath(self, moviePath, subpath):
         dirname = os.path.dirname(moviePath)
         if dirname:
-            fullpath=os.path.join(self.folderBase, dirname, subpath)
+            fullpath = os.path.join(self.folderBase, dirname, subpath)
             if os.path.exists(fullpath) and subpath.lower().endswith('.srt'):
                 return fullpath
 
@@ -146,16 +145,16 @@ class LocationHandler:
         '''
         Returns only the subtitles information for the given path.
         @param dbInfo: list of SubtitleInfo instances (db instances)
-        '''        
+        '''
         try:
             dirname = os.path.dirname(moviePath)
             if dirname:
                 fileinfo = self._iterateAllFilesInSubpath(dirname, os.path.join(self.folderBase, dirname))
-                if len(fileinfo)==1 and len(fileinfo[0])==4:
+                if len(fileinfo) == 1 and len(fileinfo[0]) == 4:
                     for sub in fileinfo[0][3]:
                         for each in dbInfo:
-                            if each.filename==sub:
-                                each.in_fs=True
+                            if each.filename == sub:
+                                each.in_fs = True
                                 break
                         else:
                             dbInfo.append(SubtitleInfo(sub))
@@ -164,80 +163,80 @@ class LocationHandler:
         sorted(dbInfo, key=(lambda x: unicode.lower(x.filename)))
         return dbInfo
 
-
     def _get_allfiles_in_path_careof_djmignore(self, parentpath):
-        exclude, allfiles=[], os.listdir(parentpath)
+        exclude, allfiles = [], os.listdir(parentpath)
         if self.DJM_IGNORE_FILE in allfiles:
             try:
                 with open(os.path.join(parentpath, self.DJM_IGNORE_FILE)) as f:
-                    exclude= [each.strip() for each in f.readlines()]
+                    exclude = [each.strip() for each in f.readlines()]
             except:
                 pass
             if not exclude or '.' in exclude:
                 return []
             exclude.append(self.DJM_IGNORE_FILE)
-        return [(name, os.path.join(parentpath, name)) for name in allfiles if name[0]!='.' and name not in exclude]
-
+        return [(name, os.path.join(parentpath, name)) for name in allfiles if name[0] != '.' and name not in exclude]
 
     def _iterateAllFilesInSubpath(self, filename, fullpath):
         '''
         Like iterateAllFilesInPath, but restrained to a specific folder (under top directory)
         Has no full exception handling: can fail if fullpath is not listable
-        '''        
-        ret, subdirs, video_files, ok_files, other_files=[], {}, {}, [], []
-        #for each in os.listdir(fullpath):
+        '''
+        ret, subdirs, video_files, ok_files, other_files = [], {}, {}, [], []
+        # for each in os.listdir(fullpath):
         for each, absname in self._get_allfiles_in_path_careof_djmignore(fullpath):
             # if each[0]=='.': continue
             # absname = os.path.join(fullpath, each)
-            fullname=self.getRelativeName(absname)
+            fullname = self.getRelativeName(absname)
             try:
                 if os.path.isdir(absname):
-                    subdirs[each]=fullname
+                    subdirs[each] = fullname
                     continue
             except OSError:
                 ret.append((fullname, True, LocationHandler.UNHANDLED_FILE))
                 continue
-            extension=os.path.splitext(each)[-1].lower()
+            extension = os.path.splitext(each)[-1].lower()
             if extension:
-                extension=extension[1:].lower()
+                extension = extension[1:].lower()
                 if extension in LocationHandler.EXT_VIDEO_EXTENSIONS:
-                    video_files[fullname]=extension
+                    video_files[fullname] = extension
                     continue
                 if extension in LocationHandler.SUBTITLE_EXTENSIONS:
                     ok_files.append(fullname)
                     continue
             other_files.append(fullname)
-        if subdirs:                        
+        if subdirs:
             if 'VIDEO_TS' in subdirs:
-                other_files+=video_files.keys()
+                other_files += video_files.keys()
                 ret.append((filename, False, LocationHandler.DVD_FOLDER, [os.path.basename(each) for each in ok_files]))
-                ok_files=video_files=[]
+                ok_files = video_files = []
                 subdirs.pop('VIDEO_TS')
-                try: subdirs.pop('AUDIO_TS')
-                except: pass
+                try:
+                    subdirs.pop('AUDIO_TS')
+                except:
+                    pass
             elif 'BDMV' in subdirs:
                 ret.append((filename, False, LocationHandler.BLUE_RAY_FOLDER))
                 subdirs.pop('BDMV')
                 if 'CERTIFICATE' in subdirs: subdirs.pop('CERTIFICATE')
-                other_files+=ok_files+video_files.keys()
-                ok_files=video_files=[]
+                other_files += ok_files + video_files.keys()
+                ok_files = video_files = []
             for each in subdirs.values():
                 ret.append((each, False, LocationHandler.UNVISITED_FOLDER))
         if video_files:
-            if len(video_files)==1:
+            if len(video_files) == 1:
                 unique, extension = video_files.popitem()
                 if extension in LocationHandler.IMAGE_EXTENSIONS:
                     assoc = LocationHandler.IMAGE_FILE_ALONE_IN_DIR
                 elif extension in LocationHandler.VIDEO_EXTENSIONS:
-                    assoc=LocationHandler.VIDEO_FILE_ALONE_IN_DIR
+                    assoc = LocationHandler.VIDEO_FILE_ALONE_IN_DIR
                 else:
-                    assoc=None
+                    assoc = None
                     other_files.append(unique)
                 if assoc:
                     ret.append((unique, False, assoc, [os.path.basename(each) for each in ok_files]))
             else:
                 if False in [each in ['vob', 'ifo', 'bup'] for each in video_files.values()]:
-                    other_files+=ok_files+video_files.keys()
+                    other_files += ok_files + video_files.keys()
                 else:
                     ret.append((filename, False, LocationHandler.DVD_FOLDER_DIRECT))
                     other_files.extend(ok_files)
@@ -247,30 +246,29 @@ class LocationHandler:
             ret.append((each, False, LocationHandler.UNHANDLED_FILE))
         return ret
 
-
     def normalizeFilename(self, path, imdbInfo):
-        
+
         title, year = imdbInfo.title, imdbInfo.year
         if not title:
             return path
 
-        newname=re.sub('[^a-z0-9]+', '_', title.lower()).title() + ((year and ('__'+year)) or '')
-        oldDirName=None
+        newname = re.sub('[^a-z0-9]+', '_', title.lower()).title() + ((year and ('__' + year)) or '')
+        oldDirName = None
 
-        dirname, basename=os.path.dirname(path), os.path.basename(path)
-        if dirname and dirname!=newname:
-            #we rename it
+        dirname, basename = os.path.dirname(path), os.path.basename(path)
+        if dirname and dirname != newname:
+            # we rename it
             oldDirName = os.path.join(self.folderBase, dirname)
             newDirName = os.path.join(self.folderBase, newname)
             self.rename(oldDirName, newDirName)
-            dirname=newname
-        newname+=os.path.splitext(basename)[-1].lower()
-        if newname!=basename:
+            dirname = newname
+        newname += os.path.splitext(basename)[-1].lower()
+        if newname != basename:
             oldPath = os.path.join(self.folderBase, dirname, basename)
             newPath = os.path.join(self.folderBase, dirname, newname)
             basename = newname
             try:
-                #if this fails, we will rename the directory back
+                # if this fails, we will rename the directory back
                 self.rename(oldPath, newPath)
             except:
                 if oldDirName:
@@ -282,16 +280,17 @@ class LocationHandler:
         oldDirname, normDirname = os.path.dirname(path), os.path.dirname(normalizedName)
         oldName, normName = os.path.basename(path), os.path.basename(normalizedName)
 
-        if oldDirname!=normDirname:
+        if oldDirname != normDirname:
             self.rename(os.path.join(self.folderBase, normDirname), os.path.join(self.folderBase, oldDirname))
 
-        if oldName!=normName:
-            self.rename(os.path.join(self.folderBase, oldDirname, normName), os.path.join(self.folderBase, oldDirname, oldName))
+        if oldName != normName:
+            self.rename(os.path.join(self.folderBase, oldDirname, normName),
+                        os.path.join(self.folderBase, oldDirname, oldName))
 
     def getRelativeName(self, path):
         ret = path[len(self.folderBase):]
-        if ret and ret[0]=='/':
-            ret=ret[1:]
+        if ret and ret[0] == '/':
+            ret = ret[1:]
         return ret
 
     def normalizeSubtitle(self, moviePath, subtitleFilename, lang_abbr):
@@ -305,58 +304,54 @@ class LocationHandler:
         dirName = os.path.dirname(moviePath) or movieName
         newName = os.path.splitext(movieName)[0]
         subExtension = os.path.splitext(subtitleFilename)[-1].lower()
-        newSubtitle = newName+'.'+lang_abbr+subExtension
-        if subtitleFilename==newSubtitle: return None
+        newSubtitle = newName + '.' + lang_abbr + subExtension
+        if subtitleFilename == newSubtitle: return None
 
         oldName = os.path.join(self.folderBase, dirName, subtitleFilename)
         newName = os.path.join(self.folderBase, dirName, newSubtitle)
 
-        if os.path.exists(newName): raise Exception('File '+newSubtitle+' already exists')
+        if os.path.exists(newName): raise Exception('File ' + newSubtitle + ' already exists')
         self.rename(oldName, newName)
         return newSubtitle, [oldName, newName]
 
     def renormalizeSubtitle(self, oldName, newName):
         self.rename(newName, oldName)
 
-
     def storeSubtitles(self, moviePath, lang_abbr, subtitles, firstSubtitle):
         '''
         returns the new path for the movie, and the found subtitles
         '''
-        dirname=basename=os.path.dirname(moviePath)
+        dirname = basename = os.path.dirname(moviePath)
         if dirname:
             dirname = os.path.join(self.folderBase, dirname)
         else:
             oldMoviePath = os.path.join(self.folderBase, moviePath)
             if os.path.isdir(oldMoviePath):
-                dirname = oldMoviePath #this is going to fail (is for BMDV)
+                dirname = oldMoviePath  # this is going to fail (is for BMDV)
             else:
-                dirname=basename=os.path.splitext(moviePath)[0]
+                dirname = basename = os.path.splitext(moviePath)[0]
                 moviePath = os.path.join(dirname, moviePath)
                 dirname = os.path.join(self.folderBase, dirname)
                 if not os.path.exists(dirname):
                     os.mkdir(dirname)
                 self.rename(oldMoviePath, os.path.join(self.folderBase, moviePath))
-        index=firstSubtitle
+        index = firstSubtitle
         for name, content in subtitles.items():
             while True:
                 try:
-                    use= '%s' % os.path.basename(name) #just avoiding some problems with unicode
+                    use = '%s' % os.path.basename(name)  # just avoiding some problems with unicode
                 except:
-                    use='--'
+                    use = '--'
                 subtitleName = os.path.join(dirname, '%s-%d-%s' % (lang_abbr, index, use))
-                index+=1
+                index += 1
                 if not os.path.exists(subtitleName): break
             with open(subtitleName, 'w') as f:
                 f.write(content)
         ret = self._iterateAllFilesInSubpath(basename, dirname)
-        if len(ret)!=1:
-            #can happen if directory already existed with some content, normally BlueRay
-            raise Exception, 'Invalid setup for directory '+dirname
+        if len(ret) != 1:
+            # can happen if directory already existed with some content, normally BlueRay
+            raise Exception, 'Invalid setup for directory ' + dirname
         return ret[0][0], ret[0][3]
-        
-
-
 
 # if __name__ == '__main__':
 #     lc = LocationHandler('/Users/coderazzi/development/test')
@@ -373,6 +368,3 @@ class LocationHandler:
 #     time.sleep(5)
 #     lc.reverseNormalization(name, newname)
 #     print 'Done'
-
-
-
