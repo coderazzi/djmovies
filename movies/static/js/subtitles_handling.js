@@ -1,7 +1,7 @@
 function setupSubtitlesHandling($form){
 
     var timeInputs;
-    var pattern=/^\s*\d(?:\d)?\:\d\d\:\d\d(?:\.\d+)?\s*$/
+    var pattern=/^\s*\d(?:\d)?:\d\d:\d\d(?:[,\.]\d+)?\s*$/
 
     function checkTime($selector, nullOk){
         var text = $.trim($selector.val());

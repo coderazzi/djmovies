@@ -21,6 +21,7 @@ SUBTITLES_COM = 'http://www.moviesubtitles.org/'
 SUBSCENE_COM = 'http://subscene.com/'
 HTML_PARSER = 'lxml'
 
+SIMULATE = False
 
 def searchYear(year, finalYear, limit):
     start = 0
@@ -88,19 +89,27 @@ def searchImdb(movieTitle):
                 return (ret, info)
 
         # http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
-        url = IMDB_COM + '/search/title?' + urllib.urlencode(
+        if SIMULATE:
+            with open('/tmp/imdb_search.html') as f:
+                soup = BeautifulSoup(f.read(), HTML_PARSER)
+        else:
+            url = IMDB_COM + '/search/title?' + urllib.urlencode(
                 {'count': '50', 'title_type': 'feature,tv_movie', 'title': movieTitle, 'view': 'simple'})
-        # note that count could be up to 250
-        page = browser.open(url)
-        soup = BeautifulSoup(page.read(), HTML_PARSER)
-        for td in soup.find_all('td', attrs={'class': 'title'}):
-            ref = td.find('a')
-            if ref:
-                href = urlparse.urlparse(
-                    ref.get('href')).path  # we remove any parameters information. So far, is useless
-                title = _unescape(ref.text)
-                if title:
-                    ret.append((getUid(href, title), title, _unescape(ref.nextSibling)))  # this is the year
+            # note that count could be up to 250
+            soup = BeautifulSoup(browser.open(url).read(), HTML_PARSER)
+            with open('/tmp/imdb_search.html', 'w') as f:
+                print >> f, soup.prettify().encode('utf-8', 'ignore')
+        for td in soup.find_all('span'):
+            if td.get('title'):
+                ref = td.find('a')
+                if ref:
+                    href = urlparse.urlparse(
+                        ref.get('href')).path  # we remove any parameters information. So far, is useless
+                    title = _unescape(ref.text)
+                    if title:
+                        year = td.find('span', attrs={'class' : 'lister-item-year'})
+                        year = _unescape(year.text) if year else ''
+                        ret.append((getUid(href, title), title, year))
         return (ret, ret and _getImdbInfo(ret[0][0], browser))
 
 
