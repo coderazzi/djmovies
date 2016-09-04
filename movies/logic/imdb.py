@@ -79,6 +79,7 @@ def searchImdb(movieTitle):
         ret = []
         # small trick, for cases when we cannot find the movie by name: we can enter the URL directly (at imdb)
         if movieTitle.startswith(IMDB_COM):
+            print 'HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
             # href=movieTitle[len(IMDB_COM):]
             href = urlparse.urlparse(movieTitle).path
             info = _getImdbInfo(getUid(href, ''), browser)
@@ -89,6 +90,7 @@ def searchImdb(movieTitle):
                 return (ret, info)
 
         # http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
+        movieTitle = movieTitle.replace('.', ' ')
         if SIMULATE:
             with open('/tmp/imdb_search.html') as f:
                 soup = BeautifulSoup(f.read(), HTML_PARSER)
