@@ -127,7 +127,6 @@ def edit_movie(request):
 
     try:
         data            = json.loads(request.body)
-        print data
         imdbinfo        = Struct.fromjs(**data['imdbinfo'])
         locationId      = data['location']
         filepath        = data['filepath']

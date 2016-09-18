@@ -79,8 +79,6 @@ def searchImdb(movieTitle):
         ret = []
         # small trick, for cases when we cannot find the movie by name: we can enter the URL directly (at imdb)
         if movieTitle.startswith(IMDB_COM):
-            print 'HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-            # href=movieTitle[len(IMDB_COM):]
             href = urlparse.urlparse(movieTitle).path
             info = _getImdbInfo(getUid(href, ''), browser)
             if info:
@@ -178,8 +176,10 @@ def _getImdbInfo(uid, browser):
                 match = yearRef and re.search('(\d\d\d\d)', _unescape(yearRef.text))
                 year = match and match.group(1)
             if not title:
-                titleTag = titleTag.find('span', attrs={'itemprop': 'name'})
-                if titleTag:
+                titleTag2 = titleTag.find('span', attrs={'itemprop': 'name'})
+                if titleTag2:
+                    title = _unescape(titleTag2.contents[0])
+                else:
                     title = _unescape(titleTag.contents[0])
         if not title:
             print 'Attention, no title!!!!'
