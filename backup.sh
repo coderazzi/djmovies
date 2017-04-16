@@ -1,14 +1,15 @@
 #!/bin/bash
 
-TARGET='/Volumes/ExtraX/Dropbox/backups'
+TARGET='/Users/coderazzi/Dropbox/backups'
 DATABASE=db_movies.sqlite
 
 cd `dirname $0`
 
 next=1
 for f in $TARGET/djmovies.*.sqlite ; do
-	number=$(echo $f | grep -Eo '[1-9]\d*')
-	let "number=1+$number"
+	# number=$(echo $f | grep -Eo '[1-9]\d*')
+	number=$(echo $f | grep -Eo '[1-9]+')
+	let number=1+$number
 	if [ $number -gt $next ] ; then
 		next=$number
 		last=$f
@@ -28,7 +29,7 @@ if [ "$copy" -eq 1 ] ; then
 	cp db_movies.sqlite $target
 	echo Created $target
 else
-	echo Database is already backup
+	echo Database is already backup, as $last
 fi
 
 

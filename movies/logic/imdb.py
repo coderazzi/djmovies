@@ -29,7 +29,7 @@ def searchYear(year, finalYear, limit):
     url = 'http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (
     year, finalYear)
     numberRe = re.compile('(\d+)')
-    yearInTitle = re.compile('^\s*(.*?)\s+\((\d\d\d\d)\)\s*$')
+    yearMatch = re.compile('^\s*\(\s*(\S+?)\s*\)\s*$')
     noSpaces = re.compile('\s+', re.S)
     with Browser() as browser:
         ret = []
@@ -37,40 +37,70 @@ def searchYear(year, finalYear, limit):
             page = browser.open(url % (start + 1))
             # page, limit = open('/Users/coderazzi/kk.html'), min(limit, 40)
             soup = BeautifulSoup(page.read(), HTML_PARSER)
+            with open('imdb_search_year.html', 'w') as f:
+                print >> f, soup.prettify().encode('utf-8', 'ignore')
             table = soup.find('table', attrs={'class': 'results'})
-            for tr in table.find_all('tr'):
-                number = tr.find('td', attrs={'class': 'number'})
-                match = number and numberRe.search(number.text)
-                if match:
-                    start = int(match.group(1))
-                    if start > limit:
-                        break
-                    imageTd = tr.find('td', attrs={'class': 'image'})
-                    imageTd = imageTd and imageTd.find('a')
-                    if imageTd:
-                        href = urlparse.urlparse(imageTd.get('href')).path
-                        title = search = imageTd.get('title')
-                        idx = yearInTitle.match(title)
-                        if idx:
-                            matchTitle, matchYear = idx.group(1), idx.group(2)
-                            search = '%s %s' % (matchTitle, matchYear)
-                            if not showYear:
-                                title = matchTitle
-                        title = _unescape(title)
-                        image = imageTd.find('img')
-                        image = image and image.get('src')
-                        try:
-                            rating = tr.find('span', attrs={'class': 'rating-rating'}).find('span', attrs={
-                                'class': 'value'}).text.strip()
-                        except:
-                            rating = '???'
-                        outline = tr.find('span', attrs={'class': 'outline'})
-                        outline = outline and outline.text.strip()
-                        credit = tr.find('span', attrs={'class': 'credit'})
-                        credit = credit and noSpaces.sub(' ', _unescape(credit.text), )
-                        genre = tr.find('span', attrs={'class': 'genre'})
-                        genre = genre and noSpaces.sub(' ', _unescape(genre.text), )
-                        ret.append((href, title, image, rating, start, outline, credit, genre, search))
+            for g1 in soup.find_all('div', attrs={'class' : 'lister-item'}):
+                g2 = g1.find('div', attrs={'class': 'lister-item-image'})
+                if g2:
+                    a = g2.find('a')
+                    if a:
+                        href = urlparse.urlparse(a.get('href')).path
+                        img = a.find('img')
+                        if img:
+                            title, img = img.get('alt'), img.get('loadlate')
+                            rating = g1.find('div', attrs={'class': 'ratings-imdb-rating'})
+                            rating = rating.get('data-value') if rating else '?'
+                            start = g1.find('span', attrs={'class': 'lister-item-index'})
+                            match = start and numberRe.search(start.text)
+                            if match:
+                                start = int(match.group(1))
+                                if start > limit:
+                                    break
+                                info = g1.find_all('p')#, attrs={'class': 'text-muted'})
+                                if len(info) == 4:
+                                    genre = info[0].find('span', attrs={'class': 'genre'})
+                                    genre = genre.text.strip() if genre else '?'
+                                    outline = noSpaces.sub(' ', _unescape(info[1].text), )
+                                    credit = noSpaces.sub(' ', _unescape(info[2].text), )
+                                    year = g1.find('span', attrs={'class': 'lister-item-year'})
+                                    year = year and yearMatch.match(year.text)
+                                    search = '%s %s' % (title, year.group(1)) if year else title
+                                    ret.append((href, title, img, rating, start, outline, credit, genre, search))
+
+            # for tr in table.find_all('tr'):
+            #     number = tr.find('td', attrs={'class': 'number'})
+            #     match = number and numberRe.search(number.text)
+            #     if match:
+            #         start = int(match.group(1))
+            #         if start > limit:
+            #             break
+            #         imageTd = tr.find('td', attrs={'class': 'image'})
+            #         imageTd = imageTd and imageTd.find('a')
+            #         if imageTd:
+            #             href = urlparse.urlparse(imageTd.get('href')).path
+            #             title = search = imageTd.get('title')
+            #             idx = yearInTitle.match(title)
+            #             if idx:
+            #                 matchTitle, matchYear = idx.group(1), idx.group(2)
+            #                 search = '%s %s' % (matchTitle, matchYear)
+            #                 if not showYear:
+            #                     title = matchTitle
+            #             title = _unescape(title)
+            #             image = imageTd.find('img')
+            #             image = image and image.get('src')
+            #             try:
+            #                 rating = tr.find('span', attrs={'class': 'rating-rating'}).find('span', attrs={
+            #                     'class': 'value'}).text.strip()
+            #             except:
+            #                 rating = '???'
+            #             outline = tr.find('span', attrs={'class': 'outline'})
+            #             outline = outline and outline.text.strip()
+            #             credit = tr.find('span', attrs={'class': 'credit'})
+            #             credit = credit and noSpaces.sub(' ', _unescape(credit.text), )
+            #             genre = tr.find('span', attrs={'class': 'genre'})
+            #             genre = genre and noSpaces.sub(' ', _unescape(genre.text), )
+            #             ret.append((href, title, image, rating, start, outline, credit, genre, search))
         return ret
 
 

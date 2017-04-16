@@ -1,6 +1,6 @@
 #on addition: brew install mediainfo unrar
 Django==1.7.7
-Wand==0.3.8
+Wand==0.4.4
 beautifulsoup4==4.3.2
 lxml==3.4.2
 mechanize==0.2.5
