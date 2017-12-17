@@ -158,18 +158,35 @@ def runProcess(exe):
 def mediainfo(path, folder):
     def mount(isoFile):   
         disk, path, first=None, None, True
-        for line in runProcess(['hdiutil', 'mount', isoFile]):
-            if first:
-                first=False         
-                match = re.match('^(/dev/d\S+)\s*(/.*)$', line)
-                if match:
-                    disk, path = match.group(1), match.group(2)
+        if sys.platform=='darwin':
+           for line in runProcess(['hdiutil', 'mount', isoFile]):
+               if first:
+                   first=False         
+                   match = re.match('^(/dev/d\S+)\s*(/.*)$', line)
+                   if match:
+                       disk, path = match.group(1), match.group(2)
+        else:
+           path='/tmp/media/iso/'+os.path.basename(isoFile)
+           try:
+              os.makedirs(path)
+           except:
+              try:
+                 umount(path)
+              except:
+                 pass
+           for line in runProcess(['mount', '-o', 'loop', isoFile,  path]):
+              print line
         return path
 
     def umount(diskOrPath):
-        for line in runProcess(['hdiutil', 'eject', diskOrPath]):
-            if 'failed' in line:
-                print '***E***', line
+        if sys.platform=='darwin':
+           for line in runProcess(['hdiutil', 'eject', diskOrPath]):
+               if 'failed' in line:
+                   print '***E***', line
+        else:
+           runProcess(['umount', diskOrPath])
+           os.rmdir(diskOrPath)
+
 
     def get_subs(path):
         dirs, files=[], []
