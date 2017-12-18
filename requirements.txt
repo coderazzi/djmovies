@@ -1,4 +1,5 @@
-#on addition: brew install mediainfo unrar
+# on addition: brew install mediainfo unrar freetype imagemagick@6
+# thiw will require to have export MAGICK_HOME=/usr/local/Cellar/imagemagick@6/6.9.9-27/ 
 Django==1.7.7
 Wand==0.4.4
 beautifulsoup4==4.3.2
