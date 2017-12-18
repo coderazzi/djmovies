@@ -2,7 +2,7 @@
 # thiw will require to have export MAGICK_HOME=/usr/local/Cellar/imagemagick@6/6.9.9-27/ 
 Django==1.7.7
 Wand==0.4.4
-beautifulsoup4==4.3.2
+beautifulsoup4==4.6.0
 lxml==3.4.2
 mechanize==0.2.5
 rarfile==2.7
