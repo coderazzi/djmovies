@@ -1,0 +1,4 @@
+cp ~/Dropbox/backups/djmovies.59.sqlite db_movies.sqlite 
+mkdir movies/static/mov_imgs
+cp -R ~/Dropbox/backups/djmovies_images/* movies/static/mov_imgs
+

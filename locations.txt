@@ -1,0 +1,95 @@
+MOVIES
+======
+
+
+MOVIES_I (M01)
+==============
+
+	WD Green WD30EZRX 3.0 TB
+
+	ISO, AVI, DVD, TS, etc, non mkv
+		* Contains at the moment a _SERIES folder with Lost and Game Of Thrones
+
+	Available: 473 Gb
+		_SERIES: 478 Gb
+
+
+MOVIES_II (M02)
+===============
+
+	WD Caviar Freen WD10EADS 1.0 TB
+
+	MKV
+
+	Available: 3.5 Gb
+
+
+MOVIES_III (M03)
+===============
+
+	Seagate Barracuda ST2000L003 2000Gb
+
+	MKV (single / folders)
+
+	Available: 7.5 Gb
+
+
+MOVIES_IV (M04)
+===============
+
+	Seagate Barracuda ST2000L003 2000Gb
+
+	MKV (single / folders)
+
+	Available: 4.1 Gb
+
+
+MOVIES_V (M05)
+===============
+
+	Seagate Barracuda ST3000DM001 3000Gb
+
+	MKV (single / folders)
+
+	Available: 4.0 Gb
+
+
+MOVIES_VI (M06)
+===============
+
+	Toshiba DT01ABA300 3.0 TB
+
+	MKV (single / folders)
+
+	Available: 13.0 Gb
+
+	
+MOVIES_VII (M07)
+================
+
+	Toshiba DT01ACA300 3.0 TB
+
+	MKV (single / folders)
+
+	Available: 24.0 Gb
+
+	
+MOVIES_VIII (M08)
+=================
+
+	Toshiba DT01ACA300 3.0 TB
+
+	MKV (single / folders)
+
+	Available: 903.0 Gb
+
+
+
+-----------------------------------------------------------------------------------------------
+
+Queries
+========
+
+Get formats on a location:
+
+	select distinct(m.format) from movies m, paths p where p.movie_id=m.id and p.location_id=1

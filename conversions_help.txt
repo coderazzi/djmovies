@@ -1,0 +1,126 @@
+Copy files with errors (like mkv)
+=================================
+
+dd if=FILE of=FILE conv=noerror,sync
+
+
+
+Combine AVI files
+=================
+
+cat part1.avi part2.avi part3.avi > tmp.avi
+
+mencoder -forceidx -oac copy -ovc copy tmp.avi -o output.avi
+
+rm -f tmp.avi
+
+
+Create ISO from VIDEO_TS folder
+===============================
+
+hdiutil makehybrid -udf -udf-volume-name VOLUME_NAME -o NAME.iso FOLDER
+
+	Where folder contains the VIDEO_TS directory
+
+	For example:
+
+	hdiutil makehybrid -udf -udf-volume-name Hulk -o /Volumes/Movies/Hulk.iso ~/Desktop/Hulk/
+
+
+Handling mp4 files
+===================
+
+ffmpeg -i 20160607_benin_01.mp4 -ss 00:00:04 -vf "transpose=2" output.mp4
+
+	This crops the first 4 seconds of the movie, and rotates it 90 degrees counterclockwise
+
+	It can be added a -t TIME to limit the duration of the clip
+
+	transpose can have the following values:
+
+		0 = 90CounterCLockwise and Vertical Flip (default)
+		1 = 90Clockwise
+		2 = 90CounterClockwise
+		3 = 90Clockwise and Vertical Flip
+
+	If no need to rotate, it can be used directly the -c copy parameter, as in:
+
+		ffmpeg -i 20160716_flight_davao_02.mp4 -c copy -t 00:00:30 output,mp4
+
+	This copies the file just until the second 30
+
+
+MKV files
+=========
+
+A movie has no subtitles and two audio streams, in Hebrew (default) and English. This can be seen with:
+
+ffmpeg -i Peter_Pan__2003.mkv
+
+    Stream #0:0(eng): Video: h264 (High), yuv420p, 1920x796 [SAR 1:1 DAR 480:199], 23.98 fps, 23.98 tbr, 1k tbn, 47.95 tbc (default)
+    Metadata:
+      title           : Peter.Pan.2003.1080p.BluRay.DD5.1.x264-HDMaNiAcS
+    Stream #0:1(eng): Audio: ac3, 48000 Hz, 5.1(side), fltp, 640 kb/s
+    Stream #0:2(heb): Audio: ac3, 48000 Hz, stereo, fltp, 128 kb/s (default)
+
+To correct this:
+
+ffmpeg -i Peter_Pan__2003.mkv -f srt -i Peter_Pan__2003.en.srt -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s srt -metadata:s:s:0 language=eng -metadata title="Peter Pan 2003" output.mkv
+
+	The map 0:0 maps the video stream, map 0:1, maps the ENG audio stream, and map 1:0 is used for the second input (the subtitle). This also sets a title.
+
+
+
+MKV - extract audio
+===================
+
+ffmpeg -i rsg-hook-1080p.mkv -map 0:1 -c:a copy hook.aac
+
+	This extracts the track 1 (audio in this case)
+
+	This can be re-added later:
+		ffmpeg -i output.mkv -i hook.aac -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy output2.mkv
+
+
+MKV - Set a track language to German
+====================================
+
+mkvinfo FILE shows the tracks
+
+mkvpropedit kk.mkv --edit track:a2 --set language=ger
+
+	Note: the best is to do mkvinfo MOVIE, and then —edit track:N where N is the exact number shown by mkvinfo
+
+
+MKV - subtitles, track languages
+=============================================
+
+To add subtitles, in english and german:
+
+mkvmerge -o output.mkv kk.mkv --language "0:eng" en.srt  --language "0:ger" de.srt
+
+For IDX/ SUB use the .idx file
+
+Set no subtitles (without removing them): it is needed to mark the default flag to 0 (or force flag):
+
+mkvpropedit output.mkv --edit track:4 --set flag-default=0
+
+mkvpropedit A_Bigger_Splash__2015.mkv --edit track:3 --set flag-forced=0
+
+Set the language of a track:
+
+mkvpropedit Honey_I_Shrunk_The_Kids__1989.mkv --edit track:3 --set language=eng
+
+
+MKV Merge two files
+===================
+mkvmerge -o o.mkv 00000.mkv +00001.mkv
+
+Merge m2ts files as well
+========================
+mkvmerge -o o.mkv 00000.m2ts +00001.m2ts +00002.m2ts
+
+Convert a TrueHD (or any) audio to AC3
+=======================================
+
+ffmpeg -i Heathers__1988.mkv -vn Heathers__1988.ac3	
