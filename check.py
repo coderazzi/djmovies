@@ -86,7 +86,7 @@ def ffmpeg_text_info(filename):
 
 
 def _ffmpeg_info(filename):
-    sequences = []
+    sequences = {}
     definitions = [sequences, [], [], []]
     for info in ffmpeg_text_info(filename):
         match = FFMPEG_INFO_SPECIFIC_PATTERN.match(info)
@@ -98,8 +98,6 @@ def _ffmpeg_info(filename):
         if stream != '0':
             _error(filename, info + ' ---> missing stream ' + stream + " : expected '0'")
         seq = int(sequence)
-        if seq in sequences:
-            _error(filename, "multiples tracks with seq number " + sequence)
         if language not in LANG_BY_PRIO:
             try:
                 language = CONVERT_LANGUAGES[language]
@@ -107,7 +105,7 @@ def _ffmpeg_info(filename):
                 if language not in DISMISS_LANGUAGES:
                     _error(filename, 'Invalid language found:' + language)
         definitions[['Video', 'Audio', 'Subtitle'].index(stream_type) + 1].append((seq, language, more))
-        sequences.append(seq)
+        sequences.append((seq, stream_type, more))
     return definitions
 
 
@@ -253,9 +251,10 @@ def update(filename):
 
 def _correct_sequencing(filename, original_sequences, videos, audios, subtitles):
     final_tracks = [x[0] for x in videos + audios + subtitles]
-    if original_sequences == final_tracks:
+    if [x[0] for x in original_sequences] == final_tracks:
         return None
 
+    print original_sequences
     for track in original_sequences:
         if track not in final_tracks:
             print track
