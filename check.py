@@ -3,10 +3,29 @@ import re
 import subprocess
 import threading
 import time
-import sys
+
+
+# --go required always to do changes
+# --just-corrections changes handle by mkvpropedit, things like changing a track name, default / forced. etc
+# --only-check-audios ensures that only audios are handled
+
+# imagine only one call -probably not good-
+# case:
+#   one audio EN: ok
+#   several audios EN:
+#       only one not marked as commentary: OK
+#       one or more audios not marked as commentary:
+#           check title:
+#               if all have title === English (AC3), etc: good, sort by current system
+#               else:
+
+
+# Audios: normalized MEANS Emglish (AC3) - commentary XX
+# If there is only one English: English - commentary XX
+
 
 MAX_TIME_FMPEG_INFO = 30  # 30 seconds
-MAX_TIME_MUX = 1800  # 30 minutes
+MAX_TIME_MUX = 3600  # 60 minutes
 FFMPEG_INFO_PATTERN = re.compile('^\s+Stream #(.+)$')
 FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Audio|Subtitle):(.*)$')
 LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
@@ -22,7 +41,7 @@ SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
 CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es'}
 DISMISS_LANGUAGES = ['gre', 'chi', 'rum', 'slv', 'swe', 'hrv', 'cze', 'dut', 'fin', 'dan', 'nor', 'ice', 'ita', 'jpn', 'kor', 'cat', 'scr', 'tur', 'vie', 'bul', 'pol', 'ara']
-LANGUAGES_IN_FILENAMES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Sweedish', 'fr': 'French'}
+LANGUAGES_IN_FILENAMES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French'}
 
 
 _COMM_KILL = 1
@@ -49,7 +68,23 @@ def _error(filename, message):
     print
     print '  S T O P '
     print '!!!!!!! [', filename, '] :', message
-    sys.exit(0)
+    print
+    raise message
+
+
+def _mkvmerge_launch(command, name_if_error):
+    rc, out, _ = _shell(command, MAX_TIME_MUX)
+    if rc > 1:
+        _error(name_if_error, 'SHELL: ' + out)
+    return out
+
+
+def _ffmpeg_launch(command):
+    rc, out, err = _shell(command, MAX_TIME_MUX)
+    if rc > 0:
+        print rc
+        _error('ffmpeg', err)
+    return err
 
 
 def _process_killer(proc, max_time, communication):
@@ -78,15 +113,14 @@ def _shell(proc_args, max_time):
 def ffmpeg_text_info(filename):
     if not os.path.isfile(filename):
         _error(filename, 'file not found')
-    _, _, err = _shell("ffmpeg -i " + filename, MAX_TIME_FMPEG_INFO)
-    for line in err.splitlines():
+    for line in _ffmpeg_launch("ffprobe " + filename).splitlines():
         match = FFMPEG_INFO_PATTERN.match(line)
         if match:
             yield match.group(1)
 
 
 def _ffmpeg_info(filename):
-    sequences = {}
+    sequences = []
     definitions = [sequences, [], [], []]
     for info in ffmpeg_text_info(filename):
         match = FFMPEG_INFO_SPECIFIC_PATTERN.match(info)
@@ -105,7 +139,7 @@ def _ffmpeg_info(filename):
                 if language not in DISMISS_LANGUAGES:
                     _error(filename, 'Invalid language found:' + language)
         definitions[['Video', 'Audio', 'Subtitle'].index(stream_type) + 1].append((seq, language, more))
-        sequences.append((seq, stream_type, more))
+        sequences.append((seq, stream_type, language, more))
     return definitions
 
 
@@ -160,23 +194,19 @@ def _update_dir(filename):
     print command
     if _DRY_RUN:
         for _, name, _ in subtitles:
-            rc, out, _ = _shell('mkvmerge -i ' + name, MAX_TIME_MUX)
-            if rc > 1:
-                _error(name, 'SHELL: ' + out)
+            _mkvmerge_launch('mkvmerge -i ' + name, name)
     else:
-        rc, out, _ = _shell(command, MAX_TIME_MUX)
-        if rc > 1:
-            _error(command, 'SHELL: ' + out)
-        else:
-            print out
+        print _mkvmerge_launch(command, filename)
 
 
-def _update_file(filename):
+def _update_file(filename, only_check_audios):
     sequences, video, audio, subtitles = _ffmpeg_info(filename)
     if len(video) != 1:
         _error(filename, "%d video streams" % len(video))
     if not audio:
         _error(filename, "%d audio streams" % len(video))
+    print audio
+    raise 12
     final_videos = _sort_tracks(video, _get_video_key)
     final_audios = _sort_tracks(audio, _get_audio_key_wrapper(filename))
     final_subs = [x for x in _sort_tracks(subtitles, _get_subtitle_key) if x[1] in LANG_BY_PRIO]
@@ -202,9 +232,9 @@ def _update_file(filename):
     if final_videos[0][1] != first_audio:
         _warning(filename, 'Video language is not ' + first_audio)
 
-    print 'Working on ', filename
+    created_file = _correct_sequencing(filename, sequences, final_videos, final_audios, final_subs)
 
-    _correct_sequencing(filename, sequences, final_videos, final_audios, final_subs)
+    #print 'Created:', created_file
 
     #  if there are sequences to move, do it before modifying the defualt / forced tracks
 
@@ -251,19 +281,12 @@ def update(filename):
 
 def _correct_sequencing(filename, original_sequences, videos, audios, subtitles):
     final_tracks = [x[0] for x in videos + audios + subtitles]
-    if [x[0] for x in original_sequences] == final_tracks:
+    final_order = [None] * len(original_sequences)
+    for i, s in enumerate(final_tracks):
+        final_order[s] = i
+
+    if final_order == range(len(original_sequences)):
         return None
-
-    print original_sequences
-    for track in original_sequences:
-        if track not in final_tracks:
-            print track
-            print videos
-            print audios
-            print subtitles
-            break
-
-    _error(filename, ';et me in peach')
 
     commands = ['ffmpeg', '-n', '-hide_banner', '-i', filename]
 
@@ -275,19 +298,23 @@ def _correct_sequencing(filename, original_sequences, videos, audios, subtitles)
     if subtitles:
         commands.append('-c:s copy')
 
-    commands.append(_get_target_file(filename))
+    target_file = _get_target_file(filename)
 
-    _error(filename, ' '.join(commands))
-    # created_file = os.path.join(_TARGET_DIR, original_sequences[0][2])
-    # command = ' '.join(commands + mappings + metadata + [created_file])
-    # print command
-    # if not _DRY_RUN:
-    #     a, b, c = _shell(command, MAX_TIME_FMPEG)
-    #     print a
-    #     print b
-    #     print c
-    #
-    # return created_file
+    commands.append(target_file)
+
+    command = ' '.join(commands)
+
+    print command
+
+    for order, sequence in zip(final_order, original_sequences):
+        track, type, language, info = sequence
+        position = ('%02d' % order) if order else '--'
+        _info(filename, '%s   (%-10s : %-3s) %s' % (position, type, language, info))
+
+    if not _DRY_RUN:
+        _ffmpeg_launch(command)
+
+    return target_file
 
 
 def _correct_default_force_tracks(filename, tracks):
@@ -402,6 +429,7 @@ if __name__ == '__main__':
     clParser.add_argument('-t', '--target', default='.', help='location for final files, if required')
     clParser.add_argument('-i', '--info-only', action='store_true', help='short info on the file')
     clParser.add_argument('--go', action='store_true', help='perform the required changes')
+    clParser.add_argument('--only-check-audios', action='store_true', help='check only audios normalization (only for files)')
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
     clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
     clParser.add_argument('filenames', nargs='+')
@@ -425,7 +453,7 @@ if __name__ == '__main__':
         for each in args.filenames:
             if os.path.isfile(each):
                 if not args.only_folders:
-                    _update_file(each)
+                    _update_file(each, args.only_check_audios)
             elif os.path.isdir(each):
                 if not args.only_files:
                     _update_dir(each)
