@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="bf9bf252-c8b8-4db1-9922-d00d7e6a042d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/check.py" afterPath="$PROJECT_DIR$/check.py" />
     </list>
     <ignored path="djmovies.iws" />
@@ -26,8 +25,8 @@
       <file leaf-file-name="check.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/check.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="116" column="35" lean-forward="false" selection-start-line="116" selection-start-column="16" selection-end-line="116" selection-end-column="35" />
+            <state relative-caret-position="553">
+              <caret line="274" column="54" lean-forward="false" selection-start-line="274" selection-start-column="54" selection-end-line="274" selection-end-column="54" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -56,36 +55,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_update_dir</find>
-      <find>n sub</find>
-      <find>no sub</find>
-      <find>MKVMERGE_LANGUAGES</find>
-      <find>print su</find>
-      <find>sys.</find>
-      <find>First La</find>
-      <find>multiple s</find>
-      <find>_get_subtitle_key</find>
-      <find>exit</find>
-      <find>ffmpeg_text_info</find>
-      <find>raise</find>
-      <find>_correct_sequencing</find>
-      <find>_TARGET_DIR</find>
-      <find>audio</find>
-      <find>audio s</find>
-      <find>seque</find>
-      <find>sequenci</find>
-      <find>_corr</find>
-      <find>sequences</find>
-      <find>in pe</find>
-      <find>_action_message</find>
-      <find>ffmpeg</find>
-      <find>_she</find>
-      <find>_shell</find>
-      <find>_mkv</find>
       <find>_s</find>
-      <find>_ffmpeg_launch</find>
       <find>print</find>
       <find>FFMPEG_INFO_PATTERN</find>
+      <find>raise 1</find>
+      <find>_correct_default_force_tracks</find>
+      <find>_check_audio</find>
+      <find>check_a</find>
+      <find>_parse_audio_info</find>
+      <find>sort_tar</find>
+      <find>_check_audios</find>
+      <find>12</find>
+      <find>--</find>
+      <find>_sort_audios</find>
+      <find>_get_audio_key_wrapper</find>
+      <find>AUDIO_MODES_BY_PRIO</find>
+      <find>':</find>
+      <find>_ffmpeg_launch</find>
+      <find>_warning</find>
+      <find>video la</find>
+      <find>_action_message</find>
+      <find>_correct_sequencing</find>
+      <find>_sort_tr</find>
+      <find>_sort_tracks</find>
+      <find>videos</find>
+      <find>audios</find>
+      <find>subtitles</find>
+      <find>defau</find>
+      <find>_sort</find>
+      <find>ffmpeg_text_info</find>
+      <find>_ffmpeg_info</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -689,6 +688,9 @@
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
+  </component>
   <component name="SvnConfiguration" cleanupOnStartRun="true">
     <configuration>$USER_HOME$/.subversion</configuration>
     <supportedVersion>125</supportedVersion>
@@ -746,7 +748,7 @@
       <workItem from="1515803558966" duration="38694000" />
       <workItem from="1517079030074" duration="1869000" />
       <workItem from="1517090511266" duration="12809000" />
-      <workItem from="1517246518931" duration="1534000" />
+      <workItem from="1517246518931" duration="18380000" />
     </task>
     <task id="LOCAL-00001" summary="nc">
       <created>1516657881079</created>
@@ -759,7 +761,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="91315000" />
+    <option name="totallyTimeSpent" value="108161000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="123" y="188" width="2191" height="1182" extended-state="0" />
@@ -777,10 +779,11 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21177545" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21177545" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32612613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24965769" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -795,7 +798,6 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32612613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1168,8 +1170,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/check.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="116" column="35" lean-forward="false" selection-start-line="116" selection-start-column="16" selection-end-line="116" selection-end-column="35" />
+        <state relative-caret-position="553">
+          <caret line="274" column="54" lean-forward="false" selection-start-line="274" selection-start-column="54" selection-end-line="274" selection-end-column="54" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

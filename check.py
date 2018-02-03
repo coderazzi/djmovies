@@ -27,12 +27,15 @@ import time
 MAX_TIME_FMPEG_INFO = 30  # 30 seconds
 MAX_TIME_MUX = 3600  # 60 minutes
 FFMPEG_INFO_PATTERN = re.compile('^\s+Stream #(.+)$')
+FFMPEG_STREAM_TITLE_PATTERN = re.compile('^\s+title\s+:\s+(.+)$')
+FFMPEG_TITLE_PATTERN = re.compile('^    title\s+:\s+(.+)$')
 FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Audio|Subtitle):(.*)$')
 LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
 AUDIO_CODECS_BY_PRIO = ['ac3', 'dts', 'flac', 'vorbis', 'aac']
-AUDIO_MODES_BY_PRIO = ['5.1', 'stereo', 'mono']
+AUDIO_MODES = ['5.1', 'stereo', 'mono', '6.1', '7.1']
 AUDIO_FREQUENCY_PATTERN = re.compile('^\s*(\\d\\d\\d\\d\\d) Hz\s*$')
 AUDIO_RATE_PATTERN = re.compile('^\s*(\\d+) kb/s')
+FILENAME_PATTERN = re.compile('(.*?)__(\d\d\d\d)(?:_\w+)?(?:_\w+)?\.\w+$')
 
 VIDEO_EXTENSIONS = ['.mkv']
 SUBTITLE_EXTENSIONS = ['.srt']
@@ -41,7 +44,7 @@ SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
 CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es'}
 DISMISS_LANGUAGES = ['gre', 'chi', 'rum', 'slv', 'swe', 'hrv', 'cze', 'dut', 'fin', 'dan', 'nor', 'ice', 'ita', 'jpn', 'kor', 'cat', 'scr', 'tur', 'vie', 'bul', 'pol', 'ara']
-LANGUAGES_IN_FILENAMES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French'}
+LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English'}
 
 
 _COMM_KILL = 1
@@ -53,7 +56,7 @@ _TARGET_DIR = '.'
 
 
 def _info(filename, message):
-    print '#  I * [', filename, '] :', message
+    print '#  I  * [', filename, '] :', message
 
 
 def _warning(filename, message):
@@ -77,6 +80,12 @@ def _mkvmerge_launch(command, name_if_error):
     if rc > 1:
         _error(name_if_error, 'SHELL: ' + out)
     return out
+
+
+def _mkvpropedit_launch(command, name_if_error):
+    rc, out, _ = _shell(command, MAX_TIME_MUX)
+    if rc:
+        _error(name_if_error, 'SHELL: ' + out)
 
 
 def _ffmpeg_launch(command):
@@ -113,16 +122,27 @@ def _shell(proc_args, max_time):
 def ffmpeg_text_info(filename):
     if not os.path.isfile(filename):
         _error(filename, 'file not found')
+    title, ret = None, []
     for line in _ffmpeg_launch("ffprobe " + filename).splitlines():
         match = FFMPEG_INFO_PATTERN.match(line)
         if match:
-            yield match.group(1)
+            ret.append([match.group(1), None])
+        elif ret:
+            match = FFMPEG_STREAM_TITLE_PATTERN.match(line)
+            if match:
+                ret[-1][1] = match.group(1)
+        elif not title:
+            match = FFMPEG_TITLE_PATTERN.match(line)
+            if match:
+                title = match.group(1)
+    return title, ret
 
 
 def _ffmpeg_info(filename):
     sequences = []
-    definitions = [sequences, [], [], []]
-    for info in ffmpeg_text_info(filename):
+    movie_title, streams = ffmpeg_text_info(filename)
+    definitions = [[], [], [], movie_title, sequences]
+    for info, title in streams:
         match = FFMPEG_INFO_SPECIFIC_PATTERN.match(info)
         if not match:
             _error(filename, info)
@@ -138,7 +158,7 @@ def _ffmpeg_info(filename):
             except KeyError:
                 if language not in DISMISS_LANGUAGES:
                     _error(filename, 'Invalid language found:' + language)
-        definitions[['Video', 'Audio', 'Subtitle'].index(stream_type) + 1].append((seq, language, more))
+        definitions[['Video', 'Audio', 'Subtitle'].index(stream_type)].append((seq, language, more, title))
         sequences.append((seq, stream_type, language, more))
     return definitions
 
@@ -199,16 +219,15 @@ def _update_dir(filename):
         print _mkvmerge_launch(command, filename)
 
 
-def _update_file(filename, only_check_audios):
-    sequences, video, audio, subtitles = _ffmpeg_info(filename)
+def _update_file(filename, skip_audio_check, in_recursion=False):
+    _info(filename, '')
+    video, audio, subtitles, movie_title, sequences = _ffmpeg_info(filename)
     if len(video) != 1:
         _error(filename, "%d video streams" % len(video))
     if not audio:
         _error(filename, "%d audio streams" % len(video))
-    print audio
-    raise 12
+    final_audios = _sort_audios(filename, audio, skip_audio_check)
     final_videos = _sort_tracks(video, _get_video_key)
-    final_audios = _sort_tracks(audio, _get_audio_key_wrapper(filename))
     final_subs = [x for x in _sort_tracks(subtitles, _get_subtitle_key) if x[1] in LANG_BY_PRIO]
     # issue warnings, if required
     if not final_subs:
@@ -224,40 +243,81 @@ def _update_file(filename, only_check_audios):
                 _error(filename, 'multiple subtitles in ' + lang)
             prev = lang
 
-
-
-
     first_audio = final_audios[0][1]
     _check_filename_by_language(filename, first_audio)
+
+    created_file = _correct_sequencing(filename, sequences, final_videos, final_audios, final_subs,
+                                       _DRY_RUN and not in_recursion)
+    if created_file:
+        if not _DRY_RUN:
+            if in_recursion:
+                _error(filename, "After sequencing correction, a second correction is required, not good")
+            else:
+                _update_file(created_file, skip_audio_check=True, in_recursion=True)
+        return
+
+    _do_non_sequencing_corrections(filename, movie_title, first_audio, final_videos, final_audios, final_subs)
+
+
+def _do_non_sequencing_corrections(filename, movie_title, first_audio, final_videos, final_audios, final_subs):
+
+    corrections = []
+
+    new_title = _suggest_title(filename)
+    if new_title != movie_title:
+        corrections.append('--set title="%s"' % new_title)
+
     if final_videos[0][1] != first_audio:
-        _warning(filename, 'Video language is not ' + first_audio)
+        _info(filename, 'Updating video language to ' + first_audio)  # no warning, just correct it !
+        corrections.append('--edit track:%d --set language=%s' % (final_videos[0][0] + 1, first_audio))
 
-    created_file = _correct_sequencing(filename, sequences, final_videos, final_audios, final_subs)
+    if final_videos[0][3]: # there is title, remove it
+        corrections.append('--edit track:%d --set name=' % (final_videos[0][0] + 1))
 
-    #print 'Created:', created_file
+    for sub in final_subs:
+        correct_name = LANGUAGES[sub[1]]
+        if sub[-1] == correct_name:
+            sub[-1] = None
+        else:
+            sub[-1] = correct_name
 
-    #  if there are sequences to move, do it before modifying the defualt / forced tracks
+    for seq, _, info, title in final_audios + final_subs:
+        subcorrections = []
+        if title:
+            subcorrections.append('--set name="%s"' % title)
+        if '(default)' in info:
+            subcorrections.append('--set flag-default=0')
+        if '(forced)' in info:
+            subcorrections.append('--set flag-forced=0')
+        if subcorrections:
+            corrections.append('--edit track:%d' % (seq+1))
+            corrections.extend(subcorrections)
+
+    if corrections:
+        command = 'mkvpropedit %s %s' % (filename, ' '.join(corrections))
+        _info(filename, command)
+        if not _DRY_RUN:
+            _mkvpropedit_launch(filename, command)
+    else:
+        _info(filename, 'No changes required')
 
 
-    # final_sequences = (_correct_default_force_tracks(filename, final_videos)
-    #                    + _correct_default_force_tracks(filename, final_audios)
-    #                    + _correct_default_force_tracks(filename, final_subs))
-    # print final_sequences
-    #if final_sequences != sequences:
-    # ffmpeg -i Peter_Pan__2003.mkv -f srt -i Peter_Pan__2003.en.srt -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s srt -metadata:s:s:0 language=eng -metadata title="Peter Pan 2003" output.mkv
-    #_warning(filename, " : final sequences are " + str(final_sequences))
+def _suggest_title(filename):
+    match = FILENAME_PATTERN.match(os.path.basename(filename))
+    if not match:
+        _error(filename, 'Name of file is not expected')
+    name = match.group(1).replace('_', ' ')
+    return '%s (%s)' % (name, match.group(2))
 
 
 def _check_filename_by_language(filename, language):
     if language != LANG_BY_PRIO[0]:
         try:
-            language = LANGUAGES_IN_FILENAMES[language]
+            language = LANGUAGES[language]
         except KeyError:
             _error(filename, 'Please add ' + language + ' to variable LANGUAGES_IN_FILENAMES')
         name, ext = os.path.splitext(filename)
-        if name.endswith('_' + language):
-            _warning(filename, 'First language is not ' + LANG_BY_PRIO[0])
-        else:
+        if not name.endswith('_' + language):
             _warning(filename, 'should end in __' + language)
             suggestion = os.path.join(os.path.dirname(filename), os.path.basename(name))+ '_' + language
             _error(filename, 'mv ' + filename + ' ' + suggestion + ext)
@@ -279,7 +339,7 @@ def update(filename):
         _update_file(filename)
 
 
-def _correct_sequencing(filename, original_sequences, videos, audios, subtitles):
+def _correct_sequencing(filename, original_sequences, videos, audios, subtitles, dry_run):
     final_tracks = [x[0] for x in videos + audios + subtitles]
     final_order = [None] * len(original_sequences)
     for i, s in enumerate(final_tracks):
@@ -298,72 +358,78 @@ def _correct_sequencing(filename, original_sequences, videos, audios, subtitles)
     if subtitles:
         commands.append('-c:s copy')
 
-    target_file = _get_target_file(filename)
-
-    commands.append(target_file)
-
-    command = ' '.join(commands)
-
-    print command
-
     for order, sequence in zip(final_order, original_sequences):
         track, type, language, info = sequence
-        position = ('%02d' % order) if order else '--'
+        position = ('%02d' % order) if order is not None else '--'
         _info(filename, '%s   (%-10s : %-3s) %s' % (position, type, language, info))
 
-    if not _DRY_RUN:
+    target_file = _get_target_file(filename)
+
+    command = ' '.join(commands + [target_file])
+    _info(filename, command)
+
+    if not dry_run:
         _ffmpeg_launch(command)
 
     return target_file
 
 
-def _correct_default_force_tracks(filename, tracks):
-    """mkvpropedit output.mkv --edit track:4 --set flag-default=0"""
+def _suggest_audio_name(lang, comment, codec, mode, title, level):
+    ret = LANGUAGES[lang]
+    if level:
+        ret += ' [' + codec
+        if level > 1:
+            ret += ', ' + mode
+        ret += ']'
+    if comment:
+        ret += ' - Commentary'
+        try:
+            # add any text after : found in title after the comment
+            ret += title[title.index(' - ', title.lower().index('comment')+1):]
+        except ValueError:
+            pass
 
-    def _action(track, forced, set):
-        if _DRY_RUN:
-            msg = 'remove'
-            if set:
-                msg = 'add'
-            if forced:
-                msg += ' (forced) '
-            else:
-                msg += ' (default) '
-            _action_message(seq[2], msg + ' on track ' + str(1))
+    return ret
+
+
+def _sort_audios(filename, audio_tracks, skip_audio_check):
+    """Returns list of (sequence, language, new title)"""
+    use = []
+    for seq, lang, info, title in audio_tracks:
+        codec, freq, mode, rate = _parse_audio_info(filename, info)
+        comment = 'comment' in title.lower() if title else False
+        # precedence is: comments last, then by language, then preserve current ordering
+        precedence = (-int(comment), -_get_lang_key(lang), seq)
+        use.append([precedence, seq, lang, info, title, codec, mode, comment, title])
+
+    if not skip_audio_check:
+        # we define 3 levels in _suggest_audio_name: only lang, lang + codec, lang + codec + mode
+        for level in range(3):
+            s = set()
+            for u in use:
+                u[-1] = _suggest_audio_name(u[2], u[7], u[5], u[6], u[4], level)
+                s.add(u[-1])
+            if len(s) == len(use):  # more than one track would have the same name
+                if level:  # (if level=0, all is good)
+                    _warning(filename, 'Multiple audio tracks in same language')
+                break
         else:
-            what = 'mkvpropedit ' + filename + ' --edit track:' + str(track+1) + ' --set flag-'
-            if forced:
-                what = what + 'forced='
-            else:
-                what = what + 'default='
-            if set:
-                what = what + '1'
-            else:
-                what = what + '0'
-            print what
+            _error(filename, 'Multiple audio tracks in same language / codec / mode: ' + ' / '. join(u[-1] for u in use))
 
-    first = True
-    for seq, _, is_default, is_forced in tracks:
-        if is_forced:
-            _action(seq, True, False)
-        if first:
-            first = False
-            if not is_default:
-                _action(seq, False, True)
-        elif is_default:
-            _action(seq, False, False)
+    use.sort()
+    return [(u[1], u[2], u[3], (None if u[4] and u[4].startswith(u[8]) else u[8])) for u in use]
 
 
 def _sort_tracks(tracks, key_provider):
     ret, tmp = [], []
-    for seq, lang, info in sorted(tracks):
-        tmp.append((key_provider(lang, info), seq, lang, info))
+    for seq, lang, info, title in sorted(tracks):
+        tmp.append([key_provider(lang, info), seq, lang, info, title])
     tmp.sort()
-    for _, seq, lang, info in tmp:
-        is_default = '(default)' in info
-        is_forced = '(forced)' in info
-        ret.append((seq, lang, is_default, is_forced))
-    return ret
+    return [t[1:] for t in tmp]
+    #     is_default = '(default)' in info
+    #     is_forced = '(forced)' in info
+    #     ret.append((seq, lang, is_default, is_forced))
+    # return ret
 
 
 def _get_lang_key(lang):
@@ -381,45 +447,44 @@ def _get_video_key(lang, info):
     return _get_lang_key(lang)
 
 
-def _get_audio_key_wrapper(filename):
+def _parse_audio_info(filename, info):
+    """Returns audio codec, audio frequency, audio mode, audio rate"""
+    s = info.split(',')
+    while len(s) < 5:
+        s.append('*')
+    codec, freq, mode, _, rate = s[:5]
+    for c in AUDIO_CODECS_BY_PRIO:
+        if c in codec:
+            codec = c
+            break
+    else:
+        _warning(filename, 'unexpected audio codec : ' + codec)
+        codec = ''
+    for c in AUDIO_MODES:
+        if c in mode:
+            mode = c
+            break
+    else:
+        _warning(filename, 'unexpected audio mode : ' + mode)
+        mode = ''
+    match = AUDIO_FREQUENCY_PATTERN.match(freq)
+    if match:
+        freq = match.group(1)
+    else:
+        _warning(filename, 'unexpected rate : ' + rate)
+        freq = '00000'
 
-    def _get_audio_key(lang, info):
-        def _get_index(string, array, info):
-            for o, c in enumerate(array):
-                if c in string:
-                    return str(len(array) - o)
-            _warning(filename, 'unexpected ' + info + ' : ' + string)
-            return '0'
+    match = AUDIO_RATE_PATTERN.match(rate)
+    if match:
+        rate = match.group(1)
+    else:
+        rate = ''
+    if len(rate) > 5:
+        _warning(filename, 'unexpected audio rate:' + rate)
+    while len(rate) < 5:
+        rate = '0' + rate
 
-        def _get_audio_frequency_key(rate):
-            match = AUDIO_FREQUENCY_PATTERN.match(rate)
-            if match:
-                return match.group(1)
-            _warning(filename, 'unexpected rate : ' + rate)
-            return '00000'
-
-        def _get_audio_rate_key(rate):
-            match = AUDIO_RATE_PATTERN.match(rate)
-            if match:
-                ret = match.group(1)
-            else:
-                ret = ''
-            if len(ret) > 5:
-                _warning(filename, 'unexpected audio rate:' + rate)
-            while len(ret) < 5:
-                ret = '0' + ret
-            return ret
-
-        s = info.split(',')
-        while len(s) < 5:
-            s.append('*')
-        return -int(''.join([str(_get_lang_key(lang)),
-                            _get_index(s[0], AUDIO_CODECS_BY_PRIO, 'audio codec'),
-                            _get_audio_frequency_key(s[1]),
-                            _get_index(s[2], AUDIO_MODES_BY_PRIO, 'audio mode'),
-                            _get_audio_rate_key(s[4])]))
-
-    return _get_audio_key
+    return codec, freq, mode, rate
 
 
 if __name__ == '__main__':
@@ -429,7 +494,7 @@ if __name__ == '__main__':
     clParser.add_argument('-t', '--target', default='.', help='location for final files, if required')
     clParser.add_argument('-i', '--info-only', action='store_true', help='short info on the file')
     clParser.add_argument('--go', action='store_true', help='perform the required changes')
-    clParser.add_argument('--only-check-audios', action='store_true', help='check only audios normalization (only for files)')
+    clParser.add_argument('--skip-audio-check', action='store_true', help='avoid audio normalization checks')
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
     clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
     clParser.add_argument('filenames', nargs='+')
@@ -440,8 +505,11 @@ if __name__ == '__main__':
             print
             print each
             print '='*len(each)
-            for l in ffmpeg_text_info(each):
+            title, streams = ffmpeg_text_info(each)
+            print 'Title:', (title if title else 'no title')
+            for l, title in streams:
                 print l
+                print '\t\tTitle:', (title if title else 'no title')
             print
     else:
         _DRY_RUN = not args.go
@@ -453,7 +521,7 @@ if __name__ == '__main__':
         for each in args.filenames:
             if os.path.isfile(each):
                 if not args.only_folders:
-                    _update_file(each, args.only_check_audios)
+                    _update_file(each, args.skip_audio_check)
             elif os.path.isdir(each):
                 if not args.only_files:
                     _update_dir(each)
