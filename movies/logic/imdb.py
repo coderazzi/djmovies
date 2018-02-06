@@ -187,12 +187,17 @@ def _getImdbInfo(uid, browser):
         print >> f, soup.prettify().encode('utf-8', 'ignore')
 
     # duration
-    infoBar = soup.find('time', attrs={'itemprop': 'duration'})
-    if infoBar:
+    for infoBar in soup.findAll('time', attrs={'itemprop': 'duration'}):
         match = duration_search.match(_unescape(infoBar.text))
         duration = match and match.group(1)
+        if duration:
+            break
+    # infoBar = soup.find('time', attrs={'itemprop': 'duration'})
+    # if infoBar:
+    #     match = duration_search.match(_unescape(infoBar.text))
+    #     duration = match and match.group(1)
     if not duration:
-        print 'Attention, no duration!!!!', _unescape(infoBar.text)
+        print 'Attention, no duration!!!!'
     divMain = soup.find('div', attrs={'id': 'pagecontent'})
     if divMain:
         # title and year
@@ -228,6 +233,8 @@ def _getImdbInfo(uid, browser):
             print 'Attention, no actors!!!!'
         trailer = divMain.find('a', itemprop='trailer')
         trailer = trailer and trailer.get('href')
+        if not trailer:
+            print 'Attention: no trailer!!!!!'
         # image now
         tdImg = divMain.find('img', attrs={'itemprop': 'image'})
         imgSrc = tdImg and tdImg.get('src')

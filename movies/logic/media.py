@@ -1,7 +1,9 @@
-#See http://paltman.github.com/pymediainfo
-#[this file is https://github.com/paltman/pymediainfo/blob/master/pymediainfo/__init__.py]
+# See http://paltman.github.com/pymediainfo
+# [this file is https://github.com/paltman/pymediainfo/blob/master/pymediainfo/__init__.py]
 
 import os, re, subprocess, sys
+
+import languages
 
 from xml.dom import minidom
 from xml.parsers.expat import ExpatError
@@ -68,7 +70,7 @@ class Track(object):
                         pass
 
     def __repr__(self):
-        return("<Track track_id='{0}', track_type='{1}'>".format(self.track_id, self.track_type))
+        return ("<Track track_id='{0}', track_type='{1}'>".format(self.track_id, self.track_type))
 
     def to_data(self):
         data = {}
@@ -82,8 +84,10 @@ class MediaInfo(object):
 
     def __init__(self, xml):
         self.xml_dom = xml
-        if _py3: xml_types = (str,)     # no unicode type in python3
-        else: xml_types = (str, unicode)
+        if _py3:
+            xml_types = (str,)  # no unicode type in python3
+        else:
+            xml_types = (str, unicode)
 
         if isinstance(xml, xml_types):
             self.xml_dom = MediaInfo.parse_xml_data_into_dom(xml)
@@ -145,57 +149,58 @@ class MediaInfo(object):
     def to_json(self):
         return json.dumps(self.to_data())
 
-def runProcess(exe):    
+
+def runProcess(exe):
     p = subprocess.Popen(exe, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    while(True):
-      retcode = p.poll() #returns None while subprocess is running
-      line = p.stdout.readline()
-      if line:
-        yield line
-      if(retcode is not None):
-        break
+    while (True):
+        retcode = p.poll()  # returns None while subprocess is running
+        line = p.stdout.readline()
+        if line:
+            yield line
+        if (retcode is not None):
+            break
+
 
 def mediainfo(path, folder):
-    def mount(isoFile):   
-        disk, path, first=None, None, True
-        if sys.platform=='darwin':
-           for line in runProcess(['hdiutil', 'mount', isoFile]):
-               if first:
-                   first=False         
-                   match = re.match('^(/dev/d\S+)\s*(/.*)$', line)
-                   if match:
-                       disk, path = match.group(1), match.group(2)
+    def mount(isoFile):
+        disk, path, first = None, None, True
+        if sys.platform == 'darwin':
+            for line in runProcess(['hdiutil', 'mount', isoFile]):
+                if first:
+                    first = False
+                    match = re.match('^(/dev/d\S+)\s*(/.*)$', line)
+                    if match:
+                        disk, path = match.group(1), match.group(2)
         else:
-           path='/tmp/media/iso/'+os.path.basename(isoFile)
-           try:
-              os.makedirs(path)
-           except:
-              try:
-                 umount(path)
-              except:
-                 pass
-           for line in runProcess(['mount', '-o', 'loop', isoFile,  path]):
-              print line
+            path = '/tmp/media/iso/' + os.path.basename(isoFile)
+            try:
+                os.makedirs(path)
+            except:
+                try:
+                    umount(path)
+                except:
+                    pass
+            for line in runProcess(['mount', '-o', 'loop', isoFile, path]):
+                print line
         return path
 
     def umount(diskOrPath):
-        if sys.platform=='darwin':
-           for line in runProcess(['hdiutil', 'eject', diskOrPath]):
-               if 'failed' in line:
-                   print '***E***', line
+        if sys.platform == 'darwin':
+            for line in runProcess(['hdiutil', 'eject', diskOrPath]):
+                if 'failed' in line:
+                    print '***E***', line
         else:
-           runProcess(['umount', diskOrPath])
-           os.rmdir(diskOrPath)
-
+            runProcess(['umount', diskOrPath])
+            os.rmdir(diskOrPath)
 
     def get_subs(path):
-        dirs, files=[], []
-        stack=[path]
+        dirs, files = [], []
+        stack = [path]
         while stack:
-            use=stack.pop()
+            use = stack.pop()
             dirs.append(os.path.basename(use))
             for each in os.listdir(use):
-                p=os.path.join(use, each)
+                p = os.path.join(use, each)
                 if os.path.isdir(p):
                     stack.append(p)
                 else:
@@ -203,12 +208,12 @@ def mediainfo(path, folder):
         return dirs, files
 
     def retSize(size):
-        return 0.01*round(size/(1024*1024*10.24)) 
+        return 0.01 * round(size / (1024 * 1024 * 10.24))
 
     def getTitleFromFilename(filename):
-        use=re.sub('\([^)]*\)', '', re.sub('_+', ' ', os.path.splitext(os.path.basename(filename))[0])).strip()
-        use = re.sub('(\\S)([A-Z])(\\S)','\\1 \\2\\3', use)
-        use = re.sub('(.*)\s+\d\d\d\d','\\1', use).strip()
+        use = re.sub('\([^)]*\)', '', re.sub('_+', ' ', os.path.splitext(os.path.basename(filename))[0])).strip()
+        use = re.sub('(\\S)([A-Z])(\\S)', '\\1 \\2\\3', use)
+        use = re.sub('(.*)\s+\d\d\d\d', '\\1', use).strip()
         return use
 
     def invoke_mi(paths):
@@ -216,55 +221,69 @@ def mediainfo(path, folder):
         size, wsize, duration = 0, 0, 0.0
 
         for path in paths:
-            size+=os.path.getsize(path)
+            size += os.path.getsize(path)
             for track in MediaInfo.parse(path).tracks:
-                if track.track_type=='General':
+                print track
+                if track.track_type == 'General':
                     name = name or track.name
                     duration += float(track.duration or 0)
-                elif track.track_type=='Video':
-                    w, h = track.width, track.height
-                    if w and h and (w*h>wsize):
-                        width, height, wsize = w, h, w*h
-                elif track.track_type=='Audio':
-                    now = track.other_language
+                elif track.track_type == 'Video':
+                    w, h = int(track.width), int(track.height)
+                    if w and h and (w * h > wsize):
+                        width, height, wsize = w, h, w * h
+                elif track.track_type == 'Audio':
+                    now = track.language
                     if now:
-                        now = now[0]
+                        now = languages.get_language(now)
                     else:
-                        now='?'
+                        now = '?'
                     audios.add(now)
-                elif track.track_type=='Text':
-                    now = track.other_language
+                elif track.track_type == 'Text':
+                    now = track.language
                     if now:
-                        now = now[0]
+                        now = languages.get_language(now)
                     else:
-                        now='?'
-                    texts.add(now) 
+                        now = '?'
+                    texts.add(now)
 
-        duration = int(round(duration/60000)) if duration else None
+        if not duration:
+            print 'media.py:', 'could not retrieve duration'
+        if not width:
+            print 'media.py:', 'could not retrieve width'
+        if not height:
+            print 'media.py:', 'could not retrieve height'
+        if not audios:
+            print 'media.py:', 'could not retrieve audios'
+        if not texts:
+            print 'media.py:', 'could not retrieve texts'
+
+        print 'Media.py', 'duration =', duration, " width =", width, " height = ", height, " audios F=", audios, ' texts =', texts
+
+
+        duration = int(round(duration / 60000)) if duration else None
         size = retSize(size)
-        return Struct.nonulls(name=name, size=size, duration=duration, width=width, height=height, 
-            audios='/'.join(audios), texts='/'.join(texts))
-
+        return Struct.nonulls(name=name, size=size, duration=duration, width=width, height=height,
+                              audios='/'.join(audios), texts='/'.join(texts))
 
     def process(path, folder):
-        path=os.path.join(folder, path)
-        extension=os.path.splitext(path)[-1].lower()
+        path = os.path.join(folder, path)
+        extension = os.path.splitext(path)[-1].lower()
         if extension:
-            extension=extension[1:].title()
+            extension = extension[1:].title()
         type = LocationHandler(folder).getType(path)
         if type in [LocationHandler.VIDEO_FILE, LocationHandler.VIDEO_FILE_ALONE_IN_DIR]:
-            ret= invoke_mi([path])
-            ret.format=extension
+            ret = invoke_mi([path])
+            ret.format = extension
             return ret
         if type in [LocationHandler.IMAGE_FILE, LocationHandler.IMAGE_FILE_ALONE_IN_DIR]:
-            mpath=mount(path)
+            mpath = mount(path)
             if not mpath:
-                raise Exception("Could not mount:"+path)
+                raise Exception("Could not mount:" + path)
             try:
                 ret = mediainfo(os.path.basename(mpath), os.path.dirname(mpath))
                 if ret:
-                    if ret.format=='BlueRay':
-                        ret.format+=' '+extension
+                    if ret.format == 'BlueRay':
+                        ret.format += ' ' + extension
                     else:
                         ret.format = extension
                 return ret
@@ -272,34 +291,32 @@ def mediainfo(path, folder):
                 umount(mpath)
         if type in [LocationHandler.DVD_FOLDER, LocationHandler.DVD_FOLDER_DIRECT, LocationHandler.BLUE_RAY_FOLDER]:
             dirs, files = get_subs(path)
-            if type==LocationHandler.BLUE_RAY_FOLDER:
-                files=[f for f in files if f.lower().endswith('.m2ts')]
+            if type == LocationHandler.BLUE_RAY_FOLDER:
+                files = [f for f in files if f.lower().endswith('.m2ts')]
                 if files:
                     mi = invoke_mi(files)
-                    mi.format='BlueRay'
+                    mi.format = 'BlueRay'
                     return mi
             else:
                 mi = invoke_mi([path])
-                mi.format='DVD'
-                size=0
+                mi.format = 'DVD'
+                size = 0
                 for each in files:
-                    size+=os.path.getsize(each)
-                mi.size=retSize(size)
+                    size += os.path.getsize(each)
+                mi.size = retSize(size)
                 return mi
         return None
 
-    ret=process(path, folder)
+    ret = process(path, folder)
     if ret and not ret.name:
         ret.name = getTitleFromFilename(path)
     return ret
 
 
-
-    
 if __name__ == '__main__':
     # movie='/Volumes/Movies_III/How_The_West_Was_Won__1962.iso'
-    folder='/Volumes/Movies_V/'
-    movie='American_Gangster__2007.mkv'
-    info= mediainfo(movie, folder)
+    folder = '/Volumes/Movies_V/'
+    movie = 'American_Gangster__2007.mkv'
+    info = mediainfo(movie, folder)
     for i in dir(info):
         print i, getattr(info, i)
