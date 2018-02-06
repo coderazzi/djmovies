@@ -2,7 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="bf9bf252-c8b8-4db1-9922-d00d7e6a042d" name="Default" comment="">
+      <change beforePath="" afterPath="$PROJECT_DIR$/movies/logic/gistfile1.py" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/movies/logic/languages.py" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/remove-track.sh" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/set-comment.sh" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/set-language.sh" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/check.py" afterPath="$PROJECT_DIR$/check.py" />
+      <change beforePath="$PROJECT_DIR$/movies/logic/imdb.py" afterPath="$PROJECT_DIR$/movies/logic/imdb.py" />
+      <change beforePath="$PROJECT_DIR$/movies/logic/media.py" afterPath="$PROJECT_DIR$/movies/logic/media.py" />
+      <change beforePath="$PROJECT_DIR$/movies/static/js/locations_sync.js" afterPath="$PROJECT_DIR$/movies/static/js/locations_sync.js" />
+      <change beforePath="$PROJECT_DIR$/movies/templates/locations_sync_movie.html" afterPath="$PROJECT_DIR$/movies/templates/locations_sync_movie.html" />
     </list>
     <ignored path="djmovies.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -22,23 +32,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="check.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/check.py">
+      <file leaf-file-name="locations_sync.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/movies/static/js/locations_sync.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="553">
-              <caret line="274" column="54" lean-forward="false" selection-start-line="274" selection-start-column="54" selection-end-line="274" selection-end-column="54" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="218">
+              <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ntpath.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/lib/python2.7/ntpath.py">
+      <file leaf-file-name="locations_sync_movie.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/movies/templates/locations_sync_movie.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2865">
-              <caret line="198" column="4" lean-forward="false" selection-start-line="198" selection-start-column="4" selection-end-line="198" selection-end-column="4" />
+            <state relative-caret-position="120">
+              <caret line="8" column="109" lean-forward="false" selection-start-line="8" selection-start-column="109" selection-end-line="8" selection-end-column="109" />
               <folding />
             </state>
           </provider>
@@ -55,36 +63,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_s</find>
-      <find>print</find>
-      <find>FFMPEG_INFO_PATTERN</find>
-      <find>raise 1</find>
-      <find>_correct_default_force_tracks</find>
-      <find>_check_audio</find>
-      <find>check_a</find>
-      <find>_parse_audio_info</find>
-      <find>sort_tar</find>
-      <find>_check_audios</find>
-      <find>12</find>
-      <find>--</find>
-      <find>_sort_audios</find>
-      <find>_get_audio_key_wrapper</find>
-      <find>AUDIO_MODES_BY_PRIO</find>
-      <find>':</find>
-      <find>_ffmpeg_launch</find>
-      <find>_warning</find>
-      <find>video la</find>
-      <find>_action_message</find>
-      <find>_correct_sequencing</find>
-      <find>_sort_tr</find>
+      <find>AUDIO_CODECS_BY_PRIO</find>
+      <find>AUDIO_CODECS</find>
+      <find>_TARGET_DIR</find>
+      <find>_get_target_file</find>
       <find>_sort_tracks</find>
-      <find>videos</find>
+      <find>_get_subtitle_key</find>
+      <find>_get_video_key</find>
+      <find>_get_lang_key</find>
+      <find>get_lang_prio</find>
+      <find>_sort_audios</find>
+      <find>Attention, no duration!!!!</find>
+      <find>25t</find>
+      <find>Hour</find>
+      <find>2h</find>
+      <find>soup =</find>
+      <find>_unescape</find>
+      <find>PT135M</find>
+      <find>duration</find>
+      <find>itemprop=&quot;duration&quot;</find>
+      <find>findAll</find>
+      <find>imdb.html</find>
+      <find>trailer_link</find>
+      <find>Attention: no trailer!!!!!</find>
+      <find>English</find>
       <find>audios</find>
-      <find>subtitles</find>
-      <find>defau</find>
-      <find>_sort</find>
-      <find>ffmpeg_text_info</find>
-      <find>_ffmpeg_info</find>
+      <find>infoBar</find>
+      <find>ref-remove</find>
+      <find>trailer</find>
+      <find>.remove-movie</find>
+      <find>remove-movie</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -108,10 +116,20 @@
         <option value="$PROJECT_DIR$/movies/logic/subtitles.py" />
         <option value="$PROJECT_DIR$/movies/views/locations_sync.py" />
         <option value="$PROJECT_DIR$/movies/logic/kk.py" />
-        <option value="$PROJECT_DIR$/movies/logic/imdb.py" />
         <option value="$PROJECT_DIR$/movies/logic/_imdb_search_tester.py" />
         <option value="$PROJECT_DIR$/../idea/bin/idea64.vmoptions" />
+        <option value="$PROJECT_DIR$/set-title.sh" />
+        <option value="$PROJECT_DIR$/set-audio-comment.sh" />
+        <option value="$PROJECT_DIR$/set-language.sh" />
+        <option value="$PROJECT_DIR$/remove-track.sh" />
+        <option value="$PROJECT_DIR$/set-comment.sh" />
         <option value="$PROJECT_DIR$/check.py" />
+        <option value="$PROJECT_DIR$/movies/logic/languages.py" />
+        <option value="$PROJECT_DIR$/movies/logic/media.py" />
+        <option value="$PROJECT_DIR$/movies/logic/gistfile1.py" />
+        <option value="$PROJECT_DIR$/movies/logic/imdb.py" />
+        <option value="$PROJECT_DIR$/movies/templates/locations_sync_movie.html" />
+        <option value="$PROJECT_DIR$/movies/static/js/locations_sync.js" />
       </list>
     </option>
   </component>
@@ -126,8 +144,8 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="123" />
-    <option name="y" value="188" />
+    <option name="x" value="176" />
+    <option name="y" value="268" />
     <option name="width" value="2191" />
     <option name="height" value="1182" />
   </component>
@@ -146,6 +164,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -153,13 +174,21 @@
               <item name="djmovies" type="b2602c69:ProjectViewProjectNode" />
               <item name="djmovies" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="djmovies" type="b2602c69:ProjectViewProjectNode" />
+              <item name="djmovies" type="462c0819:PsiDirectoryNode" />
+              <item name="movies" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="djmovies" type="b2602c69:ProjectViewProjectNode" />
+              <item name="djmovies" type="462c0819:PsiDirectoryNode" />
+              <item name="movies" type="462c0819:PsiDirectoryNode" />
+              <item name="logic" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -177,6 +206,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/movies/logic" />
     </key>
   </component>
@@ -748,7 +778,9 @@
       <workItem from="1515803558966" duration="38694000" />
       <workItem from="1517079030074" duration="1869000" />
       <workItem from="1517090511266" duration="12809000" />
-      <workItem from="1517246518931" duration="18380000" />
+      <workItem from="1517246518931" duration="18991000" />
+      <workItem from="1517671741134" duration="9000" />
+      <workItem from="1517671799004" duration="15589000" />
     </task>
     <task id="LOCAL-00001" summary="nc">
       <created>1516657881079</created>
@@ -761,10 +793,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="108161000" />
+    <option name="totallyTimeSpent" value="124370000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="123" y="188" width="2191" height="1182" extended-state="0" />
+    <frame x="176" y="268" width="2191" height="1182" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -779,11 +811,11 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21177545" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21177545" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32612613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32612613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24965769" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24965769" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -829,62 +861,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_nzbindex.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="79" column="37" lean-forward="false" selection-start-line="79" selection-start-column="37" selection-end-line="79" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/templatetags/movies_tags.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="12" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/templates/uquery_results_content.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="41" column="69" lean-forward="false" selection-start-line="41" selection-start-column="69" selection-end-line="41" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_binsearch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="19" column="12" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/uquery_logic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="195" column="32" lean-forward="false" selection-start-line="195" selection-start-column="32" selection-end-line="195" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_nzbindex.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="79" column="37" lean-forward="false" selection-start-line="79" selection-start-column="37" selection-end-line="79" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/templatetags/movies_tags.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="12" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/movies/templates/uquery_results_content.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1095,24 +1071,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/imdb.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1002">
-          <caret line="1109" column="16" lean-forward="false" selection-start-line="1109" selection-start-column="16" selection-end-line="1109" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/movies/logic/subtitles.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1065">
           <caret line="72" column="35" lean-forward="false" selection-start-line="72" selection-start-column="35" selection-end-line="72" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/views/locations_sync.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1995">
-          <caret line="145" column="44" lean-forward="false" selection-start-line="145" selection-start-column="44" selection-end-line="145" selection-end-column="44" />
         </state>
       </provider>
     </entry>
@@ -1131,20 +1093,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/imdb.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="61" column="61" lean-forward="false" selection-start-line="61" selection-start-column="61" selection-end-line="61" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2745">
-          <caret line="190" column="10" lean-forward="false" selection-start-line="190" selection-start-column="6" selection-end-line="190" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../idea/bin/idea64.vmoptions" />
     <entry file="file://$PROJECT_DIR$/movies/logic/uquery_logic.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1153,10 +1101,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/media.py">
+    <entry file="file://$PROJECT_DIR$/set-language.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1033">
-          <caret line="283" column="13" lean-forward="false" selection-start-line="283" selection-start-column="13" selection-end-line="283" selection-end-column="13" />
+        <state relative-caret-position="120">
+          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/remove-track.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1168,13 +1125,105 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/set-comment.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/check.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="553">
-          <caret line="274" column="54" lean-forward="false" selection-start-line="274" selection-start-column="54" selection-end-line="274" selection-end-column="54" />
+        <state relative-caret-position="7">
+          <caret line="179" column="4" lean-forward="false" selection-start-line="179" selection-start-column="4" selection-end-line="179" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/views/locations_sync.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="474">
+          <caret line="148" column="0" lean-forward="false" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/imdb.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="41">
+          <caret line="3307" column="15" lean-forward="false" selection-start-line="3307" selection-start-column="15" selection-end-line="3307" selection-end-column="15" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <marker date="1517872390000" expanded="true" signature="198115:198124" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="45" column="8" lean-forward="false" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/languages.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="15" lean-forward="false" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/media.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="246" column="0" lean-forward="false" selection-start-line="246" selection-start-column="0" selection-end-line="246" selection-end-column="0" />
+          <folding>
+            <element signature="e#137#167#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/gistfile1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="461">
+          <caret line="197" column="0" lean-forward="false" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/imdb.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="196" column="64" lean-forward="true" selection-start-line="196" selection-start-column="64" selection-end-line="196" selection-end-column="64" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/templates/locations_sync.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="49" column="33" lean-forward="false" selection-start-line="49" selection-start-column="33" selection-end-line="49" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/templates/locations_sync_movie.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="109" lean-forward="false" selection-start-line="8" selection-start-column="109" selection-end-line="8" selection-end-column="109" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/static/js/locations_sync.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
