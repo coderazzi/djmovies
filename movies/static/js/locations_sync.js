@@ -28,6 +28,7 @@ function setupLocationsSync($locationsSyncSelector){
 			var name = $(minusMovies[0]).attr('name');
 			$ref_remove.show().attr('href', '#'+name);			
 		} else {
+            console.log('NO minus movies!!!!');
 			$ref_remove.hide();
 		}
 	}
