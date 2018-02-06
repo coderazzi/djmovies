@@ -147,9 +147,6 @@ def edit_movie(request):
         else:
             mediainfo = Struct.fromjs(**data['mediainfo'])
 
-        if False:
-            imdbinfo.title+='__german'
-
         movie = Movie.objects.create(title = imdbinfo.title,
                                      format=mediainfo.format, 
                                      year=imdbinfo.year,
@@ -170,14 +167,14 @@ def edit_movie(request):
             if imdbinfo.bigImageLink:
                 movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
 
-            #create now the correct MoviePath entry    
+            # create now the correct MoviePath entry
             path = locationHandler.normalizeFilename(filepath, imdbinfo)
             try:
                 print 'Creating ',movie.id, locationId, path
                 MoviePath.objects.create(movie=movie, location_id=locationId, path=path)
             except IntegrityError:
                 locationHandler.reverseNormalization(filepath, path)
-                raise
+                #raise
                 raise Exception('Movie (path) already exists on this location: repeated?')
         except Exception as ex:
             movie.delete()

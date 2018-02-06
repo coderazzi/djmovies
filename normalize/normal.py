@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 import os
 import re
@@ -5,7 +7,6 @@ import subprocess
 import sys
 import threading
 import time
-
 
 # --go required always to do changes
 # --just-corrections changes handle by mkvpropedit, things like changing a track name, default / forced. etc
@@ -46,8 +47,7 @@ DISMISS_EXTENSIONS = []
 SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
 CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es'}
-DISMISS_LANGUAGES = ['gre', 'chi', 'rum', 'slv', 'swe', 'hrv', 'cze', 'dut', 'fin', 'dan', 'nor', 'ice', 'ita', 'jpn', 'kor', 'cat', 'scr', 'tur', 'vie', 'bul', 'pol', 'ara', 'rom']
-LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat'}
+LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean'}
 
 
 _COMM_KILL = 1
@@ -158,8 +158,7 @@ def _ffmpeg_info(filename):
             try:
                 language = CONVERT_LANGUAGES[language]
             except KeyError:
-                if language not in DISMISS_LANGUAGES:
-                    _error(filename, 'Invalid language found:' + language)
+                pass
         definitions[['Video', 'Audio', 'Subtitle'].index(stream_type)].append((seq, language, more, title))
         sequences.append((seq, stream_type, language, more))
     return definitions
@@ -285,7 +284,7 @@ def _do_non_sequencing_corrections(filename, movie_title, first_audio, final_vid
         corrections.append('--edit track:%d --set name=' % (final_videos[0][0] + 1))
 
     for sub in final_subs:
-        correct_name = LANGUAGES[sub[1]]
+        correct_name = _get_language_from_code(sub[1])
         if sub[-1] == correct_name:
             sub[-1] = None
         else:
@@ -332,15 +331,19 @@ def _suggest_title(filename):
 
 def _check_filename_by_language(filename, language):
     if language != LANG_BY_PRIO[0]:
-        try:
-            language = LANGUAGES[language]
-        except KeyError:
-            _error(filename, 'Please add ' + language + ' to variable LANGUAGES_IN_FILENAMES')
+        language = _get_language_from_code(language)
         name, ext = os.path.splitext(filename)
         if not name.endswith('_' + language):
             _warning(filename, 'should end in __' + language)
             suggestion = os.path.join(os.path.dirname(filename), os.path.basename(name))+ '_' + language
             _error(filename, 'mv ' + filename + ' ' + suggestion + ext)
+
+
+def _get_language_from_code(code):
+    try:
+        return LANGUAGES[code]
+    except KeyError:
+        raise Exception('Language %s not found, please extend LANGUAGES variable')
 
 
 def update(filename):
@@ -395,7 +398,7 @@ def _correct_sequencing(filename, original_sequences, videos, audios, subtitles,
 
 
 def _suggest_audio_name(lang, comment, codec, mode, title, level):
-    ret = LANGUAGES[lang]
+    ret = _get_language_from_code(lang)
     if level:
         ret += ' [' + codec
         if level > 1:

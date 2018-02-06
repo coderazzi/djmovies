@@ -29,9 +29,9 @@ MOVIES_III (M03)
 
 	Seagate Barracuda ST2000L003 2000Gb
 
-	MKV (single / folders)
+	MKV (single) - normalized!
 
-	Available: 7.5 Gb
+	Available: 9.8 Gb
 
 
 MOVIES_IV (M04)

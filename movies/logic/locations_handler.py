@@ -1,5 +1,5 @@
-import re
 import os
+import re
 
 
 class SubtitleInfo:
@@ -252,17 +252,23 @@ class LocationHandler:
         if not title:
             return path
 
+        dirname, basename = os.path.dirname(path), os.path.basename(path)
+        oldname, extension = os.path.splitext(basename)
+
         newname = re.sub('[^a-z0-9]+', '_', title.lower()).title() + ((year and ('__' + year)) or '')
         oldDirName = None
 
-        dirname, basename = os.path.dirname(path), os.path.basename(path)
+        # of old name is like new name, but adding _something (\w), we consider it good
+        if oldname.startswith(newname) and re.compile('_\w+').match(oldname[len(newname):]):
+            newname = oldname
+
         if dirname and dirname != newname:
             # we rename it
             oldDirName = os.path.join(self.folderBase, dirname)
             newDirName = os.path.join(self.folderBase, newname)
             self.rename(oldDirName, newDirName)
             dirname = newname
-        newname += os.path.splitext(basename)[-1].lower()
+        newname += extension.lower()
         if newname != basename:
             oldPath = os.path.join(self.folderBase, dirname, basename)
             newPath = os.path.join(self.folderBase, dirname, newname)

@@ -2,17 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="bf9bf252-c8b8-4db1-9922-d00d7e6a042d" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/movies/logic/gistfile1.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/movies/logic/languages.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/remove-track.sh" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/set-comment.sh" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/set-language.sh" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/check.py" afterPath="$PROJECT_DIR$/check.py" />
-      <change beforePath="$PROJECT_DIR$/movies/logic/imdb.py" afterPath="$PROJECT_DIR$/movies/logic/imdb.py" />
-      <change beforePath="$PROJECT_DIR$/movies/logic/media.py" afterPath="$PROJECT_DIR$/movies/logic/media.py" />
-      <change beforePath="$PROJECT_DIR$/movies/static/js/locations_sync.js" afterPath="$PROJECT_DIR$/movies/static/js/locations_sync.js" />
-      <change beforePath="$PROJECT_DIR$/movies/templates/locations_sync_movie.html" afterPath="$PROJECT_DIR$/movies/templates/locations_sync_movie.html" />
+      <change beforePath="$PROJECT_DIR$/locations.txt" afterPath="$PROJECT_DIR$/locations.txt" />
+      <change beforePath="$PROJECT_DIR$/movies/logic/locations_handler.py" afterPath="$PROJECT_DIR$/movies/logic/locations_handler.py" />
+      <change beforePath="$PROJECT_DIR$/movies/views/locations_sync.py" afterPath="$PROJECT_DIR$/movies/views/locations_sync.py" />
+      <change beforePath="$PROJECT_DIR$/normalize/normal.py" afterPath="$PROJECT_DIR$/normalize/normal.py" />
     </list>
     <ignored path="djmovies.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,21 +25,43 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="locations_sync.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/movies/static/js/locations_sync.js">
+      <file leaf-file-name="normal.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/normalize/normal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
-              <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+            <state relative-caret-position="343">
+              <caret line="33" column="64" lean-forward="false" selection-start-line="33" selection-start-column="64" selection-end-line="33" selection-end-column="64" />
+              <folding>
+                <element signature="e#23#37#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="locations.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/locations.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="495">
+              <caret line="33" column="18" lean-forward="false" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="locations_sync_movie.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/movies/templates/locations_sync_movie.html">
+      <file leaf-file-name="languages.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/movies/logic/languages.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="109" lean-forward="false" selection-start-line="8" selection-start-column="109" selection-end-line="8" selection-end-column="109" />
+            <state relative-caret-position="105">
+              <caret line="7" column="15" lean-forward="false" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gistfile1.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/movies/logic/gistfile1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="483">
+              <caret line="197" column="0" lean-forward="false" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -63,12 +78,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>AUDIO_CODECS_BY_PRIO</find>
-      <find>AUDIO_CODECS</find>
-      <find>_TARGET_DIR</find>
-      <find>_get_target_file</find>
-      <find>_sort_tracks</find>
-      <find>_get_subtitle_key</find>
       <find>_get_video_key</find>
       <find>_get_lang_key</find>
       <find>get_lang_prio</find>
@@ -93,6 +102,12 @@
       <find>trailer</find>
       <find>.remove-movie</find>
       <find>remove-movie</find>
+      <find>_suggest_audio_name</find>
+      <find>_suggest_au</find>
+      <find>get_language</find>
+      <find>LANGUAGES</find>
+      <find>kor</find>
+      <find>Exit</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -111,10 +126,8 @@
         <option value="$PROJECT_DIR$/movies/static/js/uquery.js" />
         <option value="$PROJECT_DIR$/imdb.html" />
         <option value="$PROJECT_DIR$/movies/logic/uquery_logic.py" />
-        <option value="$PROJECT_DIR$/movies/logic/locations_handler.py" />
         <option value="$PROJECT_DIR$/movies/static/js/subtitles_handling.js" />
         <option value="$PROJECT_DIR$/movies/logic/subtitles.py" />
-        <option value="$PROJECT_DIR$/movies/views/locations_sync.py" />
         <option value="$PROJECT_DIR$/movies/logic/kk.py" />
         <option value="$PROJECT_DIR$/movies/logic/_imdb_search_tester.py" />
         <option value="$PROJECT_DIR$/../idea/bin/idea64.vmoptions" />
@@ -130,6 +143,10 @@
         <option value="$PROJECT_DIR$/movies/logic/imdb.py" />
         <option value="$PROJECT_DIR$/movies/templates/locations_sync_movie.html" />
         <option value="$PROJECT_DIR$/movies/static/js/locations_sync.js" />
+        <option value="$PROJECT_DIR$/movies/views/locations_sync.py" />
+        <option value="$PROJECT_DIR$/movies/logic/locations_handler.py" />
+        <option value="$PROJECT_DIR$/normalize/normal.py" />
+        <option value="$PROJECT_DIR$/locations.txt" />
       </list>
     </option>
   </component>
@@ -184,6 +201,11 @@
               <item name="djmovies" type="462c0819:PsiDirectoryNode" />
               <item name="movies" type="462c0819:PsiDirectoryNode" />
               <item name="logic" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="djmovies" type="b2602c69:ProjectViewProjectNode" />
+              <item name="djmovies" type="462c0819:PsiDirectoryNode" />
+              <item name="normalize" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -780,7 +802,7 @@
       <workItem from="1517090511266" duration="12809000" />
       <workItem from="1517246518931" duration="18991000" />
       <workItem from="1517671741134" duration="9000" />
-      <workItem from="1517671799004" duration="15589000" />
+      <workItem from="1517671799004" duration="19523000" />
     </task>
     <task id="LOCAL-00001" summary="nc">
       <created>1516657881079</created>
@@ -793,7 +815,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="124370000" />
+    <option name="totallyTimeSpent" value="128304000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="176" y="268" width="2191" height="1182" extended-state="0" />
@@ -861,62 +883,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/movies/templates/uquery_results_content.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="41" column="69" lean-forward="false" selection-start-line="41" selection-start-column="69" selection-end-line="41" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_binsearch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="19" column="12" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/uquery_logic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="117" column="15" lean-forward="false" selection-start-line="117" selection-start-column="15" selection-end-line="117" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="195" column="32" lean-forward="false" selection-start-line="195" selection-start-column="32" selection-end-line="195" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_nzbindex.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/templatetags/movies_tags.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="12" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/templates/uquery_results_content.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="41" column="69" lean-forward="false" selection-start-line="41" selection-start-column="69" selection-end-line="41" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_binsearch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_binsearch.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1036,13 +1002,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/locations_handler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="614">
-          <caret line="108" column="36" lean-forward="false" selection-start-line="108" selection-start-column="36" selection-end-line="108" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_binsearch.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1620">
@@ -1094,13 +1053,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../idea/bin/idea64.vmoptions" />
-    <entry file="file://$PROJECT_DIR$/movies/logic/uquery_logic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="16" column="31" lean-forward="false" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/set-language.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -1141,20 +1093,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/movies/views/locations_sync.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="474">
-          <caret line="148" column="0" lean-forward="false" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/imdb.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="41">
           <caret line="3307" column="15" lean-forward="false" selection-start-line="3307" selection-start-column="15" selection-end-line="3307" selection-end-column="15" />
           <folding>
-            <marker date="1517872390000" expanded="true" signature="198115:198124" ph="..." />
+            <marker date="1517920327000" expanded="true" signature="253458:253467" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1167,29 +1111,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/languages.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="15" lean-forward="false" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/movies/logic/media.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
           <caret line="246" column="0" lean-forward="false" selection-start-line="246" selection-start-column="0" selection-end-line="246" selection-end-column="0" />
           <folding>
-            <element signature="e#137#167#0" expanded="true" />
+            <element signature="e#137#167#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movies/logic/gistfile1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="461">
-          <caret line="197" column="0" lean-forward="false" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1198,7 +1126,7 @@
         <state relative-caret-position="247">
           <caret line="196" column="64" lean-forward="true" selection-start-line="196" selection-start-column="64" selection-end-line="196" selection-end-column="64" />
           <folding>
-            <element signature="e#0#21#0" expanded="true" />
+            <element signature="e#0#21#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1223,6 +1151,117 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="218">
           <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/restore.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conversions_help.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/clean.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/uquery_logic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="16" column="31" lean-forward="false" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="31" />
+          <folding>
+            <marker date="1491762199000" expanded="true" signature="558:614" ph="select count... uresults" />
+            <marker date="1491762199000" expanded="true" signature="654:733" ph="select count... uresults" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/views/locations_sync.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="514">
+          <caret line="170" column="50" lean-forward="false" selection-start-line="170" selection-start-column="50" selection-end-line="170" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/locations_handler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="250" column="51" lean-forward="true" selection-start-line="250" selection-start-column="51" selection-end-line="250" selection-end-column="51" />
+          <folding>
+            <element signature="e#0#9#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/gistfile1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="483">
+          <caret line="197" column="0" lean-forward="false" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movies/logic/languages.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="15" lean-forward="false" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/normalize/normal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="33" column="64" lean-forward="false" selection-start-line="33" selection-start-column="64" selection-end-line="33" selection-end-column="64" />
+          <folding>
+            <element signature="e#23#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/locations.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="18" lean-forward="false" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
           <folding />
         </state>
       </provider>
