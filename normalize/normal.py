@@ -33,7 +33,7 @@ MAX_TIME_MUX = 3600  # 60 minutes
 FFMPEG_INFO_PATTERN = re.compile('^\s+Stream #(.+)$')
 FFMPEG_STREAM_TITLE_PATTERN = re.compile('^\s+title\s+:\s+(.+)$')
 FFMPEG_TITLE_PATTERN = re.compile('^    title\s+:\s+(.+)$')
-FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Audio|Subtitle):(.*)$')
+FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Audio|Subtitle|Attachment):(.*)$')
 LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
 AUDIO_CODECS = ['ac3', 'dts-hd', 'dts', 'flac', 'vorbis', 'aac']
 AUDIO_MODES = ['5.1', 'stereo', 'mono', '6.1', '7.1']
@@ -47,7 +47,7 @@ DISMISS_EXTENSIONS = []
 SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
 CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es'}
-LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean'}
+LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian'}
 
 
 _COMM_KILL = 1
@@ -149,7 +149,10 @@ def _ffmpeg_info(filename):
         if not match:
             _error(filename, info)
         stream, sequence, language, stream_type, more = match.groups()
-        if not language and stream_type != 'Video':
+        if stream_type == 'Attachment':
+            stream_type, language = 'Subtitle', 'tur'
+            more = 'Attachment ' + REMOVE_TRACK_SIGNATURE
+        elif not language and stream_type != 'Video':
             _error(filename, info + ' ---> missing language')
         if stream != '0':
             _error(filename, info + ' ---> missing stream ' + stream + " : expected '0'")
@@ -343,7 +346,7 @@ def _get_language_from_code(code):
     try:
         return LANGUAGES[code]
     except KeyError:
-        raise Exception('Language %s not found, please extend LANGUAGES variable')
+        raise Exception('Language %s not found, please extend LANGUAGES variable' % code)
 
 
 def update(filename):
@@ -521,18 +524,10 @@ def print_info(filename):
     print
 
 
-if __name__ == '__main__':
-    import argparse
+def main(parser, sysargs):
+    global _DRY_RUN, _TARGET_DIR
 
-    clParser = argparse.ArgumentParser(description='Movies curator')
-    clParser.add_argument('-t', '--target', help='location for final files, if required')
-    clParser.add_argument('-i', '--info-only', action='store_true', help='short info on the file')
-    clParser.add_argument('--go', action='store_true', help='perform the required changes')
-    clParser.add_argument('--skip-audio-check', action='store_true', help='avoid audio normalization checks')
-    clParser.add_argument('--only-files', action='store_true', help='only check for files')
-    clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
-    clParser.add_argument('filenames', nargs='+')
-    args = clParser.parse_args()
+    args = parser.parse_args(sysargs)
 
     if args.info_only:
         for each in args.filenames:
@@ -571,3 +566,25 @@ if __name__ == '__main__':
             except Exit:
                 if not _DRY_RUN:
                     sys.exit(0)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    clParser = argparse.ArgumentParser(description='Movies curator')
+    clParser.add_argument('-t', '--target', help='location for final files, if required')
+    clParser.add_argument('-i', '--info-only', action='store_true', help='short info on the file')
+    clParser.add_argument('--go', action='store_true', help='perform the required changes')
+    clParser.add_argument('--skip-audio-check', action='store_true', help='avoid audio normalization checks')
+    clParser.add_argument('--only-files', action='store_true', help='only check for files')
+    clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
+    clParser.add_argument('filenames', nargs='+')
+
+    if sys.stdin.isatty():
+        # not run as tty
+        main(clParser, sys.argv[1:])
+    else:
+        for f in sys.stdin.readlines():
+            i = f.strip()
+            if i:
+                main(clParser, sys.argv[1:] + [i])
