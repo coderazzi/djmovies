@@ -522,15 +522,35 @@ def print_info(filename):
     print
 
 
+def get_subtitles(filename):
+    return [x[3] for x in _ffmpeg_info(filename)[2]]
+
+
 def main(parser, sysargs):
     global _DRY_RUN, _TARGET_DIR
 
     args = parser.parse_args(sysargs)
 
     if args.info_only:
+        if args.target or args.subtitles or args.go or args.skip_audio_check or args.only_files or args.only_folders:
+            parser.print_help()
+            sys.exit(0)
         for each in args.filenames:
             if os.path.isfile(each):
                 print_info(each)
+    elif args.subtitles:
+        if args.target or args.go or args.skip_audio_check or args.only_files or args.only_folders:
+            parser.print_help()
+            sys.exit(0)
+        all, l = [], 0
+        for each in args.filenames:
+            if os.path.isfile(each):
+                name = os.path.basename(each)
+                all.append((name, get_subtitles(each)))
+                l = max(l, len(name))
+        format = '%%-%ds   :   ' % l
+        for name, subs in all:
+            print format % name, ','.join(subs)
     else:
         _DRY_RUN = not args.go
         if args.go:
@@ -572,6 +592,7 @@ if __name__ == '__main__':
     clParser = argparse.ArgumentParser(description='Movies curator')
     clParser.add_argument('-t', '--target', help='location for final files, if required')
     clParser.add_argument('-i', '--info-only', action='store_true', help='short info on the file')
+    clParser.add_argument('--subtitles', action='store_true', help='only show subtitles information')
     clParser.add_argument('--go', action='store_true', help='perform the required changes')
     clParser.add_argument('--skip-audio-check', action='store_true', help='avoid audio normalization checks')
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
