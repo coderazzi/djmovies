@@ -35,6 +35,7 @@ FFMPEG_STREAM_TITLE_PATTERN = re.compile('^\s+title\s+:\s+(.+)$')
 FFMPEG_TITLE_PATTERN = re.compile('^    title\s+:\s+(.+)$')
 FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Audio|Subtitle|Attachment):(.*)$')
 LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
+SUBTITLES_LANGS_FORCED = ['en', 'es']
 AUDIO_CODECS = ['ac3', 'dts-hd', 'dts', 'flac', 'vorbis', 'aac']
 AUDIO_MODES = ['5.1', 'stereo', 'mono', '6.1', '7.1']
 AUDIO_FREQUENCY_PATTERN = re.compile('^\s*(\\d\\d\\d\\d\\d) hz\s*$')
@@ -230,19 +231,16 @@ def _update_dir(filename):
 
 def _update_file(filename, skip_audio_check, in_recursion=False):
     _info(filename, '')
-    video, audio, subtitles, movie_title, sequences = _ffmpeg_info(filename)
+    final_videos, audio, subtitles, movie_title, sequences = _ffmpeg_info(filename)
+
+    if len(final_videos) != 1:
+        _error(filename, "%d video streams" % len(final_videos))
 
     final_audios = _sort_audios(filename, audio, skip_audio_check)
     if not final_audios:
-        _error(filename, "%d audio streams" % len(video))
+        _error(filename, "%d audio streams" % len(final_audios))
 
-    audio_priorities = _get_lang_priorities_by_audio(final_audios)
-
-    final_videos = _sort_tracks(video, audio_priorities)
-    if len(final_videos) != 1:
-        _error(filename, "%d video streams" % len(video))
-
-    final_subs = _sort_tracks([s for s in subtitles if s[1] in LANG_BY_PRIO], audio_priorities)
+    final_subs = _sort_subtitles(subtitles, final_audios)
     if not final_subs:
         _warning(filename, 'no subtitles')
     else:
@@ -329,7 +327,7 @@ def _suggest_title(filename):
     if not match:
         _error(filename, 'Name of file is not expected')
     name = match.group(1).replace('_', ' ')
-    return '%s (%s)' % (name, match.group(2))
+    return ('%s (%s)' % (name, match.group(2))).strip()
 
 
 def _check_filename_by_language(filename, language):
@@ -448,21 +446,21 @@ def _sort_audios(filename, audio_tracks, skip_audio_check):
     return [(u[1], u[2], u[3], (None if u[4] == u[8] else u[8])) for u in use]
 
 
-def _sort_tracks(tracks, audio_priorities):
+def _sort_subtitles(subtitles, final_audios):
+    # the only subtitles we will return are those in the final_audios, plus English, Spanish
+    # the order will be as well those in the audios, plus again English and Spanish
+    langs = [lang for _, lang, _, _ in final_audios if lang in LANG_BY_PRIO] + SUBTITLES_LANGS_FORCED
+
     ret, tmp = [], []
-    for seq, lang, info, title in sorted(tracks):
+    for seq, lang, info, title in subtitles:
         if not title or REMOVE_TRACK_SIGNATURE not in title:
-            tmp.append([_get_lang_prio(lang, audio_priorities), seq, lang, info, title])
+            try:
+                tmp.append([langs.index(lang), seq, lang, info, title])
+            except ValueError:
+                pass
+
     tmp.sort()
     return [t[1:] for t in tmp]
-
-
-def _get_lang_priorities_by_audio(audio_tracks):
-    ret = [lang for _, lang, _, _ in audio_tracks if lang in LANG_BY_PRIO]
-    for each in LANG_BY_PRIO:
-        if each not in ret:
-            ret.append(each)
-    return ret
 
 
 def _get_lang_prio(lang, priorities=LANG_BY_PRIO):
