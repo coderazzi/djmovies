@@ -124,3 +124,7 @@ Convert a TrueHD (or any) audio to AC3
 =======================================
 
 ffmpeg -i Heathers__1988.mkv -vn Heathers__1988.ac3	
+
+Remove attachment
+=================
+mkvpropedit /Volumes/TTC/__MOVIES/Surf_S_Up__2007.mkv --delete-attachment 1

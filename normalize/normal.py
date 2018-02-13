@@ -47,8 +47,8 @@ SUBTITLE_EXTENSIONS = ['.srt']
 DISMISS_EXTENSIONS = []
 SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
-CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es'}
-LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian'}
+CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es', 'deu' : 'de'}
+LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian', 'heb': 'Hebrew', 'chi': 'Chinese'}
 
 
 _COMM_KILL = 1

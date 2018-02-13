@@ -49,9 +49,9 @@ MOVIES_V (M05)
 
 	Seagate Barracuda ST3000DM001 3000Gb
 
-	MKV (single / folders)
+	MKV (single )
 
-	Available: 4.0 Gb
+	Available: 16.46 Gb
 
 
 MOVIES_VI (M06)
