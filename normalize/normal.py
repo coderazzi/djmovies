@@ -43,12 +43,16 @@ AUDIO_RATE_PATTERN = re.compile('^\s*(\\d+) kb/s')
 FILENAME_PATTERN = re.compile('(.*?)__(\d\d\d\d)(?:_\w+)?(?:_\w+)?\.\w+$')
 
 VIDEO_EXTENSIONS = ['.mkv']
-SUBTITLE_EXTENSIONS = ['.srt']
-DISMISS_EXTENSIONS = []
+SUBTITLE_EXTENSIONS = ['.srt', '.idx']
+DISMISS_EXTENSIONS = ['.sub']
 SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
-CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es', 'deu' : 'de'}
-LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English', 'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian', 'heb': 'Hebrew', 'chi': 'Chinese'}
+# https://www.loc.gov/standards/iso639-2/php/code_list.php
+CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es', 'deu': 'de',
+                     'fra' : 'fr'}
+LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English',
+             'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian', 'heb': 'Hebrew', 'chi': 'Chinese',
+             'tur': 'Turkish', 'rus': 'Russian', 'hin' : 'Hindi'}
 
 
 _COMM_KILL = 1

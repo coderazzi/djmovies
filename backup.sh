@@ -8,7 +8,7 @@ cd `dirname $0`
 next=1
 for f in $TARGET/djmovies.*.sqlite ; do
 	# number=$(echo $f | grep -Eo '[1-9]\d*')
-	number=$(echo $f | grep -Eo '[1-9]+')
+	number=$(echo $f | grep -Eo '[1-9][0-9]*')
 	let number=1+$number
 	if [ $number -gt $next ] ; then
 		next=$number
@@ -18,6 +18,7 @@ done
 
 copy=1
 echo Current database backup is $last
+
 if [ -n "$last" ] ; then
 	if diff -q $last $DATABASE > /dev/null ; then
   		copy=0

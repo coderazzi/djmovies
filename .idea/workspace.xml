@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="bf9bf252-c8b8-4db1-9922-d00d7e6a042d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/conversions_help.txt" afterPath="$PROJECT_DIR$/conversions_help.txt" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/backup.sh" afterPath="$PROJECT_DIR$/backup.sh" />
       <change beforePath="$PROJECT_DIR$/locations.txt" afterPath="$PROJECT_DIR$/locations.txt" />
       <change beforePath="$PROJECT_DIR$/normalize/normal.py" afterPath="$PROJECT_DIR$/normalize/normal.py" />
     </list>
@@ -27,8 +28,8 @@
       <file leaf-file-name="normal.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/normalize/normal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="577">
-              <caret line="50" column="217" lean-forward="false" selection-start-line="50" selection-start-column="217" selection-end-line="50" selection-end-column="217" />
+            <state relative-caret-position="345">
+              <caret line="54" column="64" lean-forward="false" selection-start-line="54" selection-start-column="64" selection-end-line="54" selection-end-column="64" />
               <folding>
                 <element signature="e#23#37#0" expanded="true" />
               </folding>
@@ -36,11 +37,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="locations.txt" pinned="false" current-in-tab="true">
+      <file leaf-file-name="backup.sh" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/backup.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="10" column="44" lean-forward="false" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="locations.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/locations.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="546">
-              <caret line="53" column="20" lean-forward="false" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="20" />
+            <state relative-caret-position="825">
+              <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="conversions_help.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/conversions_help.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="50">
+              <caret line="67" column="118" lean-forward="false" selection-start-line="67" selection-start-column="90" selection-end-line="67" selection-end-column="118" />
               <folding />
             </state>
           </provider>
@@ -49,8 +70,8 @@
       <file leaf-file-name="gistfile1.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/movies/logic/gistfile1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="31" column="20" lean-forward="false" selection-start-line="31" selection-start-column="20" selection-end-line="31" selection-end-column="20" />
+            <state relative-caret-position="2820">
+              <caret line="188" column="15" lean-forward="false" selection-start-line="188" selection-start-column="12" selection-end-line="188" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -77,11 +98,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Hour</find>
-      <find>2h</find>
-      <find>soup =</find>
-      <find>_unescape</find>
-      <find>PT135M</find>
       <find>duration</find>
       <find>itemprop=&quot;duration&quot;</find>
       <find>findAll</find>
@@ -107,6 +123,11 @@
       <find>TO-</find>
       <find>mkvpr</find>
       <find>deu</find>
+      <find>tur</find>
+      <find>TO-R</find>
+      <find>REMOVE_TRACK_SIGNATURE</find>
+      <find>idx</find>
+      <find>srt</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -144,8 +165,9 @@
         <option value="$PROJECT_DIR$/movies/static/js/locations_sync.js" />
         <option value="$PROJECT_DIR$/movies/views/locations_sync.py" />
         <option value="$PROJECT_DIR$/movies/logic/locations_handler.py" />
-        <option value="$PROJECT_DIR$/normalize/normal.py" />
         <option value="$PROJECT_DIR$/locations.txt" />
+        <option value="$PROJECT_DIR$/normalize/normal.py" />
+        <option value="$PROJECT_DIR$/backup.sh" />
       </list>
     </option>
   </component>
@@ -160,8 +182,8 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="176" />
-    <option name="y" value="268" />
+    <option name="x" value="190" />
+    <option name="y" value="140" />
     <option name="width" value="2191" />
     <option name="height" value="1182" />
   </component>
@@ -180,9 +202,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
       <pane id="Scratches" />
       <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -803,7 +825,10 @@
       <workItem from="1517671741134" duration="9000" />
       <workItem from="1517671799004" duration="21592000" />
       <workItem from="1518214167185" duration="3254000" />
-      <workItem from="1518347348114" duration="4614000" />
+      <workItem from="1518347348114" duration="4840000" />
+      <workItem from="1518730542491" duration="1439000" />
+      <workItem from="1518864254018" duration="1466000" />
+      <workItem from="1518903370434" duration="1135000" />
     </task>
     <task id="LOCAL-00001" summary="nc">
       <created>1516657881079</created>
@@ -816,10 +841,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="138241000" />
+    <option name="totallyTimeSpent" value="142507000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="176" y="268" width="2191" height="1182" extended-state="0" />
+    <frame x="190" y="140" width="2191" height="1182" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -836,7 +861,6 @@
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21177545" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32612613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24965769" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -853,6 +877,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32612613" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -884,13 +909,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/movies/logic/uquery_logic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="29" column="19" lean-forward="false" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/movies/logic/usenet_search_binsearch.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1111,7 +1129,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1130,13 +1147,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/doc.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/conversions_help.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1188,26 +1198,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/movies/logic/gistfile1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="20" lean-forward="false" selection-start-line="31" selection-start-column="20" selection-end-line="31" selection-end-column="20" />
+        <state relative-caret-position="2820">
+          <caret line="188" column="15" lean-forward="false" selection-start-line="188" selection-start-column="12" selection-end-line="188" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/locations.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="825">
+          <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conversions_help.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="50">
+          <caret line="67" column="118" lean-forward="false" selection-start-line="67" selection-start-column="90" selection-end-line="67" selection-end-column="118" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/normalize/normal.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="577">
-          <caret line="50" column="217" lean-forward="false" selection-start-line="50" selection-start-column="217" selection-end-line="50" selection-end-column="217" />
+        <state relative-caret-position="345">
+          <caret line="54" column="64" lean-forward="false" selection-start-line="54" selection-start-column="64" selection-end-line="54" selection-end-column="64" />
           <folding>
             <element signature="e#23#37#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/locations.txt">
+    <entry file="file://$PROJECT_DIR$/backup.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="53" column="20" lean-forward="false" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="20" />
+        <state relative-caret-position="150">
+          <caret line="10" column="44" lean-forward="false" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
           <folding />
         </state>
       </provider>

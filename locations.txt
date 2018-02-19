@@ -59,9 +59,9 @@ MOVIES_VI (M06)
 
 	Toshiba DT01ABA300 3.0 TB
 
-	MKV (single / folders)
+	MKV (single )
 
-	Available: 13.0 Gb
+	Available: 14.1 Gb
 
 	
 MOVIES_VII (M07)
@@ -69,9 +69,9 @@ MOVIES_VII (M07)
 
 	Toshiba DT01ACA300 3.0 TB
 
-	MKV (single / folders)
+	MKV (single )
 
-	Available: 24.0 Gb
+	Available: 26.88 Gb
 
 	
 MOVIES_VIII (M08)
