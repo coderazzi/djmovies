@@ -52,7 +52,7 @@ CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 
                      'fra' : 'fr'}
 LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English',
              'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian', 'heb': 'Hebrew', 'chi': 'Chinese',
-             'tur': 'Turkish', 'rus': 'Russian', 'hin' : 'Hindi'}
+             'tur': 'Turkish', 'rus': 'Russian', 'hin' : 'Hindi', 'nor': 'Norwegian'}
 
 
 _COMM_KILL = 1
@@ -233,12 +233,16 @@ def _update_dir(filename):
         _mkvmerge_launch(command, filename)
 
 
-def _update_file(filename, skip_audio_check, in_recursion=False):
+def _update_file(filename, skip_audio_check, dismiss_extra_videos, in_recursion=False):
     _info(filename, '')
     final_videos, audio, subtitles, movie_title, sequences = _ffmpeg_info(filename)
 
     if len(final_videos) != 1:
-        _error(filename, "%d video streams" % len(final_videos))
+        if dismiss_extra_videos and final_videos:
+            _warning(filename, "%d video streams" % len(final_videos))
+            final_videos = final_videos[:1]
+        else:
+            _error(filename, "%d video streams" % len(final_videos))
 
     final_audios = _sort_audios(filename, audio, skip_audio_check)
     if not final_audios:
@@ -268,7 +272,10 @@ def _update_file(filename, skip_audio_check, in_recursion=False):
             if in_recursion:
                 _error(filename, "After sequencing correction, a second correction is required, not good")
             else:
-                _update_file(created_file, skip_audio_check=True, in_recursion=True)
+                _update_file(created_file,
+                             skip_audio_check=True,
+                             dismiss_extra_videos=False,
+                             in_recursion=True)
         return
 
     _do_non_sequencing_corrections(filename, movie_title, first_audio, final_videos, final_audios, final_subs)
@@ -349,22 +356,6 @@ def _get_language_from_code(code):
         return LANGUAGES[code]
     except KeyError:
         raise Exception('Language %s not found, please extend LANGUAGES variable' % code)
-
-
-def update(filename):
-    # audios: we support all.
-    #    first one in sequence should be eng, and marked as default
-    #    if no eng, use spa, else none
-    # video: there should be only one, lang=first audio
-    #    its language must be the same as the first audio
-    # subtitles:
-    #    first one in sequence should be spa and/or eng
-    #    if first subtitle is not spa, mark it as default
-    #    only support: spa, eng, ger, fre, por
-    if os.path.isdir(filename):
-        _update_dir(filename)
-    else:
-        _update_file(filename)
 
 
 def _correct_sequencing(filename, original_sequences, videos, audios, subtitles, dry_run):
@@ -535,15 +526,26 @@ def main(parser, sysargs):
 
     args = parser.parse_args(sysargs)
 
+    if args.video_info:
+        for each in args.filenames:
+            if os.path.isfile(each):
+                title, streams = ffmpeg_text_info(each)
+                all = streams[0][0]
+                a = all.index('Video')
+                print each, ':', all[a+7:]
+        sys.exit(0)
+
     if args.info_only:
-        if args.target or args.subtitles or args.go or args.skip_audio_check or args.only_files or args.only_folders:
+        if (args.target or args.subtitles or args.go or args.skip_audio_check or args.only_files
+                or args.only_folders or args.dismiss_extra_videos):
             parser.print_help()
             sys.exit(0)
         for each in args.filenames:
             if os.path.isfile(each):
                 print_info(each)
     elif args.subtitles:
-        if args.target or args.go or args.skip_audio_check or args.only_files or args.only_folders:
+        if (args.target or args.go or args.skip_audio_check or args.only_files
+                or args.only_folders or args.dismiss_extra_videos):
             parser.print_help()
             sys.exit(0)
         all, l = [], 0
@@ -554,6 +556,9 @@ def main(parser, sysargs):
                 l = max(l, len(name))
         format = '%%-%ds   :   ' % l
         for name, subs in all:
+            if None in subs:
+                _warning(name, 'Subtitles wrong, either normalize it or set name on subtitle streams: mkvpropedit %s --edit track:4 --set name=English' % name)
+                subs = [s for s in subs if s]
             print format % name, ','.join(subs)
     else:
         _DRY_RUN = not args.go
@@ -579,7 +584,7 @@ def main(parser, sysargs):
             try:
                 if os.path.isfile(each):
                     if not args.only_folders:
-                        _update_file(each, args.skip_audio_check)
+                        _update_file(each, args.skip_audio_check, args.dismiss_extra_videos)
                 elif os.path.isdir(each):
                     if not args.only_files:
                         _update_dir(each)
@@ -600,6 +605,8 @@ if __name__ == '__main__':
     clParser.add_argument('--go', action='store_true', help='perform the required changes')
     clParser.add_argument('--skip-audio-check', action='store_true', help='avoid audio normalization checks')
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
+    clParser.add_argument('--dismiss-extra-videos', action='store_true', help='dismiss video streams after first one')
+    clParser.add_argument('--video-info', action='store_true', help='temporal, just show video info')
     clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
     clParser.add_argument('filenames', nargs='+')
 

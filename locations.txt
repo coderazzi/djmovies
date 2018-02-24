@@ -79,9 +79,9 @@ MOVIES_VIII (M08)
 
 	Toshiba DT01ACA300 3.0 TB
 
-	MKV (single / folders)
+	MKV (single )
 
-	Available: 903.0 Gb
+	Available: 1030 Gb
 
 
 
