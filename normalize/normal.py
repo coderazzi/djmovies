@@ -37,6 +37,8 @@ FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Au
 LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
 SUBTITLES_LANGS_FORCED = ['en', 'es']
 AUDIO_CODECS = ['ac3', 'dts-hd', 'dts', 'flac', 'vorbis', 'aac']
+CONVERTABLE_AUDIO_CODECS = set(['dts-hd', 'dts'])
+BASIC_AUDIO_CODEC = set(['ac3', 'aac'])
 AUDIO_MODES = ['5.1', 'stereo', 'mono', '6.1', '7.1']
 AUDIO_FREQUENCY_PATTERN = re.compile('^\s*(\\d\\d\\d\\d\\d) hz\s*$')
 AUDIO_RATE_PATTERN = re.compile('^\s*(\\d+) kb/s')
@@ -172,6 +174,13 @@ def _ffmpeg_info(filename):
     return definitions
 
 
+def _invert_language_convert(lang):
+    for k, v in CONVERT_LANGUAGES.items():
+        if v == lang:
+            return k
+    return lang
+
+
 def _get_target_file(base):
     global _TARGET_DIR
     if not _TARGET_DIR:
@@ -233,7 +242,7 @@ def _update_dir(filename):
         _mkvmerge_launch(command, filename)
 
 
-def _update_file(filename, skip_audio_check, dismiss_extra_videos, in_recursion=False):
+def _update_file(filename, skip_audio_check, dismiss_extra_videos, add_aac_codec):
     _info(filename, '')
     final_videos, audio, subtitles, movie_title, sequences = _ffmpeg_info(filename)
 
@@ -244,7 +253,8 @@ def _update_file(filename, skip_audio_check, dismiss_extra_videos, in_recursion=
         else:
             _error(filename, "%d video streams" % len(final_videos))
 
-    final_audios = _sort_audios(filename, audio, skip_audio_check)
+    final_audios_extended = _sort_audios(filename, audio, skip_audio_check)
+    final_audios = [ e[:-1] for e in final_audios_extended]
     if not final_audios:
         _error(filename, "%d audio streams" % len(final_audios))
 
@@ -266,19 +276,69 @@ def _update_file(filename, skip_audio_check, dismiss_extra_videos, in_recursion=
     _check_filename_by_language(filename, first_audio)
 
     created_file = _correct_sequencing(filename, sequences, final_videos, final_audios, final_subs,
-                                       _DRY_RUN and not in_recursion)
+                                       not _DRY_RUN and not add_aac_codec)
     if created_file:
-        if not _DRY_RUN:
-            if in_recursion:
-                _error(filename, "After sequencing correction, a second correction is required, not good")
-            else:
-                _update_file(created_file,
-                             skip_audio_check=True,
-                             dismiss_extra_videos=False,
-                             in_recursion=True)
+        if add_aac_codec:
+            _error(filename, "Cannot add aac codec if file requires modification")
         return
 
-    _do_non_sequencing_corrections(filename, movie_title, first_audio, final_videos, final_audios, final_subs)
+    mod = _do_non_sequencing_corrections(filename, movie_title, first_audio, final_videos, final_audios, final_subs)
+
+    if add_aac_codec:
+        if mod:
+            _error(filename, 'Requested to add aac, but file required modifications')
+        else:
+            _add_aac_codec(filename, first_audio, final_videos, final_audios_extended, final_subs)
+    elif not mod:
+        _info(filename, 'No changes required')
+
+
+
+def _add_aac_codec(filename, first_audio, videos, audios, subs):
+    use = None
+    for seq, lang, _, _, codec in audios:
+        if lang == first_audio:
+            if codec in CONVERTABLE_AUDIO_CODECS:
+                if use is None:
+                    use = seq, codec
+            if codec in BASIC_AUDIO_CODEC:
+                _info(filename, 'Has already codec ' + codec + ': not enhacing required')
+                return False
+    if use is None:
+        _error(filename, 'Cannot add aac')
+    else:
+        _info(filename, 'Adding aac from track %d [%s]' % use)
+
+    target = _get_target_file(filename)
+    aac_target = _get_target_file(filename + '.aac')
+
+    # first step: extract audio as AAC : ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -map 0:1 -c:a aac kk.aac
+    commandA = 'ffmpeg -n -hide_banner -i %s -map 0:%d -c:a aac %s' % (filename, use[0], aac_target)
+    _info(filename, commandA)
+
+    # second step: merge movie and this audio: ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -i kk.aac
+    #   -map 0:0 -map 1:0 -map 0:1 -map 0:2 -map 0:3 -map 0:4 -c copy -metadata:s:a:0 language=en
+    #   /Volumes/TTC/__MOVIES/Sleeping_Beauty__1959.mkv
+    commands = ['ffmpeg -n -hide_banner -i %s -i %s' % (filename, aac_target)]
+    commands.extend(['-map 0:%d' % v[0] for v in videos])
+    commands.append('-map 1:0')
+    commands.extend(['-map 0:%d' % e[0] for e in audios + subs])
+    commands.append('-c copy -metadata:s:a:0 language=%s %s' % (_invert_language_convert(first_audio), target))
+    commandB = ' '.join(commands)
+    _info(filename, commandB)
+
+    if not _DRY_RUN:
+
+        if os.path.exists(target):
+            _error(target, 'Target file already exists, coward exit...')
+        if os.path.exists(aac_target):
+            _error(aac_target, 'AAC file already exists, coward exit...')
+
+        _ffmpeg_launch(commandA)
+        _ffmpeg_launch(commandB)
+
+        # third step: normalize file
+        _update_file(target, skip_audio_check=False, dismiss_extra_videos=False, add_aac_codec=False)
 
 
 def _do_non_sequencing_corrections(filename, movie_title, first_audio, final_videos, final_audios, final_subs):
@@ -329,8 +389,8 @@ def _do_non_sequencing_corrections(filename, movie_title, first_audio, final_vid
         _info(filename, command)
         if not _DRY_RUN:
             _mkvpropedit_launch(command, filename)
-    else:
-        _info(filename, 'No changes required')
+
+    return corrections
 
 
 def _suggest_title(filename):
@@ -358,7 +418,7 @@ def _get_language_from_code(code):
         raise Exception('Language %s not found, please extend LANGUAGES variable' % code)
 
 
-def _correct_sequencing(filename, original_sequences, videos, audios, subtitles, dry_run):
+def _correct_sequencing(filename, original_sequences, videos, audios, subtitles, do_it):
     final_tracks = [x[0] for x in videos + audios + subtitles]
     final_order = [None] * len(original_sequences)
     for i, s in enumerate(final_tracks):
@@ -387,7 +447,7 @@ def _correct_sequencing(filename, original_sequences, videos, audios, subtitles,
     command = ' '.join(commands + [target_file])
     _info(filename, command)
 
-    if not dry_run:
+    if do_it:
         _ffmpeg_launch(command)
 
     return target_file
@@ -413,16 +473,20 @@ def _suggest_audio_name(lang, comment, codec, mode, title, level):
 
 def _sort_audios(filename, audio_tracks, skip_audio_check):
     """Returns list of (sequence, language, new title)"""
-    use = []
+    use, codecs = [], set()
     for seq, lang, info, title in audio_tracks:
         if title and REMOVE_TRACK_SIGNATURE in title:
             continue
         codec, freq, mode, rate = _parse_audio_info(filename, info)
         comment = 'comment' in title.lower() if title else False
+        if not comment:
+            codecs.add(codec)
         # precedence is: comments last, then by language, then preserve current ordering
         precedence = (int(comment), _get_lang_prio(lang), seq)
         use.append([precedence, seq, lang, info, title, codec, mode, comment, title])
 
+    if not codecs.intersection(BASIC_AUDIO_CODEC):
+        _warning(filename, 'No basic audio formats support: ' + ','.join(codecs))
     if not skip_audio_check:
         # we define 3 levels in _suggest_audio_name: only lang, lang + codec, lang + codec + mode
         for level in range(3):
@@ -438,7 +502,7 @@ def _sort_audios(filename, audio_tracks, skip_audio_check):
             _error(filename, 'Multiple audio tracks in same language / codec / mode: ' + ' / '. join(u[-1] for u in use))
 
     use.sort()
-    return [(u[1], u[2], u[3], (None if u[4] == u[8] else u[8])) for u in use]
+    return [(u[1], u[2], u[3], (None if u[4] == u[8] else u[8]), not u[7] and u[5]) for u in use]
 
 
 def _sort_subtitles(subtitles, final_audios):
@@ -526,17 +590,8 @@ def main(parser, sysargs):
 
     args = parser.parse_args(sysargs)
 
-    if args.video_info:
-        for each in args.filenames:
-            if os.path.isfile(each):
-                title, streams = ffmpeg_text_info(each)
-                all = streams[0][0]
-                a = all.index('Video')
-                print each, ':', all[a+7:]
-        sys.exit(0)
-
     if args.info_only:
-        if (args.target or args.subtitles or args.go or args.skip_audio_check or args.only_files
+        if (args.target or args.subtitles or args.go or args.skip_audio_check or args.only_files or args.add_aac
                 or args.only_folders or args.dismiss_extra_videos):
             parser.print_help()
             sys.exit(0)
@@ -544,7 +599,7 @@ def main(parser, sysargs):
             if os.path.isfile(each):
                 print_info(each)
     elif args.subtitles:
-        if (args.target or args.go or args.skip_audio_check or args.only_files
+        if (args.target or args.go or args.skip_audio_check or args.only_files or args.add_aac
                 or args.only_folders or args.dismiss_extra_videos):
             parser.print_help()
             sys.exit(0)
@@ -584,8 +639,10 @@ def main(parser, sysargs):
             try:
                 if os.path.isfile(each):
                     if not args.only_folders:
-                        _update_file(each, args.skip_audio_check, args.dismiss_extra_videos)
+                        _update_file(each, args.skip_audio_check, args.dismiss_extra_videos, args.add_aac)
                 elif os.path.isdir(each):
+                    if args.add_aac:
+                        _error(each, 'Cannot use add-aac on directories')
                     if not args.only_files:
                         _update_dir(each)
                 else:
@@ -603,10 +660,10 @@ if __name__ == '__main__':
     clParser.add_argument('-i', '--info-only', action='store_true', help='short info on the file')
     clParser.add_argument('--subtitles', action='store_true', help='only show subtitles information')
     clParser.add_argument('--go', action='store_true', help='perform the required changes')
+    clParser.add_argument('--add-aac', action='store_true', help='adds support for aac audio codec')
     clParser.add_argument('--skip-audio-check', action='store_true', help='avoid audio normalization checks')
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
     clParser.add_argument('--dismiss-extra-videos', action='store_true', help='dismiss video streams after first one')
-    clParser.add_argument('--video-info', action='store_true', help='temporal, just show video info')
     clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
     clParser.add_argument('filenames', nargs='+')
 
