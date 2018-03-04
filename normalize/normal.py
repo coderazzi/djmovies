@@ -37,7 +37,7 @@ FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Au
 LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
 SUBTITLES_LANGS_FORCED = ['en', 'es']
 AUDIO_CODECS = ['ac3', 'dts-hd', 'dts', 'flac', 'vorbis', 'aac']
-CONVERTABLE_AUDIO_CODECS = set(['dts-hd', 'dts'])
+CONVERTABLE_AUDIO_CODECS = set(['dts-hd', 'dts', 'flac'])
 BASIC_AUDIO_CODEC = set(['ac3', 'aac'])
 AUDIO_MODES = ['5.1', 'stereo', 'mono', '6.1', '7.1']
 AUDIO_FREQUENCY_PATTERN = re.compile('^\s*(\\d\\d\\d\\d\\d) hz\s*$')
@@ -69,19 +69,21 @@ class Exit(Exception):
     pass
 
 
+def _show(func, filename, message):
+    func('%s\t\t%s', filename, message)
+
+
 def _info(filename, message):
     if message:
-        logging.info('%s\t\t%s', filename, message)
+        _show(logging.info, filename, message)
 
 
 def _warning(filename, message):
-    logging.warning('%s\t\t%s', filename, message)
+    _show(logging.warning, filename, message)
 
 
 def _error(filename, message):
-    # if filename and os.path.exists(filename):
-    #     print_info(filename)
-    logging.error('%s\t\t%s', filename, message)
+    _show(logging.error, filename, message)
     raise Exit
 
 
@@ -293,11 +295,48 @@ def _update_file(filename, skip_audio_check, dismiss_extra_videos, add_aac_codec
         _info(filename, 'No changes required')
 
 
+def kk(filename):
+    videos, audios, subs, movie_title, sequences = _ffmpeg_info(filename)
+    first_audio = audios[0][1]
+    good_audios = [seq for seq, lang, _, _ in audios if lang == first_audio]
+    current = good_audios[0]
+    seqs = [s[0] for s in videos + audios + subs]
+    seqs.remove(current)
+    i = seqs.index(good_audios[-1])
+    seqs.insert(i+1, current)
+    seqs = ['-map 0:%d' % s for s in seqs]
+
+    target = _get_target_file(filename)
+
+    # second step: merge movie and this audio: ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -i kk.aac
+    #   -map 0:0 -map 1:0 -map 0:1 -map 0:2 -map 0:3 -map 0:4 -c copy -metadata:s:a:0 language=en
+    #   /Volumes/TTC/__MOVIES/Sleeping_Beauty__1959.mkv
+    commands = ['ffmpeg -n -hide_banner -i %s ' % filename]
+    commands.extend(seqs)
+    commands.append('-c copy %s' % target)
+    commandB = ' '.join(commands)
+
+    if _DRY_RUN:
+        _info(filename, commandB)
+    else:
+
+        if os.path.exists(target):
+            _error(target, 'Target file already exists, coward exit...')
+
+        _info(filename, commandB)
+        _ffmpeg_launch(commandB)
+
+        # third step: normalize file
+        _update_file(target, skip_audio_check=False, dismiss_extra_videos=False, add_aac_codec=False)
+
+
+
 
 def _add_aac_codec(filename, first_audio, videos, audios, subs):
-    use = None
+    use, position = None, 0
     for seq, lang, _, _, codec in audios:
         if lang == first_audio:
+            position = max(position, seq)
             if codec in CONVERTABLE_AUDIO_CODECS:
                 if use is None:
                     use = seq, codec
@@ -312,29 +351,36 @@ def _add_aac_codec(filename, first_audio, videos, audios, subs):
     target = _get_target_file(filename)
     aac_target = _get_target_file(filename + '.aac')
 
+    seqs = [s[0] for s in videos + audios + subs]
+    i = seqs.index(position)
+    seqs = ['-map 0:%d' % s for s in seqs]
+    seqs.insert(i+1, '-map 1:0')
+
     # first step: extract audio as AAC : ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -map 0:1 -c:a aac kk.aac
     commandA = 'ffmpeg -n -hide_banner -i %s -map 0:%d -c:a aac %s' % (filename, use[0], aac_target)
-    _info(filename, commandA)
 
     # second step: merge movie and this audio: ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -i kk.aac
     #   -map 0:0 -map 1:0 -map 0:1 -map 0:2 -map 0:3 -map 0:4 -c copy -metadata:s:a:0 language=en
     #   /Volumes/TTC/__MOVIES/Sleeping_Beauty__1959.mkv
     commands = ['ffmpeg -n -hide_banner -i %s -i %s' % (filename, aac_target)]
-    commands.extend(['-map 0:%d' % v[0] for v in videos])
-    commands.append('-map 1:0')
-    commands.extend(['-map 0:%d' % e[0] for e in audios + subs])
+    commands.extend(seqs)
     commands.append('-c copy -metadata:s:a:0 language=%s %s' % (_invert_language_convert(first_audio), target))
     commandB = ' '.join(commands)
-    _info(filename, commandB)
 
-    if not _DRY_RUN:
+    if _DRY_RUN:
+        _info(filename, commandA)
+        _info(filename, commandB)
+    else:
 
         if os.path.exists(target):
             _error(target, 'Target file already exists, coward exit...')
         if os.path.exists(aac_target):
             _error(aac_target, 'AAC file already exists, coward exit...')
 
+        _info(filename, commandA)
         _ffmpeg_launch(commandA)
+
+        _info(filename, commandB)
         _ffmpeg_launch(commandB)
 
         # third step: normalize file
@@ -623,7 +669,7 @@ def main(parser, sysargs):
                                 level=logging.INFO)
             console = logging.StreamHandler()
             console.setLevel(logging.INFO)
-            formatter = logging.Formatter('%(levelname)-8s %(message)s')
+            formatter = logging.Formatter('%(asctime)s\t  %(levelname)-8s %(message)s', datefmt='%I:%M:%S')
             console.setFormatter(formatter)
             logging.getLogger('').addHandler(console)
         else:
@@ -639,7 +685,10 @@ def main(parser, sysargs):
             try:
                 if os.path.isfile(each):
                     if not args.only_folders:
-                        _update_file(each, args.skip_audio_check, args.dismiss_extra_videos, args.add_aac)
+                        if args.kk:
+                            kk(each)
+                        else:
+                            _update_file(each, args.skip_audio_check, args.dismiss_extra_videos, args.add_aac)
                 elif os.path.isdir(each):
                     if args.add_aac:
                         _error(each, 'Cannot use add-aac on directories')
@@ -665,6 +714,7 @@ if __name__ == '__main__':
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
     clParser.add_argument('--dismiss-extra-videos', action='store_true', help='dismiss video streams after first one')
     clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
+    clParser.add_argument('--kk', action='store_true', help='quick test')
     clParser.add_argument('filenames', nargs='+')
 
     if sys.stdin.isatty():
