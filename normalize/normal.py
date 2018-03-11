@@ -246,7 +246,7 @@ def _update_dir(filename):
 
 def _update_file(filename, skip_audio_check, dismiss_extra_videos, add_aac_codec):
     _info(filename, '')
-    final_videos, audio, subtitles, movie_title, sequences = _ffmpeg_info(filename)
+    final_videos, audios, subtitles, movie_title, sequences = _ffmpeg_info(filename)
 
     if len(final_videos) != 1:
         if dismiss_extra_videos and final_videos:
@@ -255,8 +255,8 @@ def _update_file(filename, skip_audio_check, dismiss_extra_videos, add_aac_codec
         else:
             _error(filename, "%d video streams" % len(final_videos))
 
-    final_audios_extended = _sort_audios(filename, audio, skip_audio_check)
-    final_audios = [ e[:-1] for e in final_audios_extended]
+    final_audios_extended = _sort_audios(filename, audios, skip_audio_check)
+    final_audios = [e[:-2] for e in final_audios_extended]
     if not final_audios:
         _error(filename, "%d audio streams" % len(final_audios))
 
@@ -298,7 +298,7 @@ def _update_file(filename, skip_audio_check, dismiss_extra_videos, add_aac_codec
 def kk(filename):
     videos, audios, subs, movie_title, sequences = _ffmpeg_info(filename)
     first_audio = audios[0][1]
-    good_audios = [seq for seq, lang, _, _ in audios if lang == first_audio]
+    good_audios = [seq for seq, lang, _, more in audios if lang == first_audio and not _is_comment(more)]
     current = good_audios[0]
     seqs = [s[0] for s in videos + audios + subs]
     seqs.remove(current)
@@ -330,18 +330,16 @@ def kk(filename):
         _update_file(target, skip_audio_check=False, dismiss_extra_videos=False, add_aac_codec=False)
 
 
-
-
 def _add_aac_codec(filename, first_audio, videos, audios, subs):
     use, position = None, 0
-    for seq, lang, _, _, codec in audios:
-        if lang == first_audio:
+    for seq, lang, _, _, codec, comment in audios:
+        if lang == first_audio and not comment:
             position = max(position, seq)
             if codec in CONVERTABLE_AUDIO_CODECS:
                 if use is None:
                     use = seq, codec
             if codec in BASIC_AUDIO_CODEC:
-                _info(filename, 'Has already codec ' + codec + ': not enhacing required')
+                _info(filename, 'Has already codec ' + codec + ': not enhancing required')
                 return False
     if use is None:
         _error(filename, 'Cannot add aac')
@@ -352,9 +350,9 @@ def _add_aac_codec(filename, first_audio, videos, audios, subs):
     aac_target = _get_target_file(filename + '.aac')
 
     seqs = [s[0] for s in videos + audios + subs]
-    i = seqs.index(position)
+    index = seqs.index(position) + 1
     seqs = ['-map 0:%d' % s for s in seqs]
-    seqs.insert(i+1, '-map 1:0')
+    seqs.insert(index, '-map 1:0')
 
     # first step: extract audio as AAC : ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -map 0:1 -c:a aac kk.aac
     commandA = 'ffmpeg -n -hide_banner -i %s -map 0:%d -c:a aac %s' % (filename, use[0], aac_target)
@@ -364,7 +362,7 @@ def _add_aac_codec(filename, first_audio, videos, audios, subs):
     #   /Volumes/TTC/__MOVIES/Sleeping_Beauty__1959.mkv
     commands = ['ffmpeg -n -hide_banner -i %s -i %s' % (filename, aac_target)]
     commands.extend(seqs)
-    commands.append('-c copy -metadata:s:a:0 language=%s %s' % (_invert_language_convert(first_audio), target))
+    commands.append('-c copy -metadata:s:%d language=%s %s' % (index, _invert_language_convert(first_audio), target))
     commandB = ' '.join(commands)
 
     if _DRY_RUN:
@@ -378,7 +376,11 @@ def _add_aac_codec(filename, first_audio, videos, audios, subs):
             _error(aac_target, 'AAC file already exists, coward exit...')
 
         _info(filename, commandA)
-        _ffmpeg_launch(commandA)
+        try:
+            _ffmpeg_launch(commandA)
+        except Exit:
+            logging.error("Cannot handle this file: aac cannot be extracted")
+            return
 
         _info(filename, commandB)
         _ffmpeg_launch(commandB)
@@ -517,6 +519,10 @@ def _suggest_audio_name(lang, comment, codec, mode, title, level):
     return ret
 
 
+def _is_comment(track_info):
+    return 'comment' in track_info.lower() if track_info else False
+
+
 def _sort_audios(filename, audio_tracks, skip_audio_check):
     """Returns list of (sequence, language, new title)"""
     use, codecs = [], set()
@@ -524,7 +530,7 @@ def _sort_audios(filename, audio_tracks, skip_audio_check):
         if title and REMOVE_TRACK_SIGNATURE in title:
             continue
         codec, freq, mode, rate = _parse_audio_info(filename, info)
-        comment = 'comment' in title.lower() if title else False
+        comment = _is_comment(title)
         if not comment:
             codecs.add(codec)
         # precedence is: comments last, then by language, then preserve current ordering
@@ -548,7 +554,7 @@ def _sort_audios(filename, audio_tracks, skip_audio_check):
             _error(filename, 'Multiple audio tracks in same language / codec / mode: ' + ' / '. join(u[-1] for u in use))
 
     use.sort()
-    return [(u[1], u[2], u[3], (None if u[4] == u[8] else u[8]), not u[7] and u[5]) for u in use]
+    return [(u[1], u[2], u[3], (None if u[4] == u[8] else u[8]), not u[7] and u[5], u[7]) for u in use]
 
 
 def _sort_subtitles(subtitles, final_audios):
