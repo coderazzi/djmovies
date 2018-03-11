@@ -295,41 +295,6 @@ def _update_file(filename, skip_audio_check, dismiss_extra_videos, add_aac_codec
         _info(filename, 'No changes required')
 
 
-def kk(filename):
-    videos, audios, subs, movie_title, sequences = _ffmpeg_info(filename)
-    first_audio = audios[0][1]
-    good_audios = [seq for seq, lang, _, more in audios if lang == first_audio and not _is_comment(more)]
-    current = good_audios[0]
-    seqs = [s[0] for s in videos + audios + subs]
-    seqs.remove(current)
-    i = seqs.index(good_audios[-1])
-    seqs.insert(i+1, current)
-    seqs = ['-map 0:%d' % s for s in seqs]
-
-    target = _get_target_file(filename)
-
-    # second step: merge movie and this audio: ffmpeg -i /Volumes/MOVIES_IV/Sleeping_Beauty__1959.mkv -i kk.aac
-    #   -map 0:0 -map 1:0 -map 0:1 -map 0:2 -map 0:3 -map 0:4 -c copy -metadata:s:a:0 language=en
-    #   /Volumes/TTC/__MOVIES/Sleeping_Beauty__1959.mkv
-    commands = ['ffmpeg -n -hide_banner -i %s ' % filename]
-    commands.extend(seqs)
-    commands.append('-c copy %s' % target)
-    commandB = ' '.join(commands)
-
-    if _DRY_RUN:
-        _info(filename, commandB)
-    else:
-
-        if os.path.exists(target):
-            _error(target, 'Target file already exists, coward exit...')
-
-        _info(filename, commandB)
-        _ffmpeg_launch(commandB)
-
-        # third step: normalize file
-        _update_file(target, skip_audio_check=False, dismiss_extra_videos=False, add_aac_codec=False)
-
-
 def _add_aac_codec(filename, first_audio, videos, audios, subs):
     use, position = None, 0
     for seq, lang, _, _, codec, comment in audios:
@@ -691,10 +656,7 @@ def main(parser, sysargs):
             try:
                 if os.path.isfile(each):
                     if not args.only_folders:
-                        if args.kk:
-                            kk(each)
-                        else:
-                            _update_file(each, args.skip_audio_check, args.dismiss_extra_videos, args.add_aac)
+                        _update_file(each, args.skip_audio_check, args.dismiss_extra_videos, args.add_aac)
                 elif os.path.isdir(each):
                     if args.add_aac:
                         _error(each, 'Cannot use add-aac on directories')
