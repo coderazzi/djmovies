@@ -401,27 +401,31 @@ def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
                 else:
                     print 'getSubtitlesOnSubscene: Received file of type ' + type + ", discarded"
                     continue
-                with handler(f[0]) as z:
-                    names = z.namelist()
-                    single = None
-                    for i in range(len(names)):
-                        name = names[i]
-                        if name.lower().endswith('.srt'):
-                            if single:
-                                print 'getSubtitlesOnSubscene: Received multiple scrs, discarded'
-                                break
-                            single = name
-                    else:
-                        if single:
-                            print 'getSubtitlesOnSubscene: reading on ' + type + ' entry ' + single
-                            content = z.read(single)
-                            try:
-                                content = content.decode('iso-8859-1').encode('utf8')
-                            except:
-                                pass
-                            ret[single] = content
+                try:
+                    with handler(f[0]) as z:
+                        names = z.namelist()
+                        single = None
+                        for i in range(len(names)):
+                            name = names[i]
+                            if name.lower().endswith('.srt'):
+                                if single:
+                                    print 'getSubtitlesOnSubscene: Received multiple scrs, discarded'
+                                    break
+                                single = name
                         else:
-                            print 'getSubtitlesOnSubscene: Received no  scrs, discarded'
+                            if single:
+                                print 'getSubtitlesOnSubscene: reading on ' + type + ' entry ' + single
+                                content = z.read(single)
+                                try:
+                                    content = content.decode('iso-8859-1').encode('utf8')
+                                except:
+                                    pass
+                                ret[single] = content
+                            else:
+                                print 'getSubtitlesOnSubscene: Received no  scrs, discarded'
+                except:
+                    print 'getSubtitlesOnSubscene: Error reading file ' + ref
+                    pass
     return ret
 
 # print getSubtitlesOnSubscene(searchSubtitlesOnSubscene('The Rock')[0][1], 'English')

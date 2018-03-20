@@ -7,10 +7,7 @@ MOVIES_I (M01)
 
 	WD Green WD30EZRX 3.0 TB
 
-	ISO, AVI, DVD, TS, etc, non mkv
-		* Contains at the moment a _SERIES folder with Lost and Game Of Thrones
-
-	Available: 473 Gb
+	Available: 802 Gb
 		_SERIES: 478 Gb
 
 
@@ -21,7 +18,7 @@ MOVIES_II (M02)
 
 	MKV
 
-	Available: 3.5 Gb
+	Available: 8.07 Gb
 
 
 MOVIES_III (M03)
@@ -31,7 +28,7 @@ MOVIES_III (M03)
 
 	MKV (single) - normalized!
 
-	Available: 9.8 Gb
+	Available: 9.9 Gb
 
 
 MOVIES_IV (M04)
@@ -41,7 +38,7 @@ MOVIES_IV (M04)
 
 	MKV (single )
 
-	Available: 13.8 Gb
+	Available: 2.16 Gb
 
 
 MOVIES_V (M05)
@@ -51,7 +48,7 @@ MOVIES_V (M05)
 
 	MKV (single )
 
-	Available: 16.46 Gb
+	Available: 2.52 Gb
 
 
 MOVIES_VI (M06)
@@ -61,7 +58,7 @@ MOVIES_VI (M06)
 
 	MKV (single )
 
-	Available: 14.1 Gb
+	Available: 14.71 Gb
 
 	
 MOVIES_VII (M07)
@@ -71,7 +68,7 @@ MOVIES_VII (M07)
 
 	MKV (single )
 
-	Available: 26.88 Gb
+	Available: 18.91 Gb
 
 	
 MOVIES_VIII (M08)

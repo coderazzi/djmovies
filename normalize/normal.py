@@ -34,8 +34,9 @@ FFMPEG_INFO_PATTERN = re.compile('^\s+Stream #(.+)$')
 FFMPEG_STREAM_TITLE_PATTERN = re.compile('^\s+title\s+:\s+(.+)$')
 FFMPEG_TITLE_PATTERN = re.compile('^    title\s+:\s+(.+)$')
 FFMPEG_INFO_SPECIFIC_PATTERN = re.compile('^(\d+):(\d+)(?:\((\w+)\))?: (Video|Audio|Subtitle|Attachment):(.*)$')
-LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt']
-SUBTITLES_LANGS_FORCED = ['en', 'es']
+LANG_BY_PRIO = ['en', 'es', 'de', 'fr', 'pt', 'it']
+AVOID_SUBTITLES = set()  # ['es'])
+SUBTITLES_LANGS_FORCED = ['en']
 AUDIO_CODECS = ['ac3', 'dts-hd', 'dts', 'flac', 'vorbis', 'aac']
 CONVERTABLE_AUDIO_CODECS = set(['dts-hd', 'dts', 'flac'])
 BASIC_AUDIO_CODEC = set(['ac3', 'aac'])
@@ -44,17 +45,18 @@ AUDIO_FREQUENCY_PATTERN = re.compile('^\s*(\\d\\d\\d\\d\\d) hz\s*$')
 AUDIO_RATE_PATTERN = re.compile('^\s*(\\d+) kb/s')
 FILENAME_PATTERN = re.compile('(.*?)__(\d\d\d\d)(?:_\w+)?(?:_\w+)?\.\w+$')
 
-VIDEO_EXTENSIONS = ['.mkv']
+TARGET_VIDEO_EXTENSION = '.mkv'
+VIDEO_EXTENSIONS = ['.mkv', '.avi', '.mp4']
 SUBTITLE_EXTENSIONS = ['.srt', '.idx']
 DISMISS_EXTENSIONS = ['.sub']
 SUBTITLES_LANGUAGES = {'.en': 'en', '.es': 'es', '.de': 'de', '.fr': 'fr'}
 
 # https://www.loc.gov/standards/iso639-2/php/code_list.php
 CONVERT_LANGUAGES = {'eng': 'en', 'fre': 'fr', 'esp': 'es', 'ger': 'de', 'por': 'pt', 'spa': 'es', 'deu': 'de',
-                     'fra' : 'fr'}
+                     'fra': 'fr', 'ita': 'it'}
 LANGUAGES = {'es': 'Spanish', 'de': 'German', 'jpn': 'Japanese', 'swe': 'Swedish', 'fr': 'French', 'en': 'English',
-             'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'ita': 'Italian', 'heb': 'Hebrew', 'chi': 'Chinese',
-             'tur': 'Turkish', 'rus': 'Russian', 'hin' : 'Hindi', 'nor': 'Norwegian'}
+             'pt': 'Portuguese', 'cat': 'Cat', 'kor': 'Korean', 'it': 'Italian', 'heb': 'Hebrew', 'chi': 'Chinese',
+             'tur': 'Turkish', 'rus': 'Russian', 'hin': 'Hindi', 'nor': 'Norwegian'}
 
 
 _COMM_KILL = 1
@@ -189,7 +191,8 @@ def _get_target_file(base):
         if not _DRY_RUN:
             _error(base, 'Operation requires user to specify a --target parameter')
         _TARGET_DIR = '/tmp'
-    ret = os.path.abspath(os.path.join(_TARGET_DIR, os.path.basename(base)))
+    base, ext = os.path.splitext(os.path.basename(base))
+    ret = os.path.abspath(os.path.join(_TARGET_DIR, base + TARGET_VIDEO_EXTENSION))
     if os.path.abspath(base) == ret:
         _error('', "Target file: " + ret + " matches original file " + base)
     return ret
@@ -525,7 +528,8 @@ def _sort_audios(filename, audio_tracks, skip_audio_check):
 def _sort_subtitles(subtitles, final_audios):
     # the only subtitles we will return are those in the final_audios, plus English, Spanish
     # the order will be as well those in the audios, plus again English and Spanish
-    langs = [lang for _, lang, _, _ in final_audios if lang in LANG_BY_PRIO] + SUBTITLES_LANGS_FORCED
+    langs = [lang for _, lang, _, _ in final_audios if lang in LANG_BY_PRIO and lang not in AVOID_SUBTITLES]
+    langs = langs + SUBTITLES_LANGS_FORCED
 
     ret, tmp = [], []
     for seq, lang, info, title in subtitles:
