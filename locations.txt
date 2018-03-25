@@ -58,7 +58,7 @@ MOVIES_VI (M06)
 
 	MKV (single )
 
-	Available: 14.71 Gb
+	Available: 48.04 Gb
 
 	
 MOVIES_VII (M07)
