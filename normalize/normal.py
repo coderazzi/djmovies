@@ -686,7 +686,6 @@ if __name__ == '__main__':
     clParser.add_argument('--only-files', action='store_true', help='only check for files')
     clParser.add_argument('--dismiss-extra-videos', action='store_true', help='dismiss video streams after first one')
     clParser.add_argument('--only-folders', action='store_true', help='only check for directories')
-    clParser.add_argument('--kk', action='store_true', help='quick test')
     clParser.add_argument('filenames', nargs='+')
 
     if sys.stdin.isatty():
