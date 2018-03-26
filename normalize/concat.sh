@@ -8,7 +8,11 @@ if [ "$#" -eq 1 ]; then
     if [ -d "$1" ] ; then
         OUTPUT=$1
         TMP_FILE=$(mktemp /tmp/69.XXXXXX)
-        while read each; do echo "file '$1/$each'" >> $TMP_FILE; ANY=$each; done < <(ls "$1")
+        while read each; do
+            F=`echo $1/$each | sed "s/'/\\'\\\\\\'\\'/g"`
+            echo "file '$F'" >> $TMP_FILE; ANY=$each;
+        done < <(ls "$1")
+        #cat $TMP_FILE
     else
         echo "$1 is not a folder"
         exit 1
@@ -17,9 +21,11 @@ else
     TMP_FILE=$(mktemp /tmp/69.XXXXXX)
     OUTPUT=`dirname "$1"`
     ANY=$1
-    for i; do echo "file '$i'" >> $TMP_FILE; done
+    for i; do
+        F=`echo $i | sed "s/'/\\'\\\\\\'\\'/g"`
+        echo "file '$F'" >> $TMP_FILE;
+    done
 fi
-
 filename=$(basename "$ANY")
 OUTPUT="$OUTPUT.${filename##*.}"
 

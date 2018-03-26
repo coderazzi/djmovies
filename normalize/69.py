@@ -13,7 +13,7 @@ _TARGET_DIR = None
 
 VIDEO_EXTENSIONS = set(['.mkv', '.avi', '.mp4', '.mov', '.wmv' , '.mpg', '.rmvb', '.divx', '.m4v', '.flv', '.mpeg', '.iso'])
 IMAGE_EXTENSIONS = set(['.jpg', '.png', '.gif', '.jpeg'])
-DISMISS_EXTENSIONS = set(['.srt', '.nfo', '.db', '.sfv', '.srr'])
+DISMISS_EXTENSIONS = set(['.srt', '.nfo', '.db', '.sfv', '.srr', '.html', '.md5', '.doc', '.txt', '.htm'])
 
 IGNORE_FOLDER = '.69-ok'
 
