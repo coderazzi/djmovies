@@ -71,25 +71,33 @@ def _shell(proc_args, max_time):
     return proc.returncode, out, err
 
 
+def _exec_concat(path, videos, arg_name=None):
+    command = os.path.join(os.path.dirname(__file__) or '.', 'concat.sh')
+    if arg_name:
+        command += " -a"+arg_name
+    for v in sorted(videos):
+        command = command + ' "%s"' % v
+    _info(path, command)
+    rc, out, err = _shell(command, MAX_TIME_CONCAT)
+    if rc > 1:
+        _error(path, 'SHELL: ' + out)
+        return False
+    match = CONCAT_PATTERN.match(out.splitlines()[-1])
+    if not match:
+        _error(path, 'SHELL: ' + err)
+        return False
+    if not os.path.exists(match.group(1)):
+        _error(path, 'concat.sh, missing ' + match.group(1))
+        return False
+    return True
+
+
 def _process_video(path, videos, extension):
     if len(videos) == 1:
         # just move it up, putting to it the name of the folder (add the extension)
         os.rename(videos[0], path+extension)
     else:
-        command = os.path.join(os.path.dirname(__file__) or '.', 'concat.sh')
-        for v in sorted(videos):
-            command = command + ' "%s"' % v
-        _info(path, command)
-        rc, out, err = _shell(command, MAX_TIME_CONCAT)
-        if rc > 1:
-            _error(path, 'SHELL: ' + out)
-            return False
-        match = CONCAT_PATTERN.match(out.splitlines()[-1])
-        if not match:
-            _error(path, 'SHELL: ' + err)
-            return False
-        if not os.path.exists(match.group(1)):
-            _error(path, 'concat.sh, missing ' + match.group(1))
+        if not _exec_concat(path, videos):
             return False
     try:
         shutil.rmtree(path)
@@ -98,7 +106,48 @@ def _process_video(path, videos, extension):
         raise
     return True
 
-# let's find folders that have: no subfolders, up to 15 files, from which up to 10 videos
+
+def _group(filenames):
+    stack = [f for f in filenames if os.path.isdir(f)]
+    if len(stack) != 1:
+        _error('group', 'must be used on exactly one folder')
+        return
+
+    for base, group in _get_folder_videos(stack[0]):
+        if len(group) > 1:
+            argname = re.sub('_+', '_', re.sub('\W', '_', base))
+            if _DRY_RUN:
+                for each in group:
+                    _info(argname, each)
+            else:
+                _exec_concat(base, group, argname)
+
+
+def _get_folder_videos(folder):
+    pattern = re.compile("(.*?)\d+$")
+    videos = {}  # mapped by extension
+    for each in os.listdir(folder):
+        if not each.startswith('.'):
+            path = os.path.join(folder, each)
+            if os.path.isfile(path):
+                base, ext = os.path.splitext(each)
+                match = pattern.match(base)
+                if match:
+                    base = match.group(1)
+                ext = ext.lower()
+                if ext in VIDEO_EXTENSIONS:
+                    try:
+                        sub_videos = videos[ext]
+                    except KeyError:
+                        sub_videos = videos[ext] = {}
+                    try:
+                        group = sub_videos[base]
+                    except KeyError:
+                        group = sub_videos[base] = []
+                    group.append(path)
+    for each in videos.values():
+        for base, group in each.items():
+            yield base, sorted(group)
 
 
 def _process(filenames, force):
@@ -142,7 +191,6 @@ def _process(filenames, force):
 
 
 def _get_folder_info(folder):
-    """Returns [subfolders, videos, images, else]"""
     subfolders, videos, images, others, ignore, video_extension = [], [], [], set(), False, None
     for each in os.listdir(folder):
         if each .startswith('.'):
@@ -194,7 +242,10 @@ def main(parser, sysargs):
         else:
             _error(args.target, "Invalid target argument, not a directory")
     try:
-        _process(args.filenames, args.force and not _DRY_RUN)  # only allow force with --go
+        if args.group:
+            _group(args.filenames)
+        else:
+            _process(args.filenames, args.force and not _DRY_RUN)  # only allow force with --go
     except Exit:
         if not _DRY_RUN:
             sys.exit(0)
@@ -206,6 +257,7 @@ if __name__ == '__main__':
     clParser = argparse.ArgumentParser(description='Movies curator')
     clParser.add_argument('-t', '--target', help='location for final files, if required')
     clParser.add_argument('--force', action='store_true', help='forces the processing of video on a given folder')
+    clParser.add_argument('--group', action='store_true', help='groups videos in a folder by name')
     clParser.add_argument('--go', action='store_true', help='perform the required changes')
     clParser.add_argument('filenames', nargs='+')
 
