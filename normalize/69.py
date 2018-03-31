@@ -11,7 +11,7 @@ import time
 _DRY_RUN = False  # note: is not constant
 _TARGET_DIR = None
 
-VIDEO_EXTENSIONS = set(['.mkv', '.avi', '.mp4', '.mov', '.wmv' , '.mpg', '.rmvb', '.divx', '.m4v', '.flv', '.mpeg', '.iso'])
+VIDEO_EXTENSIONS = set(['.mkv', '.avi', '.mp4', '.mov', '.wmv' , '.mpg', '.rmvb', '.divx', '.m4v', '.flv', '.mpeg', '.iso', '.asf', '.asx', '.f4v'])
 IMAGE_EXTENSIONS = set(['.jpg', '.png', '.gif', '.jpeg'])
 DISMISS_EXTENSIONS = set(['.srt', '.nfo', '.db', '.sfv', '.srr', '.html', '.md5', '.doc', '.txt', '.htm'])
 
@@ -102,8 +102,15 @@ def _process_video(path, videos, extension):
     try:
         shutil.rmtree(path)
     except OSError:
-        _error(path, "Cannot remove?")
-        raise
+        import time
+        time.sleep(5)
+        try:
+            shutil.rmtree(path)
+        except OSError:
+            import traceback
+            traceback.print_exc()
+            _error(path, "Cannot remove?")
+            raise
     return True
 
 
@@ -183,7 +190,7 @@ def _process(filenames, force):
                         if not _process_video(folder, videos, video_extension):
                             return
             elif ilen:
-                _info(folder, "IMAGES folder")
+                _warning(folder, "IMAGES folder")
             else:
                 _warning(folder, "Remove empty directory")
     if unknown_extensions:
@@ -200,7 +207,7 @@ def _get_folder_info(folder):
             path = os.path.join(folder, each)
             if os.path.isdir(path):
                 subfolders.append(path)
-            else:
+            elif os.path.isfile(path):
                 ext = os.path.splitext(each)[1].lower()
                 if ext in VIDEO_EXTENSIONS:
                     if videos:
