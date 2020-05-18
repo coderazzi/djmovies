@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from movies.images_manager import ImagesManager
 
+
 class Movie(models.Model):
     class Meta:
         db_table = 'movies'
@@ -53,7 +54,7 @@ class Movie(models.Model):
                 ret.append(each)
         return (ret and (' / '.join(ret))) or ''
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s [%d]" % (self.title, self.id)
 
 
@@ -63,26 +64,29 @@ class Location(models.Model):
     description = models.TextField(blank=True)
     path = models.TextField(blank=True)
     movies = models.ManyToManyField(Movie, through='MoviePath')
+
     class Meta:
         db_table = 'locations'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s [%d]" % (self.name, self.id)
 
 
 class MoviePath(models.Model):
-    movie = models.ForeignKey(Movie)
-    location = models.ForeignKey(Location)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     path = models.TextField()
+
     class Meta:
         db_table = 'paths'
 
 
 class Subtitle(models.Model):
-    movie = models.ForeignKey(Movie)
-    location = models.ForeignKey(Location)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     language = models.TextField()
     filename = models.TextField()
+
     class Meta:
         db_table = 'subtitles'
 
@@ -90,16 +94,17 @@ class Subtitle(models.Model):
 class Image(models.Model):
     objects = ImagesManager()
     id = models.AutoField(primary_key=True)
-    movie = models.ForeignKey(Movie)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     url = models.TextField(blank=True)
     path = models.TextField(blank=True)
     size = models.TextField(blank=True)
     width = models.IntegerField(null=True, blank=True)
     height = models.IntegerField(null=True, blank=True)
+
     class Meta:
         db_table = 'images'
 
-    def __unicode__(self):
+    def __str__(self):
         movie = self.movie or '-no movie associated?-'
         return "%s [%dx%d]" % (movie, self.width, self.height)
 
@@ -116,18 +121,19 @@ class Image(models.Model):
         except:
             pass
 
-    SIZE_BASIC='B'
-    SIZE_LARGE='L'
-    DIRECTORY_BASE='static/mov_imgs'
-    ABS_DIRECTORY_BASE=os.path.join('movies', DIRECTORY_BASE)
+    SIZE_BASIC = 'B'
+    SIZE_LARGE = 'L'
+    DIRECTORY_BASE = 'static/mov_imgs'
+    ABS_DIRECTORY_BASE = os.path.join('movies', DIRECTORY_BASE)
 
 
 class Lock(models.Model):
     name = models.TextField(primary_key=True)
+
     class Meta:
         db_table = 'locks'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @staticmethod
@@ -147,10 +153,11 @@ class Configuration(models.Model):
     id = models.AutoField(primary_key=True)
     key = models.TextField(unique=True)
     value = models.TextField(blank=True)
+
     class Meta:
         db_table = 'configuration'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.key
 
     @staticmethod
@@ -168,14 +175,12 @@ class Configuration(models.Model):
         else:
             Configuration.objects.create(key=key, value=value)
 
-    IMDB_SEARCH_YEAR='imdb-search-year'
-    IMDB_SEARCH_YEAR2='imdb-search-year2'
-    IMDB_SEARCH_RESULTS='imdb-search-max-results'
+    IMDB_SEARCH_YEAR = 'imdb-search-year'
+    IMDB_SEARCH_YEAR2 = 'imdb-search-year2'
+    IMDB_SEARCH_RESULTS = 'imdb-search-max-results'
 
 
 class UQuery(models.Model):
-
-
     id = models.AutoField(primary_key=True)
     title = models.TextField(unique=True)
     standarized_title = models.TextField(unique=True)
@@ -188,10 +193,9 @@ class UQuery(models.Model):
         db_table = 'uqueries'
 
 
-class UResults(models.Model):       
-
+class UResults(models.Model):
     oid = models.IntegerField()
-    query = models.ForeignKey('UQuery')
+    query = models.ForeignKey('UQuery', on_delete=models.CASCADE)
     desc = models.TextField()
     size = models.IntegerField()
     nfo = models.TextField(null=True, blank=True)
@@ -208,7 +212,5 @@ class UResults(models.Model):
         unique_together = (('oid', 'query'),)
 
 
-
-#ensure now that images are properly deleted
+# ensure now that images are properly deleted
 models.signals.pre_delete.connect(Image.delete_callback, sender=Image, dispatch_uid="image.delete_callback")
-

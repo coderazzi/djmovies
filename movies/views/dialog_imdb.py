@@ -11,10 +11,8 @@ def _json_response(f):
     try:
         result = f()
     except Exception as ex:
-        print traceback.format_exc()
-        #raise
+        print(traceback.format_exc())
         result = {'error': 'Server error: '+str(ex)}
-    #print json.dumps(result)
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 
@@ -29,7 +27,7 @@ def get_mediainfo(request):
 
 def search_title(request):
     def inner():    
-        references, firstInfo = searchImdb(request.POST['movie.title'].encode('ascii', 'ignore'))
+        references, firstInfo = searchImdb(request.POST['movie.title'])
         return {'links' : references, 
                 'first_movie_info': firstInfo and firstInfo.__dict__}
     return _json_response(inner)

@@ -1,4 +1,7 @@
 #!/bin/bash
-export MAGICK_HOME=/usr/local/Cellar/imagemagick@6/6.9.9-27/
+#export MAGICK_HOME=/usr/local/Cellar/imagemagick@6/6.9.9-27/
+#unalias python
 cd `dirname $0`
-./manage.py runserver
+source venv/bin/activate
+xdg-open  "http://127.0.0.1:8000"
+python3 ./manage.py runserver

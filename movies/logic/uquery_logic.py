@@ -1,7 +1,10 @@
-import re, time
+import re
+import time
+
+# from usenet_search_binsearch import search_title
+from movies.logic.usenet_search_nzbindex import search_title
+
 from movies.models import UQuery, UResults
-#from usenet_search_binsearch import search_title
-from usenet_search_nzbindex import search_title
 
 STATUS_NO_DOWNLOADED = 0xc0
 STATUS_DOWNLOADED = 0xc1
@@ -111,16 +114,16 @@ def _get_results(query_id, exclude_status=5000):
 
 def _update_results(query, results=[], only_get_newer_results=True):
     exclude = [d.oid for d in results]
-    print 'Exclude', exclude
+    print('Exclude', exclude)
     if exclude:
-        print 'Exclude type', type(exclude[0])
+        print('Exclude type', type(exclude[0]))
     newest_oid, new_results = search_title(query.standarized_title, query.min_size, DEFAULT_MAX_SIZE,
                                            exclude_oid_list=exclude,
                                            stop_on_oid=query.newest_result if only_get_newer_results else None)
     now = int(time.time())
     for d in reversed(new_results):
         if int(d.oid) not in exclude:
-            print 'New oid:', d.oid, type(d.oid)
+            print('New oid:', d.oid, type(d.oid))
             UResults(query_id=query.id, oid=d.oid, desc=d.desc, size=d.size, nfo=d.nfo,
                      files=d.files, since=d.since, parts=d.parts, total_parts=d.total_parts,
                      status=STATUS_NO_DOWNLOADED, creation_time=now, download=d.download).save()

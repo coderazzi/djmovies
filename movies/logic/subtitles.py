@@ -102,8 +102,8 @@ class SubtitleFileHandler:
 
         with open(self.fullpath, 'w') as f:
             for counter, period, content in self.content:
-                print >> f, counter
-                print >> f, period
+                print(counter, file=f)
+                print(period, file=f)
                 for line in content:
-                    print >> f, line
-                print >> f
+                    print(line, file=f)
+                print(file=f)

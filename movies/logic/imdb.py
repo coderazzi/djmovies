@@ -1,11 +1,11 @@
-import htmlentitydefs
+import json
 import rarfile
 import re
-import urllib
-import urlparse
 import zipfile
 
 from bs4 import BeautifulSoup
+from html.entities import name2codepoint
+from urllib.parse import urlparse, urlencode, urljoin
 
 from movies.logic.browser import Browser
 from movies.logic.dstruct import Struct
@@ -23,11 +23,12 @@ HTML_PARSER = 'lxml'
 
 SIMULATE = False
 
+
 def searchYear(year, finalYear, limit):
     start = 0
     showYear = year != finalYear
     url = 'http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (
-    year, finalYear)
+        year, finalYear)
     numberRe = re.compile('(\d+)')
     yearMatch = re.compile('^\s*\(\s*(\S+?)\s*\)\s*$')
     noSpaces = re.compile('\s+', re.S)
@@ -38,14 +39,14 @@ def searchYear(year, finalYear, limit):
             # page, limit = open('/Users/coderazzi/kk.html'), min(limit, 40)
             soup = BeautifulSoup(page.read(), HTML_PARSER)
             with open('imdb_search_year.html', 'w') as f:
-                print >> f, soup.prettify().encode('utf-8', 'ignore')
+                print(soup.prettify().encode('utf-8', 'ignore'), file=f)
             table = soup.find('table', attrs={'class': 'results'})
-            for g1 in soup.find_all('div', attrs={'class' : 'lister-item'}):
+            for g1 in soup.find_all('div', attrs={'class': 'lister-item'}):
                 g2 = g1.find('div', attrs={'class': 'lister-item-image'})
                 if g2:
                     a = g2.find('a')
                     if a:
-                        href = urlparse.urlparse(a.get('href')).path
+                        href = urlparse(a.get('href')).path
                         img = a.find('img')
                         if img:
                             title, img = img.get('alt'), img.get('loadlate')
@@ -57,7 +58,7 @@ def searchYear(year, finalYear, limit):
                                 start = int(match.group(1))
                                 if start > limit:
                                     break
-                                info = g1.find_all('p')#, attrs={'class': 'text-muted'})
+                                info = g1.find_all('p')  # , attrs={'class': 'text-muted'})
                                 if len(info) == 4:
                                     genre = info[0].find('span', attrs={'class': 'genre'})
                                     genre = genre.text.strip() if genre else '?'
@@ -78,7 +79,7 @@ def searchYear(year, finalYear, limit):
             #         imageTd = tr.find('td', attrs={'class': 'image'})
             #         imageTd = imageTd and imageTd.find('a')
             #         if imageTd:
-            #             href = urlparse.urlparse(imageTd.get('href')).path
+            #             href = urlparse(imageTd.get('href')).path
             #             title = search = imageTd.get('title')
             #             idx = yearInTitle.match(title)
             #             if idx:
@@ -109,7 +110,7 @@ def searchImdb(movieTitle):
         ret = []
         # small trick, for cases when we cannot find the movie by name: we can enter the URL directly (at imdb)
         if movieTitle.startswith(IMDB_COM):
-            href = urlparse.urlparse(movieTitle).path
+            href = urlparse(movieTitle).path
             info = _getImdbInfo(getUid(href, ''), browser)
             if info:
                 uid = getUid(href, info.title)
@@ -123,21 +124,21 @@ def searchImdb(movieTitle):
             with open('/tmp/imdb_search.html') as f:
                 soup = BeautifulSoup(f.read(), HTML_PARSER)
         else:
-            url = IMDB_COM + '/search/title?' + urllib.urlencode(
+            url = IMDB_COM + '/search/title?' + urlencode(
                 {'count': '50', 'title_type': 'feature,tv_movie', 'title': movieTitle, 'view': 'simple'})
             # note that count could be up to 250
             soup = BeautifulSoup(browser.open(url).read(), HTML_PARSER)
             with open('/tmp/imdb_search.html', 'w') as f:
-                print >> f, soup.prettify().encode('utf-8', 'ignore')
+                print(soup.prettify().encode('utf-8', 'ignore'), file=f)
         for td in soup.find_all('span'):
             if td.get('title'):
                 ref = td.find('a')
                 if ref:
-                    href = urlparse.urlparse(
+                    href = urlparse(
                         ref.get('href')).path  # we remove any parameters information. So far, is useless
                     title = _unescape(ref.text)
                     if title:
-                        year = td.find('span', attrs={'class' : 'lister-item-year'})
+                        year = td.find('span', attrs={'class': 'lister-item-year'})
                         year = _unescape(year.text) if year else ''
                         ret.append((getUid(href, title), title, year))
         return (ret, ret and _getImdbInfo(ret[0][0], browser))
@@ -146,7 +147,7 @@ def searchImdb(movieTitle):
 def searchImdbBasic(movieTitle):
     '''Not used any longer, would return movies in incorrect language'''
     ret = []
-    url = IMDB_COM + '/find?' + urllib.urlencode({'q': movieTitle, 's': 'all'})
+    url = IMDB_COM + '/find?' + urlencode({'q': movieTitle, 's': 'all'})
     with Browser() as browser:
         page = browser.open(url)
         soup = BeautifulSoup(page.read(), HTML_PARSER)
@@ -158,7 +159,7 @@ def searchImdbBasic(movieTitle):
                 if ref:
                     href = ref.get('href')
                     if href and title_search.match(href):
-                        href = urlparse.urlparse(href).path  # we remove any parameters information. So far, is useless
+                        href = urlparse(href).path  # we remove any parameters information. So far, is useless
                         title = _unescape(ref.text)
                         if title:
                             ret.append((getUid(href, title), title, _unescape(ref.nextSibling)))
@@ -182,76 +183,38 @@ def _getImdbInfo(uid, browser):
     title, year, duration, genres, actors, trailer, imgSrc, bigImgSrc = [None] * 8
     link, title = uid.split(' ', 1)
     page = browser.open(IMDB_COM + link)
+    # page = open('imdb.html')
     soup = BeautifulSoup(page.read(), HTML_PARSER)
     with open('imdb.html', 'w') as f:
-        print >> f, soup.prettify().encode('utf-8', 'ignore')
+        print(soup.prettify().encode('utf-8', 'ignore'), file=f)
 
+    data = json.loads(soup.find('script', type='application/ld+json').text)
+    title = data['name']
+    try:
+        year = data['datePublished'].split('-')[0]
+    except:
+        year = '???'
+    genres = '/'.join(data['genre'])
+    actors = '/'.join([x['name'] for x in data['actor']])
+    try:
+        trailer = data['trailer']['embedUrl']
+    except KeyError:
+        trailer = ''
+    imgSrc = bigImageSrc = data['image']
+    for each in soup.findAll('div', attrs={'class': 'poster'}):
+        imgSrc = each.find('img').attrs['src']
+        break
     # duration
-    for infoBar in soup.findAll('time', attrs={'itemprop': 'duration'}):
+    for infoBar in soup.findAll('time'):
         match = duration_search.match(_unescape(infoBar.text))
         duration = match and match.group(1)
         if duration:
             break
-    # infoBar = soup.find('time', attrs={'itemprop': 'duration'})
-    # if infoBar:
-    #     match = duration_search.match(_unescape(infoBar.text))
-    #     duration = match and match.group(1)
     if not duration:
-        print 'Attention, no duration!!!!'
-    divMain = soup.find('div', attrs={'id': 'pagecontent'})
-    if divMain:
-        # title and year
-        titleTag = divMain.find('h1')  # , attrs={'class':'header'})
-        if titleTag:
-            yearRef = titleTag.find('a')
-            if yearRef:
-                year = _unescape(yearRef.text)
-            else:
-                yearRef = titleTag.find('span', attrs={'class': 'nobr'})
-                match = yearRef and re.search('(\d\d\d\d)', _unescape(yearRef.text))
-                year = match and match.group(1)
-            if not title:
-                titleTag2 = titleTag.find('span', attrs={'itemprop': 'name'})
-                if titleTag2:
-                    title = _unescape(titleTag2.contents[0])
-                else:
-                    title = _unescape(titleTag.contents[0])
-        if not title:
-            print 'Attention, no title!!!!'
-        # actors, genres
-        genres = '/'.join([_unescape(each.text) for each in divMain.find_all('span', itemprop='genre')])
-        actors = []
-        actors_info =  divMain.find_all('span', attrs={'itemprop': 'actors'})
-        if not actors_info:
-            actors_info = divMain.find_all('div', attrs={'itemprop': 'actors'})
-        for each in actors_info:
-            actor = each.find_all('span', itemprop='name')
-            if actor:
-                actors.extend(actor)
-        actors = '/'.join([_unescape(each.text) for each in actors])
-        if not actors:
-            print 'Attention, no actors!!!!'
-        trailer = divMain.find('a', itemprop='trailer')
-        trailer = trailer and trailer.get('href')
-        if not trailer:
-            print 'Attention: no trailer!!!!!'
-        # image now
-        tdImg = divMain.find('img', attrs={'itemprop': 'image'})
-        imgSrc = tdImg and tdImg.get('src')
-        print 'img', imgSrc
-        if imgSrc:
-            bigImgSrc = tdImg.parent.get('href')
-            if bigImgSrc:
-                try:
-                    imgTag = BeautifulSoup(browser.open(bigImgSrc).read(), HTML_PARSER).find('img', attrs={
-                        'id': 'primary-img'})
-                    bigImgSrc = imgTag and imgTag.get('src')
-                except:
-                    bigImgSrc = None
-        url = urlparse.urlparse(link).path  # we remove any parameters information. So far, is useless
-        print 'Final duration:',duration
-        return Struct.nonulls(url=url, title=title, year=year, duration=duration, uid=uid,
-                              genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
+        print('Attention, no duration!!!!')
+    url = urlparse(link).path  # we remove any parameters information. So far, is useless
+    return Struct.nonulls(url=url, title=title, year=year, duration=duration, uid=uid,
+                          genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
 
 
 def _unescape(text):
@@ -262,15 +225,15 @@ def _unescape(text):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return unichr(int(text[3:-1], 16))
+                    return chr(int(text[3:-1], 16))
                 else:
-                    return unichr(int(text[2:-1]))
+                    return chr(int(text[2:-1]))
             except ValueError:
                 pass
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = chr(name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         return text.strip()  # leave as is
@@ -301,7 +264,7 @@ def searchSubtitles(movieTitle):
 def getSubtitles(subTitleRef, language, firstSubtitle, lastSubtitle):
     ret, url = {}, SUBTITLES_COM
     with Browser() as browser:
-        page = browser.open(urlparse.urljoin(url, subTitleRef))
+        page = browser.open(urljoin(url, subTitleRef))
         soup = BeautifulSoup(page.read(), HTML_PARSER)
         subrefs = []
         for each in soup.find_all('a', attrs={'title': 'Download %s subtitles' % language.lower()}):
@@ -314,7 +277,7 @@ def getSubtitles(subTitleRef, language, firstSubtitle, lastSubtitle):
                 subrefs.append(each['href'])
         subtitleIdx = 1
         for each in subrefs:
-            page = browser.open(urlparse.urljoin(url, each))
+            page = browser.open(urljoin(url, each))
             soup = BeautifulSoup(page.read(), HTML_PARSER)
             img = soup.find('img', attrs={'title': 'Download'})
             if img:
@@ -323,7 +286,7 @@ def getSubtitles(subTitleRef, language, firstSubtitle, lastSubtitle):
                 if ref:
                     subtitleIdx += 1
                     if subtitleIdx > firstSubtitle:
-                        f = browser.retrieve(urlparse.urljoin(url, ref))
+                        f = browser.retrieve(urljoin(url, ref))
                         with zipfile.ZipFile(f[0]) as z:
                             names = z.namelist()
                             for i in range(len(names)):
@@ -345,7 +308,7 @@ def searchSubtitlesOnSubscene(movieTitle):
     with Browser() as browser:
         browser.open(SUBSCENE_COM)
         browser.select_form(nr=0)
-        browser.form['q'] = movieTitle
+        browser.form['query'] = movieTitle
         try:
             browser.submit()
         except:
@@ -368,7 +331,7 @@ def searchSubtitlesOnSubscene(movieTitle):
 def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
     ret, url = {}, SUBSCENE_COM
     with Browser() as browser:
-        page = browser.open(urlparse.urljoin(url, subTitleRef))
+        page = browser.open(urljoin(url, subTitleRef))
         soup = BeautifulSoup(page.read(), HTML_PARSER)
         subrefs = []
         for each in soup.find_all('td', attrs={'class': 'a1'}):
@@ -380,18 +343,18 @@ def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
         # firstSubtitle, lastSubtitles are 1 based
         for each in subrefs[firstSubtitle - 1:lastSubtitle]:
             try:
-                page = browser.open(urlparse.urljoin(url, each))
-            except Exception, ex:
-                print 'Error retrieving ref ' + each, ex
+                page = browser.open(urljoin(url, each))
+            except Exception as ex:
+                print('Error retrieving ref ' + each, ex)
                 continue
             soup = BeautifulSoup(page.read(), HTML_PARSER)
             ref = soup.find('a', attrs={'id': 'downloadButton'})
             ref = ref and ref.get('href')
             if ref:
                 try:
-                    f = browser.retrieve(urlparse.urljoin(url, ref))
-                except Exception, ex:
-                    print 'Error retrieving ref ' + ref, ex
+                    f = browser.retrieve(urljoin(url, ref))
+                except Exception as ex:
+                    print('Error retrieving ref ' + ref, ex)
                     continue
                 type = f[1].getsubtype()
                 if type == 'x-zip-compressed':
@@ -399,7 +362,7 @@ def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
                 elif type == 'x-rar-compressed':
                     handler = rarfile.RarFile
                 else:
-                    print 'getSubtitlesOnSubscene: Received file of type ' + type + ", discarded"
+                    print('getSubtitlesOnSubscene: Received file of type ' + type + ", discarded")
                     continue
                 try:
                     with handler(f[0]) as z:
@@ -409,12 +372,12 @@ def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
                             name = names[i]
                             if name.lower().endswith('.srt'):
                                 if single:
-                                    print 'getSubtitlesOnSubscene: Received multiple scrs, discarded'
+                                    print('getSubtitlesOnSubscene: Received multiple scrs, discarded')
                                     break
                                 single = name
                         else:
                             if single:
-                                print 'getSubtitlesOnSubscene: reading on ' + type + ' entry ' + single
+                                print('getSubtitlesOnSubscene: reading on ' + type + ' entry ' + single)
                                 content = z.read(single)
                                 try:
                                     content = content.decode('iso-8859-1').encode('utf8')
@@ -422,9 +385,9 @@ def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
                                     pass
                                 ret[single] = content
                             else:
-                                print 'getSubtitlesOnSubscene: Received no  scrs, discarded'
+                                print('getSubtitlesOnSubscene: Received no  scrs, discarded')
                 except:
-                    print 'getSubtitlesOnSubscene: Error reading file ' + ref
+                    print('getSubtitlesOnSubscene: Error reading file ' + ref)
                     pass
     return ret
 

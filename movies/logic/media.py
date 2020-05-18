@@ -3,14 +3,14 @@
 
 import os, re, subprocess, sys
 
-import languages
 
 from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 from tempfile import mkstemp
 
+from movies.logic import languages
 from movies.logic.dstruct import Struct
-from locations_handler import LocationHandler
+from movies.logic.locations_handler import LocationHandler
 
 _py3 = sys.version_info >= (3,)
 
@@ -84,10 +84,7 @@ class MediaInfo(object):
 
     def __init__(self, xml):
         self.xml_dom = xml
-        if _py3:
-            xml_types = (str,)  # no unicode type in python3
-        else:
-            xml_types = (str, unicode)
+        xml_types = (str,)  # no unicode type in python3
 
         if isinstance(xml, xml_types):
             self.xml_dom = MediaInfo.parse_xml_data_into_dom(xml)
@@ -117,7 +114,7 @@ class MediaInfo(object):
             p = subprocess.Popen(command, stdout=fp_out, stderr=fp_err, env=environment)
             p.wait()
         except:
-            print >> sys.stderr, '\n\n\n\nCHECK THAT mediaindo IS INSTALLED!!!\n\n\n\n'
+            print('\n\n\n\nCHECK THAT mediaindo IS INSTALLED!!!\n\n\n\n', file=sys.stderr)
             raise
         fp_out.seek(0)
 
@@ -181,14 +178,14 @@ def mediainfo(path, folder):
                 except:
                     pass
             for line in runProcess(['mount', '-o', 'loop', isoFile, path]):
-                print line
+                print(line)
         return path
 
     def umount(diskOrPath):
         if sys.platform == 'darwin':
             for line in runProcess(['hdiutil', 'eject', diskOrPath]):
                 if 'failed' in line:
-                    print '***E***', line
+                    print('***E***', line)
         else:
             runProcess(['umount', diskOrPath])
             os.rmdir(diskOrPath)
@@ -223,7 +220,7 @@ def mediainfo(path, folder):
         for path in paths:
             size += os.path.getsize(path)
             for track in MediaInfo.parse(path).tracks:
-                print track
+                print(track)
                 if track.track_type == 'General':
                     name = name or track.name
                     duration += float(track.duration or 0)
@@ -247,17 +244,17 @@ def mediainfo(path, folder):
                     texts.add(now)
 
         if not duration:
-            print 'media.py:', 'could not retrieve duration'
+            print('media.py:', 'could not retrieve duration')
         if not width:
-            print 'media.py:', 'could not retrieve width'
+            print('media.py:', 'could not retrieve width')
         if not height:
-            print 'media.py:', 'could not retrieve height'
+            print('media.py:', 'could not retrieve height')
         if not audios:
-            print 'media.py:', 'could not retrieve audios'
+            print('media.py:', 'could not retrieve audios')
         if not texts:
-            print 'media.py:', 'could not retrieve texts'
+            print('media.py:', 'could not retrieve texts')
 
-        print 'Media.py', 'duration =', duration, " width =", width, " height = ", height, " audios F=", audios, ' texts =', texts
+        print('Media.py', 'duration =', duration, " width =", width, " height = ", height, " audios F=", audios, ' texts =', texts)
 
 
         duration = int(round(duration / 60000)) if duration else None
@@ -319,4 +316,4 @@ if __name__ == '__main__':
     movie = 'American_Gangster__2007.mkv'
     info = mediainfo(movie, folder)
     for i in dir(info):
-        print i, getattr(info, i)
+        print(i, getattr(info, i))

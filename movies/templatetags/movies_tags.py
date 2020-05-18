@@ -1,9 +1,10 @@
-import urllib
+from urllib.parse import urlencode
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template import Library
 
-register=Library()
+register = Library()
+
 
 # @register.simple_tag
 # def usenet_search(search):
@@ -13,4 +14,4 @@ register=Library()
 
 @register.simple_tag
 def uquery_search(search):
-	return reverse('#create_query')+'?'+urllib.urlencode({'q':search.encode('utf-8', 'ignore')})
+    return reverse('#create_query') + '?' + urlencode({'q': search.encode('utf-8', 'ignore')})

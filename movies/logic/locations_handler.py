@@ -160,7 +160,7 @@ class LocationHandler:
                             dbInfo.append(SubtitleInfo(sub))
         except:
             pass
-        sorted(dbInfo, key=(lambda x: unicode.lower(x.filename)))
+        sorted(dbInfo, key=(lambda x: str.lower(x.filename)))
         return dbInfo
 
     def _get_allfiles_in_path_careof_djmignore(self, parentpath):
@@ -351,26 +351,10 @@ class LocationHandler:
                 subtitleName = os.path.join(dirname, '%s-%d-%s' % (lang_abbr, index, use))
                 index += 1
                 if not os.path.exists(subtitleName): break
-            with open(subtitleName, 'w') as f:
+            with open(subtitleName, 'wb') as f:
                 f.write(content)
         ret = self._iterateAllFilesInSubpath(basename, dirname)
         if len(ret) != 1:
             # can happen if directory already existed with some content, normally BlueRay
-            raise Exception, 'Invalid setup for directory ' + dirname
+            raise Exception('Invalid setup for directory ' + dirname)
         return ret[0][0], ret[0][3]
-
-# if __name__ == '__main__':
-#     lc = LocationHandler('/Users/coderazzi/development/test')
-#     print lc.getSubtitles('The_Terminator__1984/The_Terminator__1984.mp4')
-
-
-# if __name__ == '__main__':
-#     from dstruct import Struct
-#     import time
-#     lc = LocationHandler('/tmp')
-#     name='kk/kk.mkv'
-#     newname=lc.normalizeFilename(name, Struct(year='1992', title='EL pajaro'))
-#     print newname
-#     time.sleep(5)
-#     lc.reverseNormalization(name, newname)
-#     print 'Done'

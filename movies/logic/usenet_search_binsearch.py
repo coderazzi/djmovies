@@ -1,8 +1,9 @@
-import re, urllib
+import re
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
 from movies.logic.browser import Browser
 from movies.logic.dstruct import Struct
+from urllib.parse import quote_plus
 
 # NOTE: To prettify anything, do:
 #  with open('/tmp/kk.html') as i:
@@ -106,7 +107,7 @@ def _get_nfo(browser, oid):
 
 
 def _search_url(title, min_size, max_size, first):
-    return SEARCH % (urllib.quote_plus(title), first, min_size, max_size)
+    return SEARCH % (quote_plus(title), first, min_size, max_size)
 
 # with open('../kk.html') as i:
 #     soup = BeautifulSoup(i.read(), HTML_PARSER)

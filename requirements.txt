@@ -1,12 +1,7 @@
-# on addition: brew install mediainfo unrar freetype imagemagick@6
-# 	this will require to have export MAGICK_HOME=/usr/local/Cellar/imagemagick@6/6.9.9-27/ 
-# For Linux:
-#       apt-get install mediainfo unrar imagemagick libxml2-dev libxslt-dev zlib1g-dev
-# brew install ffmpeg --with-fdk-aac
-Django==1.7.7
+Django==3.0.5
 Wand==0.4.4
 beautifulsoup4==4.6.0
-lxml==3.4.2
-mechanize==0.2.5
+lxml==4.5
+mechanize==0.4.5
 rarfile==2.7
-wsgiref==0.1.2
+#wsgiref==0.1.2

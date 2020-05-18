@@ -1,4 +1,4 @@
-from gistfile1 import languages
+from movies.logic.gistfile1 import languages
 
 
 def get_language(code):

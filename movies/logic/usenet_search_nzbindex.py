@@ -1,8 +1,9 @@
-import re, urllib
+import re
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
 from movies.logic.browser import Browser
 from movies.logic.dstruct import Struct
+from urllib.parse import quote_plus
 
 # NOTE: To prettify anything, do:
 #  with open('/tmp/kk.html') as i:
@@ -12,10 +13,11 @@ from movies.logic.dstruct import Struct
 
 HTML_PARSER = 'lxml'
 SEARCH = 'http://www.nzbindex.nl/search/?q=%s&sort=agedesc&minsize=%d&maxsize=%d&max=%d&more=1&hidespam=1&p=%d'
-MAX_RESULTS=25
+MAX_RESULTS = 25
 MIN_SIZE = 4567
 
 BROWSER = Browser()
+
 
 def search_title(title, min_size, max_size, exclude_oid_list=None, stop_on_oid=None):
     """Searchs in usenet for the given title, using the specific min_size
@@ -25,12 +27,12 @@ def search_title(title, min_size, max_size, exclude_oid_list=None, stop_on_oid=N
        It returns the newest oid (download id) found, and the list of results, sorted from newer to older"""
     if exclude_oid_list is None:
         exclude_oid_list = []
-    title_ext = re.compile('"([^"]+)"',re.M | re.S)
+    title_ext = re.compile('"([^"]+)"', re.M | re.S)
     parts_reg = re.compile("^[^\(]+\((\d+).*$", re.M | re.S)
-    nfo_reg = re.compile("^javascript:nfo\('([^']+)'\);$",re.M | re.S)
-    files_reg = re.compile("^((\s+\d+\s*\w+\s+\|?)+).*$", re.M|re.S)
+    nfo_reg = re.compile("^javascript:nfo\('([^']+)'\);$", re.M | re.S)
+    files_reg = re.compile("^((\s+\d+\s*\w+\s+\|?)+).*$", re.M | re.S)
     size_reg = re.compile('([\d\.]+).([GM])')
-    time_reg = re.compile('^\s+([\d\.]+)\s+(\w+)\s+', re.M|re.S)
+    time_reg = re.compile('^\s+([\d\.]+)\s+(\w+)\s+', re.M | re.S)
     ret, exclude_list = [], exclude_oid_list[:]
     search_init, loop, agreed, first_oid_found = 0, True, False, None
     today = date.today()
@@ -38,10 +40,10 @@ def search_title(title, min_size, max_size, exclude_oid_list=None, stop_on_oid=N
         loop = False
         BROWSER.open(_search_url(title, min_size, max_size, MAX_RESULTS, search_init))
         soup = BeautifulSoup(BROWSER.response().read(), HTML_PARSER)
-        #soup = BeautifulSoup(open('example_output_nzb_index.html').read(), HTML_PARSER)
+        # soup = BeautifulSoup(open('example_output_nzb_index.html').read(), HTML_PARSER)
 
         with open('nzb_index_trace.html', 'w') as f:
-            print >> f, soup.prettify().encode('utf-8', 'ignore')
+            print(soup.prettify().encode('utf-8', 'ignore'), file=f)
 
         if not search_init:
             form = soup.find('form')
@@ -75,7 +77,7 @@ def search_title(title, min_size, max_size, exclude_oid_list=None, stop_on_oid=N
                     loop = True
                     exclude_list.append(oid)
                     if tds[1].find('span', attrs={'class': 'threat'}):
-                        continue #Password protected
+                        continue  # Password protected
                     for a in tds[1].find_all('a'):
                         if a.text == 'Download':
                             download = a.get('href')
@@ -105,8 +107,8 @@ def search_title(title, min_size, max_size, exclude_oid_list=None, stop_on_oid=N
                                         if match:
                                             nfo = _get_nfo(match.group(1))
                             if not files:
-                                files='?'
-                            match = size_reg.match(tds[2].text.strip().replace(',',''))
+                                files = '?'
+                            match = size_reg.match(tds[2].text.strip().replace(',', ''))
                             if match:
                                 size = float(match.group(1))
                                 if match.group(2) == 'G':
@@ -119,7 +121,7 @@ def search_title(title, min_size, max_size, exclude_oid_list=None, stop_on_oid=N
                             time = today
                             if match:
                                 reference = float(match.group(1))
-                                if match.group(2)[0]=='d':
+                                if match.group(2)[0] == 'd':
                                     reference *= 24
                                 time -= timedelta(hours=int(reference))
                             ret.append(Struct(oid=oid, desc=desc, size=int(size),
@@ -143,5 +145,4 @@ def _get_nfo(ref):
 
 
 def _search_url(title, min_size, max_size, max_results, first):
-    return SEARCH % (urllib.quote_plus(title), min_size, max_size, max_results, first)
-
+    return SEARCH % (quote_plus(title), min_size, max_size, max_results, first)
