@@ -16,7 +16,7 @@ from movies.logic.dstruct import Struct
 
 title_search = re.compile('/title/tt\d+')
 duration_search = re.compile('[^\\d]*(\\d+) min.*')
-IMDB_COM = 'http://www.imdb.com'
+IMDB_COM = 'https://www.imdb.com'
 SUBTITLES_COM = 'http://www.moviesubtitles.org/'
 SUBSCENE_COM = 'http://subscene.com/'
 HTML_PARSER = 'lxml'
