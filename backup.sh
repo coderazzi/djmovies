@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET='/Users/coderazzi/Dropbox/backups'
+TARGET='/home/coderazzi/Dropbox/backups'
 DATABASE=db_movies.sqlite
 
 cd `dirname $0`
@@ -9,7 +9,7 @@ next=1
 for f in $TARGET/djmovies.*.sqlite ; do
 	# number=$(echo $f | grep -Eo '[1-9]\d*')
 	number=$(echo $f | grep -Eo '[1-9][0-9]*')
-	let number=1+$number
+	number=$((number+1))
 	if [ $number -gt $next ] ; then
 		next=$number
 		last=$f

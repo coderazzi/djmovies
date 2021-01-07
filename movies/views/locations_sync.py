@@ -166,7 +166,7 @@ def edit_movie(request):
                 movie.image_set.create(url=imdbinfo.bigImageLink, size=Image.SIZE_LARGE)
 
             # create now the correct MoviePath entry
-            path = locationHandler.normalizeFilename(filepath, imdbinfo)
+            path = locationHandler.normalize_filename_and_title(filepath, imdbinfo)
             try:
                 print('Creating ', movie.id, locationId, path)
                 MoviePath.objects.create(movie=movie, location_id=locationId, path=path)

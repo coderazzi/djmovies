@@ -106,7 +106,7 @@ def _ffmpeg_launch(command):
     rc, out, err = _shell(command, MAX_TIME_MUX)
     if rc > 0:
         _error('ffmpeg', err)
-    return err
+    return err.decode('utf-8')
 
 
 def _process_killer(proc, max_time, communication):
@@ -591,15 +591,15 @@ def _parse_audio_info(filename, info):
 
 
 def print_info(filename):
-    print
-    print filename
-    print '='*len(filename)
+    print()
+    print(filename)
+    print('='*len(filename))
     title, streams = ffmpeg_text_info(filename)
-    print 'Title:', (title if title else 'no title')
+    print('Title:', (title if title else 'no title'))
     for l, title in streams:
-        print l
-        print '\t\tTitle:', (title if title else 'no title')
-    print
+        print(l)
+        print('\t\tTitle:', (title if title else 'no title'))
+    print()
 
 
 def get_subtitles(filename):
@@ -635,7 +635,7 @@ def main(parser, sysargs):
             if None in subs:
                 _warning(name, 'Subtitles wrong, either normalize it or set name on subtitle streams: mkvpropedit %s --edit track:4 --set name=English' % name)
                 subs = [s for s in subs if s]
-            print format % name, ','.join(subs)
+            print(format % name, ','.join(subs))
     else:
         _DRY_RUN = not args.go
         if args.go:

@@ -1,6 +1,9 @@
 import os
 import re
 
+from movies.logic.shell_utils import set_movie_title
+
+
 
 class SubtitleInfo:
     def __init__(self, filename, language=None, in_fs=None):
@@ -246,40 +249,47 @@ class LocationHandler:
             ret.append((each, False, LocationHandler.UNHANDLED_FILE))
         return ret
 
-    def normalizeFilename(self, path, imdbInfo):
+    def normalize_filename_and_title(self, path, imdbInfo):
 
         title, year = imdbInfo.title, imdbInfo.year
         if not title:
             return path
 
         dirname, basename = os.path.dirname(path), os.path.basename(path)
-        oldname, extension = os.path.splitext(basename)
+        old_name, extension = os.path.splitext(basename)
 
-        newname = re.sub('[^a-z0-9]+', '_', title.lower()).title() + ((year and ('__' + year)) or '')
-        oldDirName = None
+        new_name = re.sub('[^a-z0-9]+', '_', title.lower()).title() + ((year and ('__' + year)) or '')
+        old_dir_name = None
 
         # of old name is like new name, but adding _something (\w), we consider it good
-        if oldname.startswith(newname) and re.compile('_\w+').match(oldname[len(newname):]):
-            newname = oldname
+        if old_name.startswith(new_name) and re.compile('_\w+').match(old_name[len(new_name):]):
+            new_name = old_name
 
-        if dirname and dirname != newname:
+        if dirname and dirname != new_name:
             # we rename it
-            oldDirName = os.path.join(self.folderBase, dirname)
-            newDirName = os.path.join(self.folderBase, newname)
-            self.rename(oldDirName, newDirName)
-            dirname = newname
-        newname += extension.lower()
-        if newname != basename:
-            oldPath = os.path.join(self.folderBase, dirname, basename)
-            newPath = os.path.join(self.folderBase, dirname, newname)
-            basename = newname
+            old_dir_name = os.path.join(self.folderBase, dirname)
+            new_dir_name = os.path.join(self.folderBase, new_name)
+            self.rename(old_dir_name, new_dir_name)
+            dirname = new_name
+        new_name += extension.lower()
+        if new_name != basename:
+            old_path = os.path.join(self.folderBase, dirname, basename)
+            new_path = os.path.join(self.folderBase, dirname, new_name)
+            basename = new_name
             try:
                 # if this fails, we will rename the directory back
-                self.rename(oldPath, newPath)
+                self.rename(old_path, new_path)
             except:
-                if oldDirName:
-                    self.rename(newDirName, oldDirName)
+                if old_dir_name:
+                    self.rename(new_dir_name, old_dir_name)
                 raise
+
+        if year:
+            movie_title = '%s (%s)' % (title, year)
+        else:
+            movie_title = title
+        set_movie_title(new_path, movie_title)
+
         return os.path.join(dirname, basename)
 
     def reverseNormalization(self, path, normalizedName):

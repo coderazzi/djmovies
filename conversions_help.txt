@@ -128,3 +128,8 @@ ffmpeg -i Heathers__1988.mkv -vn Heathers__1988.ac3
 Remove attachment
 =================
 mkvpropedit /Volumes/TTC/__MOVIES/Surf_S_Up__2007.mkv --delete-attachment 1
+
+set tile
+==========
+
+mkvpropedit Capone__2020.mkv --edit info --set title="Capone (2020)"

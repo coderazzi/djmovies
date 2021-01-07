@@ -124,8 +124,10 @@ def searchImdb(movieTitle):
             with open('/tmp/imdb_search.html') as f:
                 soup = BeautifulSoup(f.read(), HTML_PARSER)
         else:
-            url = IMDB_COM + '/search/title?' + urlencode(
-                {'count': '50', 'title_type': 'feature,tv_movie', 'title': movieTitle, 'view': 'simple'})
+            url = IMDB_COM + '/find?' + urlencode(
+                {'q': movieTitle})
+            # url = IMDB_COM + '/search/title?' + urlencode(
+            #     {'count': '50', 'title_type': 'feature,tv_movie', 'title': movieTitle, 'view': 'simple'})
             # note that count could be up to 250
             soup = BeautifulSoup(browser.open(url).read(), HTML_PARSER)
             with open('/tmp/imdb_search.html', 'w') as f:
