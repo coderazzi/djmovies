@@ -23,15 +23,16 @@ HTML_PARSER = 'lxml'
 
 SIMULATE = False
 
+TITLE_EXTRACTOR = re.compile('([^(]+)\(([^\)]+)\)(.*)')
 
-def searchYear(year, finalYear, limit):
+
+def search_year(year, final_year, limit):
     start = 0
-    showYear = year != finalYear
     url = 'http://www.imdb.com/search/title?at=0&sort=moviemeter,asc&start=%%d&title_type=feature&year=%s,%s' % (
-        year, finalYear)
-    numberRe = re.compile('(\d+)')
-    yearMatch = re.compile('^\s*\(\s*(\S+?)\s*\)\s*$')
-    noSpaces = re.compile('\s+', re.S)
+        year, final_year)
+    number_re = re.compile('(\d+)')
+    year_match = re.compile('^\s*\(\s*(\S+?)\s*\)\s*$')
+    no_spaces = re.compile('\s+', re.S)
     with Browser() as browser:
         ret = []
         while start + 1 < limit:
@@ -53,7 +54,7 @@ def searchYear(year, finalYear, limit):
                             rating = g1.find('div', attrs={'class': 'ratings-imdb-rating'})
                             rating = rating.get('data-value') if rating else '?'
                             start = g1.find('span', attrs={'class': 'lister-item-index'})
-                            match = start and numberRe.search(start.text)
+                            match = start and number_re.search(start.text)
                             if match:
                                 start = int(match.group(1))
                                 if start > limit:
@@ -62,127 +63,106 @@ def searchYear(year, finalYear, limit):
                                 if len(info) == 4:
                                     genre = info[0].find('span', attrs={'class': 'genre'})
                                     genre = genre.text.strip() if genre else '?'
-                                    outline = noSpaces.sub(' ', _unescape(info[1].text), )
-                                    credit = noSpaces.sub(' ', _unescape(info[2].text), )
+                                    outline = no_spaces.sub(' ', _unescape(info[1].text), )
+                                    credit = no_spaces.sub(' ', _unescape(info[2].text), )
                                     year = g1.find('span', attrs={'class': 'lister-item-year'})
-                                    year = year and yearMatch.match(year.text)
+                                    year = year and year_match.match(year.text)
                                     search = '%s %s' % (title, year.group(1)) if year else title
                                     ret.append((href, title, img, rating, start, outline, credit, genre, search))
-
-            # for tr in table.find_all('tr'):
-            #     number = tr.find('td', attrs={'class': 'number'})
-            #     match = number and numberRe.search(number.text)
-            #     if match:
-            #         start = int(match.group(1))
-            #         if start > limit:
-            #             break
-            #         imageTd = tr.find('td', attrs={'class': 'image'})
-            #         imageTd = imageTd and imageTd.find('a')
-            #         if imageTd:
-            #             href = urlparse(imageTd.get('href')).path
-            #             title = search = imageTd.get('title')
-            #             idx = yearInTitle.match(title)
-            #             if idx:
-            #                 matchTitle, matchYear = idx.group(1), idx.group(2)
-            #                 search = '%s %s' % (matchTitle, matchYear)
-            #                 if not showYear:
-            #                     title = matchTitle
-            #             title = _unescape(title)
-            #             image = imageTd.find('img')
-            #             image = image and image.get('src')
-            #             try:
-            #                 rating = tr.find('span', attrs={'class': 'rating-rating'}).find('span', attrs={
-            #                     'class': 'value'}).text.strip()
-            #             except:
-            #                 rating = '???'
-            #             outline = tr.find('span', attrs={'class': 'outline'})
-            #             outline = outline and outline.text.strip()
-            #             credit = tr.find('span', attrs={'class': 'credit'})
-            #             credit = credit and noSpaces.sub(' ', _unescape(credit.text), )
-            #             genre = tr.find('span', attrs={'class': 'genre'})
-            #             genre = genre and noSpaces.sub(' ', _unescape(genre.text), )
-            #             ret.append((href, title, image, rating, start, outline, credit, genre, search))
         return ret
 
 
-def searchImdb(movieTitle):
+def search_imdb(movie_title):
     with Browser() as browser:
         ret = []
         # small trick, for cases when we cannot find the movie by name: we can enter the URL directly (at imdb)
-        if movieTitle.startswith(IMDB_COM):
-            href = urlparse(movieTitle).path
-            info = _getImdbInfo(getUid(href, ''), browser)
+        if movie_title.startswith(IMDB_COM):
+            href = urlparse(movie_title).path
+            info = _get_imdb_info(get_uid(href, ''), browser)
             if info:
-                uid = getUid(href, info.title)
+                uid = get_uid(href, info.title)
                 info.uid = uid
                 ret.append((uid, info.title, info.year))
-                return (ret, info)
+                return ret, info
 
         # http://www.imdb.com/search/title?count=250&title=last%20stand&title_type=feature,tv_movie&view=simple
-        movieTitle = movieTitle.replace('.', ' ')
+        movie_title = movie_title.replace('.', ' ')
         if SIMULATE:
             with open('/tmp/imdb_search.html') as f:
                 soup = BeautifulSoup(f.read(), HTML_PARSER)
         else:
-            url = IMDB_COM + '/find?' + urlencode(
-                {'q': movieTitle})
+            url = IMDB_COM + '/find?' + urlencode({'q': movie_title})
+            print(url)
             # url = IMDB_COM + '/search/title?' + urlencode(
             #     {'count': '50', 'title_type': 'feature,tv_movie', 'title': movieTitle, 'view': 'simple'})
             # note that count could be up to 250
             soup = BeautifulSoup(browser.open(url).read(), HTML_PARSER)
             with open('/tmp/imdb_search.html', 'w') as f:
                 print(soup.prettify().encode('utf-8', 'ignore'), file=f)
-        for td in soup.find_all('span'):
-            if td.get('title'):
-                ref = td.find('a')
-                if ref:
-                    href = urlparse(
-                        ref.get('href')).path  # we remove any parameters information. So far, is useless
-                    title = _unescape(ref.text)
-                    if title:
-                        year = td.find('span', attrs={'class': 'lister-item-year'})
-                        year = _unescape(year.text) if year else ''
-                        ret.append((getUid(href, title), title, year))
-        return (ret, ret and _getImdbInfo(ret[0][0], browser))
+        section = soup.find(class_='findList')
+        if section:
+            first, ref, image = True, None, None
+            for td in section.find_all('td'):
+                # first td wraps the image and link
+                # second gets the title
+                if first:
+                    first = False
+                    aref = td.find('a')
+                    if aref:
+                        ref, image = urlparse(aref.get('href')).path, aref.find('img').get('src')
+                else:
+                    first = True
+                    # second td is <td class="result_text"> <a href="/title/tt2953050/?ref_=fn_al_tt_1">Encanto</a> (2021) </td>
+                    # for some reason, there are \n characters (like '\', 'n')
+                    text = _unescape(td.text.replace('\\n',' ').strip())
+                    match = TITLE_EXTRACTOR.match(text)
+                    if match:
+                        year = match.group(2)
+                        title, extra = match.group(1).strip(),match.group(3).strip()
+                        if extra:
+                            title = title + ' ' + extra
+                        ret.append((get_uid(ref, title), title, year))
+        return ret, ret and _get_imdb_info(ret[0][0], browser)
 
 
-def searchImdbBasic(movieTitle):
-    '''Not used any longer, would return movies in incorrect language'''
+def search_imdb_basic(movie_title):
+    """ Not used any longer, would return movies in incorrect language"""
+
     ret = []
-    url = IMDB_COM + '/find?' + urlencode({'q': movieTitle, 's': 'all'})
+    url = IMDB_COM + '/find?' + urlencode({'q': movie_title, 's': 'all'})
     with Browser() as browser:
         page = browser.open(url)
         soup = BeautifulSoup(page.read(), HTML_PARSER)
-        divMain = soup.find('div', attrs={'id': 'main'})
-        if divMain:
-            title_search = re.compile('/title/tt\d+')
-            for td in divMain.find_all('td'):
+        div_main = soup.find('div', attrs={'id': 'main'})
+        if div_main:
+            t_search = re.compile('/title/tt\d+')
+            for td in div_main.find_all('td'):
                 ref = td.find('a')
                 if ref:
                     href = ref.get('href')
-                    if href and title_search.match(href):
+                    if href and t_search.match(href):
                         href = urlparse(href).path  # we remove any parameters information. So far, is useless
                         title = _unescape(ref.text)
                         if title:
-                            ret.append((getUid(href, title), title, _unescape(ref.nextSibling)))
-        return (ret, ret and _getImdbInfo(ret[0][0], browser))
+                            ret.append((get_uid(href, title), title, _unescape(ref.nextSibling)))
+        return ret, ret and _get_imdb_info(ret[0][0], browser)
 
 
-def getUid(href, title):
+def get_uid(href, title):
     # when we retrieve movies by name (searchImdb), we obtain a list of URLs, and the associated title.
     # However, when visiting those URLs, the retrieved title could have a different value (normally due
     # to some translation). For this reason, we encode the url and the title in a single uid
     return href + ' ' + title
 
 
-def getImdbInfo(link):
+def get_imdb_info(link):
     with Browser() as browser:
-        return _getImdbInfo(link, browser)
+        return _get_imdb_info(link, browser)
 
 
-def _getImdbInfo(uid, browser):
-    # the link includes, in fact, the URL, an space, and the title
-    title, year, duration, genres, actors, trailer, imgSrc, bigImgSrc = [None] * 8
+def _get_imdb_info(uid, browser):
+    # the link includes, in fact, the URL, a space, and the title
+    title, year, duration, genres, actors, trailer, img_src, big_img_src = [None] * 8
     link, title = uid.split(' ', 1)
     page = browser.open(IMDB_COM + link)
     # page = open('imdb.html')
@@ -202,10 +182,7 @@ def _getImdbInfo(uid, browser):
         trailer = data['trailer']['embedUrl']
     except KeyError:
         trailer = ''
-    imgSrc = bigImageSrc = data['image']
-    for each in soup.findAll('div', attrs={'class': 'poster'}):
-        imgSrc = each.find('img').attrs['src']
-        break
+    img_src = data['image']
     # duration
     for infoBar in soup.findAll('time'):
         match = duration_search.match(_unescape(infoBar.text))
@@ -216,7 +193,7 @@ def _getImdbInfo(uid, browser):
         print('Attention, no duration!!!!')
     url = urlparse(link).path  # we remove any parameters information. So far, is useless
     return Struct.nonulls(url=url, title=title, year=year, duration=duration, uid=uid,
-                          genres=genres, actors=actors, trailer=trailer, imageLink=imgSrc, bigImageLink=bigImgSrc)
+                          genres=genres, actors=actors, trailer=trailer, imageLink=img_src, bigImageLink=big_img_src)
 
 
 def _unescape(text):
@@ -392,5 +369,3 @@ def getSubtitlesOnSubscene(subTitleRef, language, firstSubtitle, lastSubtitle):
                     print('getSubtitlesOnSubscene: Error reading file ' + ref)
                     pass
     return ret
-
-# print getSubtitlesOnSubscene(searchSubtitlesOnSubscene('The Rock')[0][1], 'English')

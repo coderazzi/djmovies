@@ -3,7 +3,7 @@ import json, traceback
 from django.http import HttpResponse
 
 from movies.logic.media import mediainfo
-from movies.logic.imdb import getImdbInfo, searchImdb
+from movies.logic.imdb import get_imdb_info, search_imdb
 
 
 
@@ -27,16 +27,16 @@ def get_mediainfo(request):
 
 def search_title(request):
     def inner():    
-        references, firstInfo = searchImdb(request.POST['movie.title'])
-        return {'links' : references, 
-                'first_movie_info': firstInfo and firstInfo.__dict__}
+        references, first_info = search_imdb(request.POST['movie.title'])
+        return {'links': references,
+                'first_movie_info': first_info and first_info.__dict__}
     return _json_response(inner)
 
 
 def access_url(request):
     def inner():
-        info = getImdbInfo(request.POST['movie.imdb'])
+        info = get_imdb_info(request.POST['movie.imdb'])
         if info:
-            return {'movie_info' : info and info.__dict__}
+            return {'movie_info': info and info.__dict__}
         return {'error': 'Invalid IMDb reference'}
     return _json_response(inner)

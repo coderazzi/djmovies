@@ -1,12 +1,18 @@
 Set up
 ======
 cd djmovies
-sudo apt-get install mediainfo unrar imagemagick libxml2-dev libxslt-dev zlib1g-dev ffmeg mkvtoolnix
+sudo apt-get install mediainfo unrar imagemagick libxml2-dev libxslt-dev zlib1g-dev ffmpeg mkvtoolnix
 pip3 install virtualenv
 virtualenv venv
 source venv/bin/activate
 pip3 install -r requirements.txt 
 deactivate
+
+=======To restore movies
+
+cp ~/Dropbox/backups/djmovies.70.sqlite db_movies.sqlite
+mkdir movies/static/mov_imgs/
+cp -R ~/Dropbox/backups/dj_movies_images movies/static/mov_imgs/
 
 
 In Mac, it was needed:

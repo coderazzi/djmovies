@@ -249,9 +249,9 @@ class LocationHandler:
             ret.append((each, False, LocationHandler.UNHANDLED_FILE))
         return ret
 
-    def normalize_filename_and_title(self, path, imdbInfo):
+    def normalize_filename_and_title(self, path, imdb_info):
 
-        title, year = imdbInfo.title, imdbInfo.year
+        title, year = imdb_info.title, imdb_info.year
         if not title:
             return path
 
@@ -283,6 +283,8 @@ class LocationHandler:
                 if old_dir_name:
                     self.rename(new_dir_name, old_dir_name)
                 raise
+        else:
+            new_path = os.path.join(self.folderBase, dirname, new_name)
 
         if year:
             movie_title = '%s (%s)' % (title, year)

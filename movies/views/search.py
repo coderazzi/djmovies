@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from movies.models import *
 
-from movies.logic.imdb import searchYear
+from movies.logic.imdb import search_year
 from movies.logic.uquery_logic import standarize_title
 
 
@@ -18,7 +18,7 @@ def imdb(request, year, year2=None, limit=150):
     Configuration.setValue(Configuration.IMDB_SEARCH_YEAR2, year2)
     Configuration.setValue(Configuration.IMDB_SEARCH_RESULTS, limit)
 
-    imdb_results = searchYear(year, year2, int(limit))    
+    imdb_results = search_year(year, year2, int(limit))
     movies_in_database= set([m[0] for m in Movie.objects.values_list('imdb_link')])
     movies_in_uquery= set([m[0] for m in UQuery.objects.values_list('standarized_title')])
 
