@@ -64,7 +64,7 @@ Otherwise, it is needed to setup the initial database
     sqlite3 userdata/db_movies.sqlite < db_schema
     ln -sf ../../userdata/mov_imgs movies/static 
 
-Thus userdata folder can then managed as a separate git repository
+This userdata folder can then managed as a separate git repository
 
 # Execution
 
