@@ -55,7 +55,7 @@ Very specifically, the access to external services is likely not working now.
 
 I keep my data in a private repository, so I can initialize the application doing:
 
-    git clone https://github.com/coderazzi/djmovies-userdata userdata 
+    git clone git@github.com:coderazzi/djmovies-userdata.git userdata 
     ln -sf ../../userdata/mov_imgs movies/static 
 
 Otherwise, it is needed to setup the initial database
