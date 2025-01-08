@@ -1,5 +1,5 @@
-Set up
-======
+Set up LINUX
+============
 cd djmovies
 sudo apt-get install mediainfo unrar imagemagick libxml2-dev libxslt-dev zlib1g-dev ffmpeg mkvtoolnix
 pip3 install virtualenv
@@ -8,18 +8,17 @@ source venv/bin/activate
 pip3 install -r requirements.txt 
 deactivate
 
+Set up MACOS
+============
+brew install mediainfo rar freetype imagemagick@6
+brew install ffmpeg 
+export MAGICK_HOME=/opt/homebrew/opt/imagemagick@6
+
 =======To restore movies
 
 cp ~/Dropbox/backups/djmovies.70.sqlite db_movies.sqlite
 mkdir movies/static/mov_imgs/
 cp -R ~/Dropbox/backups/dj_movies_images movies/static/mov_imgs/
-
-
-In Mac, it was needed:
-======================
-brew install mediainfo unrar freetype imagemagick@6
-brew install ffmpeg --with-fdk-aac
-export MAGICK_HOME=/usr/local/Cellar/imagemagick@6/6.9.9-27/
 
 
 To execute
