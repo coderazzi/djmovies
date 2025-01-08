@@ -7,8 +7,8 @@
 	
     <div class='container'>
         <div class='row'>
-            {% if locations %}
             <table class='table table-striped' id='locations-list'>
+                {% if locations %}
 				<thead>
 					<tr><th></th><th>Name</th><th>Description</th><th>Path</th></tr>
 				</thead>
@@ -26,10 +26,10 @@
 				    </tr>
 	                {% endfor %}
 	            </tbody>
+                {% else %}
+                    <h2 class='col-sm-4 col-sm-offset-4'>There are no locations</h2>
+                {% endif %}
             </table>
-            {% else %}
-                <h2 class='col-sm-4 col-sm-offset-4'>There are no locations</h2>
-            {% endif %}
         </div>
 
     </div>

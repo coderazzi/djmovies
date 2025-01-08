@@ -63,6 +63,7 @@ Otherwise, it is needed to setup the initial database
     mkdir -p userdata/mov_imgs
     sqlite3 userdata/db_movies.sqlite < db_schema
     ln -sf ../../userdata/mov_imgs movies/static 
+    python3 ./manage.py migrate --fake
 
 This userdata folder can then managed as a separate git repository
 
