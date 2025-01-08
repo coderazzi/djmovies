@@ -1,6 +1,8 @@
 DjMovies is my personal movies organizer.
 
-# Install packages
+![snapshot](https://coderazzi.net/python/djmovies/djmovies.png)
+
+# OS: install packages
 
 ## linux
 	sudo apt-get install mediainfo unrar imagemagick libxml2-dev libxslt-dev zlib1g-dev ffmpeg mkvtoolnix  
@@ -9,20 +11,28 @@ DjMovies is my personal movies organizer.
 	 brew install mediainfo rar freetype imagemagick@6 ffmpeg 
 	 export MAGICK_HOME=/opt/homebrew/opt/imagemagick@6  
 
-# Initial setup
+# Python setup
 
 	 git clone https://github.com/coderazzi/djmovies    
 	 cd djmovies  
-	 git clone https://github.com/coderazzi/djmovies-userdata userdata 
-	 ln -sf ../../userdata/mov_imgs movies/static 
 	 python3 -m venv venv 
 	 source venv/bin/activate 
 	 pip3 install -r requirements.txt   
 
-To clear the database and start from scratch:
+# Application initialization
 
-	bash userdata/clear_all.sh  
+I keep my data in a private repository, so I can initialize the application doing:
 
+    git clone https://github.com/coderazzi/djmovies-userdata userdata 
+    ln -sf ../../userdata/mov_imgs movies/static 
+
+Otherwise, it is needed to setup the initial database
+
+    mkdir -p userdata/mov_imgs
+    sqlite3 userdata/db_movies.sqlite < db_schema
+    ln -sf ../../userdata/mov_imgs movies/static 
+
+Thus userdata folder can then managed as a separate git repository
 
 # Run
 

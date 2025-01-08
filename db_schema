@@ -1,0 +1,67 @@
+CREATE TABLE configuration (
+				                            id          INTEGER PRIMARY KEY,
+				                            key         TEXT, 
+				                            value       TEXT);
+CREATE TABLE images (
+				                            id          INTEGER PRIMARY KEY,
+				                            movie_id    INTEGER, 
+				                            url         TEXT,
+				                            path        TEXT,
+				                            size        TEXT, width INTEGER, height INTEGER);
+CREATE TABLE IF NOT EXISTS "locations" (id INTEGER PRIMARY KEY,name TEXT,description TEXT, "path" TEXT);
+CREATE TABLE IF NOT EXISTS "django_session" (
+    "session_key" varchar(40) NOT NULL PRIMARY KEY,
+    "session_data" text NOT NULL,
+    "expire_date" datetime NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "paths" (id integer primary key,movie_id INTEGER,location_id INTEGER,path text);
+CREATE TABLE IF NOT EXISTS "locks" (
+    "name" text NOT NULL PRIMARY KEY
+);
+CREATE TABLE IF NOT EXISTS "subtitles" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "movie_id" integer NOT NULL REFERENCES "movies" ("id"),
+    "location_id" integer NOT NULL REFERENCES "locations" ("id"),
+    "language" text NOT NULL,
+    "filename" text NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "movies" (id INTEGER PRIMARY KEY,title TEXT,format TEXT,year INTEGER,duration INTEGER,imdb_duration INTEGER,width INTEGER,height INTEGER,size REAL,imdb_link TEXT,trailer_link TEXT,genres TEXT,actors TEXT,in_audios TEXT,in_subs TEXT);
+CREATE TABLE IF NOT EXISTS "django_migrations" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "app" varchar(255) NOT NULL, "name" varchar(255) NOT NULL, "applied" datetime NOT NULL);
+CREATE TABLE IF NOT EXISTS "uqueries" (
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "title" text NOT NULL UNIQUE,
+    "standarized_title" text NOT NULL UNIQUE,
+    "min_size" integer,
+    "last_check" integer,
+    "newest_result" integer,
+    "completed" bool NOT NULL
+);
+CREATE TABLE IF NOT EXISTS "uresults" (
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "oid" integer NOT NULL,
+    "query_id" integer NOT NULL REFERENCES "uqueries" ("id"),
+    "desc" text NOT NULL,
+    "size" integer NOT NULL,
+    "nfo" text,
+    "files" text NOT NULL,
+    "since" text NOT NULL,
+    "parts" integer NOT NULL,
+    "total_parts" integer NOT NULL,
+    "status" integer NOT NULL,
+    "creation_time" integer NOT NULL, "download" TEXT,
+    UNIQUE ("oid", "query_id")
+);
+CREATE TABLE IF NOT EXISTS "django_content_type" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "app_label" varchar(100) NOT NULL, "model" varchar(100) NOT NULL);
+CREATE INDEX images_movie_id ON images (movie_id);
+CREATE INDEX "django_session_b7b81f0c" ON "django_session" ("expire_date");
+CREATE INDEX movies_to_locations_location ON "paths" (location_id);
+CREATE INDEX movies_to_locations_movie ON "paths" (movie_id);
+CREATE INDEX "subtitles_d06c534f" ON "subtitles" ("movie_id");
+CREATE INDEX "subtitles_afbb987d" ON "subtitles" ("location_id");
+CREATE INDEX movies_title_idx ON "movies" (title);
+CREATE UNIQUE INDEX configuration_key ON configuration (key);
+CREATE UNIQUE INDEX images_id ON images (id);
+CREATE UNIQUE INDEX locations_idx ON "locations" (id);
+CREATE UNIQUE INDEX movies_idx ON "movies" (id);
+CREATE INDEX "uresults_1f3ceafc" ON "uresults" ("query_id");
+CREATE UNIQUE INDEX "django_content_type_app_label_model_76bd3d3b_uniq" ON "django_content_type" ("app_label", "model");
