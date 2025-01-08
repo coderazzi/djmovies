@@ -1,9 +1,9 @@
 *.pyc
 /.idea
-db_movies.sqlite
 imdb.html
 imdb_search_year.html
 nzb_index_trace.html
-movies/static/mov_imgs/
+movies/static/mov_imgs
 venv/
-
+userdata
+.DS_Store
